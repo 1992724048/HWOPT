@@ -1,0 +1,10 @@
+﻿{
+  "required": true,
+  "package": "com.worldgen.accessor",
+  "compatibilityLevel": "JAVA_25",
+  "mixins": [
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

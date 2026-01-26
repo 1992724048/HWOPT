@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\exception.1.0.0\build\native\exception.props" Condition="Exists('..\packages\exception.1.0.0\build\native\exception.props')" />
+  <Import Project="..\packages\glm.1.0.3\build\native\glm.props" Condition="Exists('..\packages\glm.1.0.3\build\native\glm.props')" />
+  <Import Project="..\packages\logger.1.0.0\build\native\logger.props" Condition="Exists('..\packages\logger.1.0.0\build\native\logger.props')" />
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>18.0</VCProjectVersion>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectGuid>{8336a515-3f32-4610-bf87-3ccfb9350a8b}</ProjectGuid>
+    <RootNamespace>hwopt</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>Intel C++ Compiler 2025</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+    <InterproceduralOptimization>true</InterproceduralOptimization>
+    <UseIntelIPP1A>Static_Library</UseIntelIPP1A>
+    <UseInteloneTBB>true</UseInteloneTBB>
+    <UseInteloneMKL>Parallel</UseInteloneMKL>
+    <UseILP64Interfaces1A>true</UseILP64Interfaces1A>
+    <EnableMKLOpenMPOffloadToGPU>true</EnableMKLOpenMPOffloadToGPU>
+    <UseInteloneDAL>Parallel_Static</UseInteloneDAL>
+    <UseIntelMPI>true</UseIntelMPI>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>Intel C++ Compiler 2025</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+    <InterproceduralOptimization>true</InterproceduralOptimization>
+    <UseIntelIPP1A>Static_Library</UseIntelIPP1A>
+    <UseInteloneTBB>true</UseInteloneTBB>
+    <UseInteloneMKL>Parallel</UseInteloneMKL>
+    <UseILP64Interfaces1A>true</UseILP64Interfaces1A>
+    <EnableMKLOpenMPOffloadToGPU>true</EnableMKLOpenMPOffloadToGPU>
+    <UseInteloneDAL>Parallel_Static</UseInteloneDAL>
+    <UseIntelMPI>true</UseIntelMPI>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>..\$(Platform)-$(Configuration)\</OutDir>
+    <IntDir>..\$(Platform)-$(Configuration)\build\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>..\$(Platform)-$(Configuration)\</OutDir>
+    <IntDir>..\$(Platform)-$(Configuration)\build\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_DEBUG;HWOPT_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <ExceptionHandling>Async</ExceptionHandling>
+      <GenerateAlternateCodePaths>AVX2</GenerateAlternateCodePaths>
+      <UseProcessorExtensions>AVX2</UseProcessorExtensions>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <OpenMP>GenerateParallelCode</OpenMP>
+      <Optimization>Disabled</Optimization>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+      <IntrinsicFunctions>false</IntrinsicFunctions>
+      <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
+      <StringPooling>false</StringPooling>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <FloatingPointModel>Precise</FloatingPointModel>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableUAC>false</EnableUAC>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>NDEBUG;HWOPT_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <ExceptionHandling>Async</ExceptionHandling>
+      <GenerateAlternateCodePaths>ARROWLAKE-S</GenerateAlternateCodePaths>
+      <UseProcessorExtensions>ARROWLAKE-S</UseProcessorExtensions>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <OpenMP>GenerateParallelCode</OpenMP>
+      <FloatingPointModel>Precise</FloatingPointModel>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <Optimization>MaxSpeedHighLevel</Optimization>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <StringPooling>true</StringPooling>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableUAC>false</EnableUAC>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="Noise\ImprovedNoise.cpp" />
+    <ClCompile Include="Noise\PerlinNoise.cpp" />
+    <ClCompile Include="Noise\SimplexNoise.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Noise\ImprovedNoise.h" />
+    <ClInclude Include="Noise\PerlinNoise.h" />
+    <ClInclude Include="Noise\SimplexNoise.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>这台计算机上缺少此项目引用的 NuGet 程序包。使用“NuGet 程序包还原”可下载这些程序包。有关更多信息，请参见 http://go.microsoft.com/fwlink/?LinkID=322105。缺少的文件是 {0}。</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\logger.1.0.0\build\native\logger.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\logger.1.0.0\build\native\logger.props'))" />
+    <Error Condition="!Exists('..\packages\glm.1.0.3\build\native\glm.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\glm.1.0.3\build\native\glm.props'))" />
+    <Error Condition="!Exists('..\packages\exception.1.0.0\build\native\exception.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\exception.1.0.0\build\native\exception.props'))" />
+  </Target>
+</Project>
