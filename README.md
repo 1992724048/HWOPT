@@ -1,2 +1,3 @@
 # HWOPT
-English translation: A Minecraft optimization mod that refactors part of the code using C++ and DPC++, with support for GPU acceleration.
+A Minecraft optimization mod that refactors part of the code using C++ and DPC++, with support for GPU acceleration.
+## In development...
