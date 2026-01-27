@@ -14,7 +14,7 @@ ImprovedNoise::ImprovedNoise() {
     }
 
     for (int i = 0; i < 256; i++) {
-        std::uniform_int_distribution d(0, 256 - i);
+        std::uniform_int_distribution d(0, 255 - i);
         const int offset = d(mt);
         const char tmp = this->p[i];
         this->p[i] = this->p[i + offset];

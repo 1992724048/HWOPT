@@ -20,7 +20,6 @@ public:
 
 private:
     std::array<char, 256> p;
-    const float SHIFT_UP_EPSILON = 1.0E-7F;
 
     static auto grad_dot(const int hash, const double x, const double y, const double z) -> double ;
 

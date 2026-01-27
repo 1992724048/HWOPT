@@ -155,8 +155,7 @@ auto SimplexNoise::get_corner_noise_3d(const int index, double x, double y, doub
     double n0;
     if (t0 < 0.0) {
         n0 = 0.0;
-    }
-    else {
+    } else {
         t0 *= t0;
         n0 = t0 * t0 * dot(GRADIENT[index], x, y, z);
     }

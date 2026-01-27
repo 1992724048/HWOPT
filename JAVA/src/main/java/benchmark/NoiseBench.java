@@ -4,6 +4,10 @@ import it.unimi.dsi.fastutil.doubles.DoubleArrayList;
 import library.dll.PerlinNoiseNative;
 import nativecode.dll.FFMFactory;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.levelgen.synth.PerlinNoise;
+
+import java.lang.foreign.Arena;
+import java.lang.foreign.SymbolLookup;
 
 public enum NoiseBench {
     ;
@@ -13,34 +17,44 @@ public enum NoiseBench {
     static final double Y = 64.0;
     static final double Z = 200.7;
 
-    static void main(String[] args) {
-        RandomSource random = RandomSource.create(1234L);
-        var JAVA_PERLIN = net.minecraft.world.level.levelgen.synth.PerlinNoise.create(random, -2, 1.0, 1.0, 1.0, 1.0);
+    static final Arena ARENA = Arena.global();
 
-        PerlinNoiseNative noise = FFMFactory.load(PerlinNoiseNative.class);
+    static RandomSource random;
+    static PerlinNoise JAVA_PERLIN;
+
+    static PerlinNoiseNative NATIVE_NOISE;
+    static long hwopt$nativePtr;
+
+    static {
+        SymbolLookup.libraryLookup("F:\\CODE\\hwopt\\CPP\\hwopt\\x64-Release\\mimalloc-redirect.dll", ARENA);
+        SymbolLookup.libraryLookup("F:\\CODE\\hwopt\\CPP\\hwopt\\x64-Release\\mimalloc.dll", ARENA);
+        SymbolLookup.libraryLookup("F:\\CODE\\hwopt\\CPP\\hwopt\\x64-Release\\hwopt.dll", ARENA);
+
+        random = RandomSource.create(1234L);
+        JAVA_PERLIN = net.minecraft.world.level.levelgen.synth.PerlinNoise.create(random, -2, 1.0, 1.0, 1.0, 1.0);
+
+        NATIVE_NOISE = FFMFactory.load(PerlinNoiseNative.class);
         DoubleArrayList amplitudeList = new DoubleArrayList();
         amplitudeList.add(1);
         amplitudeList.add(1);
         amplitudeList.add(1);
         amplitudeList.add(1);
-        long hwopt$nativePtr = noise.create(-2, amplitudeList.toDoubleArray(), amplitudeList.size(), true);
+        hwopt$nativePtr = NATIVE_NOISE.create(-2, amplitudeList.toDoubleArray(), amplitudeList.size(), true);
         System.out.println("Native: " + hwopt$nativePtr);
+    }
 
-        // =============================
-        // 1️⃣ Java -> C++ (Panama)
-        // =============================
+    static void main(String[] args) {
+        // Java -> C++ (Panama)
         long t0 = System.nanoTime();
         double sumNative = 0.0;
 
         for (int i = 0; N > i; i++) {
-            sumNative += noise.getValue(hwopt$nativePtr, X + i * 0.001, Y, Z + i * 0.002);
+            sumNative += NATIVE_NOISE.getValue(hwopt$nativePtr, X + i * 0.001, Y, Z + i * 0.002);
         }
 
         long t1 = System.nanoTime();
 
-        // =============================
-        // 2️⃣ 纯 Java PerlinNoise
-        // =============================
+        // ️Java PerlinNoise
         long t2 = System.nanoTime();
         double sumJava = 0.0;
 

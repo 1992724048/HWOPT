@@ -30,7 +30,6 @@ public:
     [[nodiscard]] auto edge_value(const double noise_value) const -> double ;
 
 private:
-    const int ROUND_OFF = 33554432;
     std::vector<std::shared_ptr<ImprovedNoise>> noise_levels;
     int first_octave;
     std::vector<double> amplitudes;

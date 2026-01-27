@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\mimalloc.3.2.6\build\native\mimalloc.props" Condition="Exists('..\packages\mimalloc.3.2.6\build\native\mimalloc.props')" />
   <Import Project="..\packages\exception.1.0.0\build\native\exception.props" Condition="Exists('..\packages\exception.1.0.0\build\native\exception.props')" />
   <Import Project="..\packages\glm.1.0.3\build\native\glm.props" Condition="Exists('..\packages\glm.1.0.3\build\native\glm.props')" />
   <Import Project="..\packages\logger.1.0.0\build\native\logger.props" Condition="Exists('..\packages\logger.1.0.0\build\native\logger.props')" />
@@ -99,6 +100,8 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -125,12 +128,15 @@
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <StringPooling>true</StringPooling>
+      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
+      <ControlFlowGuard>false</ControlFlowGuard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
       <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -148,7 +154,9 @@
     <ClInclude Include="Noise\SimplexNoise.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
-  <ImportGroup Label="ExtensionTargets" />
+  <ImportGroup Label="ExtensionTargets">
+    <Import Project="..\packages\mimalloc.3.2.6\build\native\mimalloc.targets" Condition="Exists('..\packages\mimalloc.3.2.6\build\native\mimalloc.targets')" />
+  </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>这台计算机上缺少此项目引用的 NuGet 程序包。使用“NuGet 程序包还原”可下载这些程序包。有关更多信息，请参见 http://go.microsoft.com/fwlink/?LinkID=322105。缺少的文件是 {0}。</ErrorText>
@@ -156,5 +164,7 @@
     <Error Condition="!Exists('..\packages\logger.1.0.0\build\native\logger.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\logger.1.0.0\build\native\logger.props'))" />
     <Error Condition="!Exists('..\packages\glm.1.0.3\build\native\glm.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\glm.1.0.3\build\native\glm.props'))" />
     <Error Condition="!Exists('..\packages\exception.1.0.0\build\native\exception.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\exception.1.0.0\build\native\exception.props'))" />
+    <Error Condition="!Exists('..\packages\mimalloc.3.2.6\build\native\mimalloc.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\mimalloc.3.2.6\build\native\mimalloc.props'))" />
+    <Error Condition="!Exists('..\packages\mimalloc.3.2.6\build\native\mimalloc.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\mimalloc.3.2.6\build\native\mimalloc.targets'))" />
   </Target>
 </Project>

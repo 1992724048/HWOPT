@@ -18,6 +18,7 @@ auto APIENTRY DllMain(HMODULE hModule, const DWORD ul_reason_for_call, LPVOID lp
 }
 
 extern "C" API auto PerlinNoise_create(const int first_octave, const double* amplitudes, const int size, const bool use_new_initialization) -> std::uint64_t try {
+    thread_local auto _ = _set_se_translator(stdpp::exception::NativeException::seh_to_ce);
     std::vector<double> amps(size);
     std::memcpy(amps.data(), amplitudes, sizeof(double) * size);
     return reinterpret_cast<std::uint64_t>(new PerlinNoise({first_octave, amps}, use_new_initialization));

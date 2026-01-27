@@ -9,7 +9,6 @@ PerlinNoise::PerlinNoise(const std::pair<int, std::vector<double>>& pair, const 
     if (use_new_initialization) {
         for (int i = 0; i < octaves; i++) {
             if (this->amplitudes[i] != 0.0) {
-                const int octave = this->first_octave + i;
                 this->noise_levels[i] = std::make_shared<ImprovedNoise>();
             }
         }
