@@ -1,6 +1,6 @@
 # HWOPT / 硬件加速优化模组
-A Minecraft optimization mod that refactors part of the code using C++ and DPC++, with support for GPU acceleration.  
-一个 Minecraft 优化模组，使用 C++ 与 DPC++ 重构部分核心代码，并支持 GPU 加速。
+使用 C++ 实现核心逻辑，并通过 DPC++（SYCL）实现并行与 GPU 加速。  
+Core logic is implemented in C++, with parallel and GPU acceleration via DPC++ (SYCL).
 
 ## 状态 / Status
 正在开发中，距离正式发布还需要一段时间。  
