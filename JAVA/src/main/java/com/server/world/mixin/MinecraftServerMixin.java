@@ -19,18 +19,18 @@ import java.util.Optional;
 @Mixin(MinecraftServer.class)
 public abstract class MinecraftServerMixin {
     @Inject(method = "setInitialSpawn", at = @At("HEAD"), cancellable = true)
-    private static void hwopt$spawnAtVillage(final ServerLevel level, final ServerLevelData levelData, final boolean spawnBonusChest, final boolean isDebug, final LevelLoadListener levelLoadListener, final CallbackInfo ci) {
+    private static void hwopt$spawnAtVillage(ServerLevel level, ServerLevelData levelData, boolean spawnBonusChest, boolean isDebug, LevelLoadListener levelLoadListener, CallbackInfo ci) {
         if (!level.dimension().equals(Level.OVERWORLD)) {
             return;
         }
 
-        final Optional<BlockPos> villagePos = Optional.ofNullable(level.findNearestMapStructure(StructureTags.VILLAGE, new BlockPos(0, level.getSeaLevel(), 0), 256, false));
+        Optional<BlockPos> villagePos = Optional.ofNullable(level.findNearestMapStructure(StructureTags.VILLAGE, new BlockPos(0, level.getSeaLevel(), 0), 256, false));
         if (villagePos.isEmpty()) {
             return;
         }
 
-        final BlockPos village = villagePos.get();
-        final BlockPos spawn = level.getHeightmapPos(Heightmap.Types.WORLD_SURFACE, village);
+        BlockPos village = villagePos.get();
+        BlockPos spawn = level.getHeightmapPos(Heightmap.Types.WORLD_SURFACE, village);
 
         levelData.setSpawn(LevelData.RespawnData.of(level.dimension(), spawn, 0.0F, 0.0F));
         ci.cancel();

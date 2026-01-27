@@ -150,7 +150,7 @@ auto SimplexNoise::dot(const int* g, const double x, const double y, const doubl
     return g[0] * x + g[1] * y + g[2] * z;
 }
 
-auto SimplexNoise::get_corner_noise_3d(const int index, double x, double y, double z, const double base) -> double {
+auto SimplexNoise::get_corner_noise_3d(const int index, const double x, const double y, const double z, const double base) -> double {
     double t0 = base - x * x - y * y - z * z;
     double n0;
     if (t0 < 0.0) {

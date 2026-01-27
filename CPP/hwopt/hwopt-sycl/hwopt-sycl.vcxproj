@@ -50,12 +50,12 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>..\$(Platform)-$(Configuration)\</OutDir>
+    <OutDir>$(SolutionDir)..\..\JAVA\src\main\resources\native\win64\</OutDir>
     <IntDir>..\$(Platform)-$(Configuration)\build\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>..\$(Platform)-$(Configuration)\</OutDir>
+    <OutDir>$(SolutionDir)..\..\JAVA\src\main\resources\native\win64\</OutDir>
     <IntDir>..\$(Platform)-$(Configuration)\build\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">

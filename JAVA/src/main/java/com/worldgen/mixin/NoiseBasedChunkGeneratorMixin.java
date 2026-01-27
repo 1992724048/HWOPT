@@ -18,7 +18,7 @@ import static com.google.common.util.concurrent.Futures.submit;
 @Mixin(NoiseBasedChunkGenerator.class)
 public abstract class NoiseBasedChunkGeneratorMixin {
     @Inject(method = "fillFromNoise", at = @At("HEAD"), cancellable = true)
-    private void fillFromNoise(Blender blender, RandomState randomState, StructureManager structureManager, ChunkAccess centerChunk, CallbackInfoReturnable<CompletableFuture<ChunkAccess>> cir) {
+    private void fillFromNoise(final Blender blender, final RandomState randomState, final StructureManager structureManager, final ChunkAccess centerChunk, final CallbackInfoReturnable<CompletableFuture<ChunkAccess>> cir) {
 
     }
 }

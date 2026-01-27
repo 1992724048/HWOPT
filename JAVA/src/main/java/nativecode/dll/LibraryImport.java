@@ -6,4 +6,5 @@ import java.lang.annotation.*;
 @Target(ElementType.TYPE)
 public @interface LibraryImport {
     String dll();
+    long structSize();
 }

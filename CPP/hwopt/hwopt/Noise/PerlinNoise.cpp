@@ -1,6 +1,8 @@
 ﻿#include "PerlinNoise.h"
 
 PerlinNoise::PerlinNoise(const std::pair<int, std::vector<double>>& pair, const bool use_new_initialization) {
+    touch();
+
     this->first_octave = pair.first;
     this->amplitudes = pair.second;
     const int octaves = this->amplitudes.size();

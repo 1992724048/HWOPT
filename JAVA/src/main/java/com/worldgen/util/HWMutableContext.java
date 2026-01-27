@@ -7,8 +7,8 @@ public final class HWMutableContext implements DensityFunction.FunctionContext {
     public int y;
     public int z;
 
-    @Override public int blockX() { return this.x; }
-    @Override public int blockY() { return this.y; }
-    @Override public int blockZ() { return this.z; }
+    @Override public int blockX() { return x; }
+    @Override public int blockY() { return y; }
+    @Override public int blockZ() { return z; }
 }
 

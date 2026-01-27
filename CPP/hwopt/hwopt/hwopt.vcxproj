@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\encode.1.0.0\build\native\encode.props" Condition="Exists('..\packages\encode.1.0.0\build\native\encode.props')" />
   <Import Project="..\packages\mimalloc.3.2.6\build\native\mimalloc.props" Condition="Exists('..\packages\mimalloc.3.2.6\build\native\mimalloc.props')" />
   <Import Project="..\packages\exception.1.0.0\build\native\exception.props" Condition="Exists('..\packages\exception.1.0.0\build\native\exception.props')" />
   <Import Project="..\packages\glm.1.0.3\build\native\glm.props" Condition="Exists('..\packages\glm.1.0.3\build\native\glm.props')" />
@@ -64,11 +65,11 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>..\$(Platform)-$(Configuration)\</OutDir>
+    <OutDir>$(SolutionDir)..\..\JAVA\src\main\resources\native\win64\</OutDir>
     <IntDir>..\$(Platform)-$(Configuration)\build\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>..\$(Platform)-$(Configuration)\</OutDir>
+    <OutDir>$(SolutionDir)..\..\JAVA\src\main\resources\native\win64\</OutDir>
     <IntDir>..\$(Platform)-$(Configuration)\build\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -150,6 +151,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Noise\ImprovedNoise.h" />
+    <ClInclude Include="JavaNative.h" />
     <ClInclude Include="Noise\PerlinNoise.h" />
     <ClInclude Include="Noise\SimplexNoise.h" />
   </ItemGroup>
@@ -166,5 +168,6 @@
     <Error Condition="!Exists('..\packages\exception.1.0.0\build\native\exception.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\exception.1.0.0\build\native\exception.props'))" />
     <Error Condition="!Exists('..\packages\mimalloc.3.2.6\build\native\mimalloc.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\mimalloc.3.2.6\build\native\mimalloc.props'))" />
     <Error Condition="!Exists('..\packages\mimalloc.3.2.6\build\native\mimalloc.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\mimalloc.3.2.6\build\native\mimalloc.targets'))" />
+    <Error Condition="!Exists('..\packages\encode.1.0.0\build\native\encode.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\encode.1.0.0\build\native\encode.props'))" />
   </Target>
 </Project>
