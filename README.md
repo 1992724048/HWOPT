@@ -10,7 +10,4 @@ Currently under active development. It will take some time before a public relea
 
 | 测试项目 / Benchmark | 优化前 / Baseline | 优化后 / Optimized | 性能提升 / Improvement |
 |----------------------|-------------------|--------------------|------------------------|
-| NoiseBench           | 100%              | 144.5%             | +44.5%                 |
-
-> 当前在 NoiseBench 测试中取得了约 44.5% 的性能提升。  
-> Currently, a performance improvement of approximately 44.5% has been achieved in the NoiseBench benchmark.
+| NoiseBench           | 612.591 ms        | 396.340 ms         | +35.30%                |
