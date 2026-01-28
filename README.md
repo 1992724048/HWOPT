@@ -8,6 +8,13 @@ Currently under active development. It will take some time before a public relea
 
 ## 性能测试 / Benchmark Results
 
-| 测试项目 / Benchmark | 优化前 / Baseline | 优化后 / Optimized | 性能提升 / Improvement |
-|----------------------|-------------------|--------------------|------------------------|
-| NoiseBench           | 612.591 ms        | 396.340 ms         | +35.30%                |
+> 测试环境 / Environment:  
+> - CPU: Ultra9 285k
+> - MEM: DDR5 48GB 6400MHz C32 x2
+> - JDK: OpenJDK 25 
+> - OS: Windows 11 25H2 Beta
+> - Runs: 10 (avg)
+
+| 测试项目 / Benchmark | 优化前 / Baseline (Java) | 优化后 / Optimized (FFM) | 性能提升 / Speedup |
+|---------------------|--------------------------|-------------------------|--------------------|
+| NoiseBench          | 4613.318 ms              | 3181.600 ms             | **+31.03%**        |
