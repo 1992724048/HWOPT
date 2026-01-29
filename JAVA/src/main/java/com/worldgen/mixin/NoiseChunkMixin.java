@@ -12,7 +12,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(NoiseChunk.class)
 public abstract class NoiseChunkMixin {
-
     @Shadow
     private DensityFunction preliminarySurfaceLevel;
 

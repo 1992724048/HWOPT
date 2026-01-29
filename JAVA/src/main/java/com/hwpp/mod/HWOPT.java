@@ -1,8 +1,10 @@
 package com.hwpp.mod;
 
 import benchmark.NoiseBench;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.event.level.LevelEvent;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
 import net.neoforged.neoforge.event.server.ServerStoppedEvent;
 import net.neoforged.neoforge.event.server.ServerStoppingEvent;
@@ -65,6 +67,8 @@ public class HWOPT {
             .displayItems((parameters, output) -> {
                 output.accept(HWOPT.EXAMPLE_ITEM.get()); // 把示例项目添加到标签页中。对于你自己的账单，这种方式比活动更受欢迎
             }).build());
+    
+    public static long seed;
 
     // mod类的构造子是加载mod时运行的第一个代码。
     // FML 会识别一些参数类型，比如 IEventBus 或 ModContainer，并自动传递。
@@ -102,7 +106,7 @@ public class HWOPT {
 
     private void addCreative(final BuildCreativeModeTabContentsEvent event) {
         if (event.getTabKey() == CreativeModeTabs.BUILDING_BLOCKS) {
-            event.accept(HWOPT.EXAMPLE_BLOCK_ITEM);
+            event.accept(EXAMPLE_BLOCK_ITEM);
         }
     }
 
@@ -129,7 +133,15 @@ public class HWOPT {
     @SubscribeEvent
     public void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
         if (event.getEntity() instanceof ServerPlayer player) {
-            HWOPT.LOGGER.info("Player joined: {}", player.getName());
+            LOGGER.info("Player joined: {}", player.getName());
+        }
+    }
+    
+    @SubscribeEvent
+    public void onWorldLoad(LevelEvent.Load event) {
+        if (event.getLevel() instanceof ServerLevel level) {
+            seed = level.getSeed();
+            System.out.println("Seed is: " + seed);
         }
     }
 

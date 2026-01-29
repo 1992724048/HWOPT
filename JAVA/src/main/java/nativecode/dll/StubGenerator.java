@@ -6,7 +6,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.Opcodes;
 
 import static org.objectweb.asm.Opcodes.*;
 
@@ -60,9 +62,10 @@ enum StubGenerator {
         
         int nativeIndex = 0;
         for (Method m : methods) {
-            Field f = m.getAnnotation(Field.class);
-            if (f != null) {
-                emitFieldMethod(cw, implName, m, f.offset());
+            if (m.isAnnotationPresent(Field.class)) {
+                emitFieldMethod(cw, implName, m, m.getAnnotation(Field.class).offset());
+            } else if (m.isAnnotationPresent(FieldArray.class)) {
+                emitFieldArrayMethod(cw, implName, m, m.getAnnotation(FieldArray.class));
             } else {
                 emitMethod(cw, implName, m, nativeIndex++, structSize);
             }
@@ -119,6 +122,78 @@ enum StubGenerator {
         mv.visitMethodInsn(INVOKESPECIAL, "java/lang/Object", "<init>", "()V", false);
         mv.visitInsn(RETURN);
         mv.visitMaxs(1, 1);
+        mv.visitEnd();
+    }
+    
+    private static void emitFieldArrayMethod(ClassWriter cw,
+                                             String implName,
+                                             Method m,
+                                             FieldArray fa) {
+        
+        Class<?> rt = m.getReturnType();
+        if (!rt.isArray()) {
+            throw new IllegalStateException("@FieldArray must return array");
+        }
+        
+        Class<?> ct = rt.getComponentType();
+        long offset = fa.offset();
+        int len = fa.length();
+        
+        int elemSize;
+        String ofArrayDesc;
+        if (ct == double.class) {
+            elemSize = 8;
+            ofArrayDesc = "([D)Ljava/lang/foreign/MemorySegment;";
+        } else if (ct == int.class) {
+            elemSize = 4;
+            ofArrayDesc = "([I)Ljava/lang/foreign/MemorySegment;";
+        } else {
+            throw new IllegalStateException("Unsupported @FieldArray type: " + ct);
+        }
+        
+        MethodType mt = MethodType.methodType(rt);
+        MethodVisitor mv = cw.visitMethod(ACC_PUBLIC,
+                                          m.getName(),
+                                          mt.toMethodDescriptorString(),
+                                          null, null);
+        
+        mv.visitCode();
+        
+        mv.visitIntInsn(SIPUSH, len);
+        mv.visitTypeInsn(NEWARRAY, String.valueOf(ct == double.class ? T_DOUBLE : T_INT));
+        mv.visitVarInsn(ASTORE, 1);
+        
+        mv.visitVarInsn(ALOAD, 0);
+        mv.visitFieldInsn(GETFIELD, implName, "ptr", "Ljava/lang/foreign/MemorySegment;");
+        mv.visitLdcInsn(offset);
+        mv.visitLdcInsn((long) len * elemSize);
+        mv.visitMethodInsn(INVOKEINTERFACE,
+                           "java/lang/foreign/MemorySegment",
+                           "asSlice",
+                           "(JJ)Ljava/lang/foreign/MemorySegment;",
+                           true);
+        mv.visitVarInsn(ASTORE, 2);
+        
+        mv.visitVarInsn(ALOAD, 1);
+        mv.visitMethodInsn(INVOKESTATIC,
+                           "java/lang/foreign/MemorySegment",
+                           "ofArray",
+                           ofArrayDesc,
+                           false);
+        mv.visitVarInsn(ASTORE, 3);
+        
+        mv.visitVarInsn(ALOAD, 3);
+        mv.visitVarInsn(ALOAD, 2);
+        mv.visitMethodInsn(INVOKEINTERFACE,
+                           "java/lang/foreign/MemorySegment",
+                           "copyFrom",
+                           "(Ljava/lang/foreign/MemorySegment;)V",
+                           true);
+        
+        mv.visitVarInsn(ALOAD, 1);
+        mv.visitInsn(ARETURN);
+        
+        mv.visitMaxs(0, 0);
         mv.visitEnd();
     }
     
@@ -185,7 +260,7 @@ enum StubGenerator {
             layoutDesc = "Ljava/lang/foreign/ValueLayout$OfShort;";
             getDesc = "(Ljava/lang/foreign/ValueLayout$OfShort;J)S";
             setDesc = "(Ljava/lang/foreign/ValueLayout$OfShort;JS)V";
-            returnOpcode = IRETURN; // short 用 int 返回
+            returnOpcode = IRETURN;
             loadOpcode = ILOAD;
         } else if (type == byte.class) {
             layoutName = "JAVA_BYTE";
@@ -195,7 +270,6 @@ enum StubGenerator {
             returnOpcode = IRETURN;
             loadOpcode = ILOAD;
         } else if (type == boolean.class) {
-            // 按 C 的 _Bool / uint8_t 处理
             layoutName = "JAVA_BOOLEAN";
             layoutDesc = "Ljava/lang/foreign/ValueLayout$OfBoolean;";
             getDesc = "(Ljava/lang/foreign/ValueLayout$OfBoolean;J)Z";

@@ -1,8 +1,6 @@
 ﻿#include "ImprovedNoise.h"
 
-ImprovedNoise::ImprovedNoise() {
-    std::random_device rd;
-    std::mt19937_64 mt(rd());
+ImprovedNoise::ImprovedNoise(std::mt19937_64& mt) {
     std::uniform_real_distribution dist_double(0.0, 1.0);
 
     this->xo = dist_double(mt) * 256.0;
@@ -16,7 +14,7 @@ ImprovedNoise::ImprovedNoise() {
     for (int i = 0; i < 256; i++) {
         std::uniform_int_distribution d(0, 255 - i);
         const int offset = d(mt);
-        const char tmp = this->p[i];
+        const uint8_t tmp = this->p[i];
         this->p[i] = this->p[i + offset];
         this->p[i + offset] = tmp;
     }

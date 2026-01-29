@@ -5,11 +5,14 @@ import java.io.InputStream;
 import java.lang.foreign.*;
 import java.lang.invoke.*;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.net.JarURLConnection;
 import java.net.URL;
 import java.nio.ByteOrder;
 import java.nio.file.*;
 import java.security.MessageDigest;
 import java.util.*;
+import java.util.stream.Stream;
 
 public enum FFMFactory {
     ;
@@ -40,7 +43,6 @@ public enum FFMFactory {
         }
         
         Path dllPath = Paths.get(System.getProperty("user.dir"), lib.dll()).toAbsolutePath();
-        System.out.println("dllPath:" + dllPath);
         System.load(dllPath.toString());
         SymbolLookup lookup = SymbolLookup.libraryLookup(lib.dll(), ARENA);
         
@@ -49,14 +51,19 @@ public enum FFMFactory {
             
             List<Method> allMethods = new ArrayList<>();
             for (Method m : api.getMethods()) {
-                if (Object.class == m.getDeclaringClass()) continue;
-                if (!java.lang.reflect.Modifier.isAbstract(m.getModifiers())) continue;
+                if (Object.class == m.getDeclaringClass()) {
+                    continue;
+                }
+                if (!Modifier.isAbstract(m.getModifiers())) {
+                    continue;
+                }
                 allMethods.add(m);
             }
             
             List<Method> nativeMethods = new ArrayList<>();
             for (Method m : allMethods) {
-                if (!m.isAnnotationPresent(Field.class)) {
+                if (!m.isAnnotationPresent(Field.class)
+                        && !m.isAnnotationPresent(FieldArray.class)) {
                     nativeMethods.add(m);
                 }
             }
@@ -132,14 +139,12 @@ public enum FFMFactory {
             return FunctionDescriptor.of(ValueLayout.ADDRESS,
                                          layouts.toArray(MemoryLayout[]::new));
         }
-        
         return FunctionDescriptor.of(map(m.getReturnType()),
                                      layouts.toArray(MemoryLayout[]::new));
     }
     
     private static MethodType buildNativeMethodType(Method m) {
         boolean create = isCreate(m);
-        
         List<Class<?>> pts = new ArrayList<>();
         
         if (!create) {
@@ -154,35 +159,47 @@ public enum FFMFactory {
             }
         }
         
-        Class<?> rt;
-        if (void.class == m.getReturnType()) {
-            rt = void.class;
-        } else if (create || !m.getReturnType().isPrimitive()) {
+        Class<?> rt = m.getReturnType();
+        if (create || !rt.isPrimitive()) {
             rt = MemorySegment.class;
-        } else {
-            rt = m.getReturnType();
+        } else if (String.class == rt || rt.isArray()) {
+            rt = MemorySegment.class;
         }
         
         return MethodType.methodType(rt, pts.toArray(Class<?>[]::new));
     }
     
     private static MemoryLayout map(Class<?> c) {
-        if (int.class == c) return ValueLayout.JAVA_INT;
-        if (long.class == c) return ValueLayout.JAVA_LONG;
-        if (float.class == c) return ValueLayout.JAVA_FLOAT;
-        if (double.class == c) return ValueLayout.JAVA_DOUBLE;
-        if (boolean.class == c) return ValueLayout.JAVA_BOOLEAN;
-        if (String.class == c) return ValueLayout.ADDRESS;
-        if (MemorySegment.class == c) return ValueLayout.ADDRESS;
-        if (c.isInterface()) return ValueLayout.ADDRESS;
-        
+        if (int.class == c) {
+            return ValueLayout.JAVA_INT;
+        }
+        if (long.class == c) {
+            return ValueLayout.JAVA_LONG;
+        }
+        if (float.class == c) {
+            return ValueLayout.JAVA_FLOAT;
+        }
+        if (double.class == c) {
+            return ValueLayout.JAVA_DOUBLE;
+        }
+        if (boolean.class == c) {
+            return ValueLayout.JAVA_BOOLEAN;
+        }
+        if (String.class == c) {
+            return ValueLayout.ADDRESS;
+        }
+        if (MemorySegment.class == c) {
+            return ValueLayout.ADDRESS;
+        }
+        if (c.isInterface()) {
+            return ValueLayout.ADDRESS;
+        }
         if (c.isArray()) {
             Class<?> ct = c.getComponentType();
             if (ct.isPrimitive() || MemorySegment.class == ct) {
                 return ValueLayout.ADDRESS;
             }
         }
-        
         throw new UnsupportedOperationException("Unsupported type: " + c);
     }
     
@@ -255,7 +272,6 @@ public enum FFMFactory {
                 throw new RuntimeException("Resource dir not found in classpath: " + resourceDir);
             }
         } catch (Exception e) {
-            // 只有这里才回退到开发目录
             Path devDir = Paths.get(System.getProperty("user.dir"))
                     .resolve("../src/main/resources/native/win64")
                     .normalize();
@@ -270,24 +286,28 @@ public enum FFMFactory {
             file_filter(outDir, devDir);
             return;
         }
-
+        
         try {
             if ("file".equals(url.getProtocol())) {
                 Path dir = Paths.get(url.toURI());
                 file_filter(outDir, dir);
                 
             } else if ("jar".equals(url.getProtocol())) {
-                var conn = (java.net.JarURLConnection) url.openConnection();
+                var conn = (JarURLConnection) url.openConnection();
                 var jar = conn.getJarFile();
                 String prefix = conn.getEntryName();
                 
                 var entries = jar.entries();
                 while (entries.hasMoreElements()) {
                     var e = entries.nextElement();
-                    if (e.isDirectory()) continue;
+                    if (e.isDirectory()) {
+                        continue;
+                    }
                     
                     String name = e.getName();
-                    if (!name.startsWith(prefix)) continue;
+                    if (!name.startsWith(prefix)) {
+                        continue;
+                    }
                     
                     String fileName = name.substring(prefix.length() + 1);
                     try (InputStream in = jar.getInputStream(e)) {

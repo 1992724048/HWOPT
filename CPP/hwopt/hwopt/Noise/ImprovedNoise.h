@@ -10,32 +10,41 @@ public:
     double yo;
     double zo;
 
-    ImprovedNoise();
+    ImprovedNoise(std::mt19937_64& mt);
 
-    [[nodiscard]] auto noise(const double _x, const double _y, const double _z) const -> double ;
+    [[nodiscard]] auto noise(double _x, double _y, double _z) const -> double;
 
-    [[nodiscard]] auto noise(const double _x, const double _y, const double _z, const double yScale, const double yFudge) const -> double ;
+    [[nodiscard]] auto noise(double _x, double _y, double _z, double yScale, double yFudge) const -> double;
 
-    auto noise_with_derivative(const double _x, const double _y, const double _z, double* derivativeOut) const -> double ;
+    auto noise_with_derivative(double _x, double _y, double _z, double* derivativeOut) const -> double;
 
 private:
-    std::array<char, 256> p;
+    std::array<uint8_t, 256> p;
 
-    static auto grad_dot(const int hash, const double x, const double y, const double z) -> double ;
+    static auto grad_dot(int hash, double x, double y, double z) -> double;
 
-    [[nodiscard]] auto perm(const int x) const -> int ;
+    [[nodiscard]] auto perm(int x) const -> int;
 
-    [[nodiscard]] auto sample_and_lerperm(const int x, const int y, const int z, const double xr, const double yr, const double zr, const double yrOriginal) const -> double ;
+    [[nodiscard]] auto sample_and_lerperm(int x, int y, int z, double xr, double yr, double zr, double yrOriginal) const -> double;
 
-    auto sample_with_derivative(const int x, const int y, const int z, const double xr, const double yr, const double zr, double* derivativeOut) const -> double ;
+    auto sample_with_derivative(int x, int y, int z, double xr, double yr, double zr, double* derivativeOut) const -> double;
 
-    static auto smoothstep(const double x) -> double ;
+    static auto smoothstep(double x) -> double;
 
-    static auto smoothstep_derivative(const double x) -> double ;
+    static auto smoothstep_derivative(double x) -> double;
 
-    static auto lerp(const double alpha1, const double p0, const double p1) -> double ;
+    static auto lerp(double alpha1, double p0, double p1) -> double;
 
-    static auto lerp2(const double alpha1, const double alpha2, const double x00, const double x10, const double x01, const double x11) -> double ;
+    static auto lerp2(double alpha1, double alpha2, double x00, double x10, double x01, double x11) -> double;
 
-    static auto lerp3(const double alpha1, const double alpha2, const double alpha3, const double x000, const double x100, const double x010, const double x110, const double x001, const double x101, const double x011, const double x111) -> double ;
+    static auto lerp3(double alpha1, double alpha2, double alpha3, double x000, double x100, double x010, double x110, double x001, double x101, double x011, double x111) -> double;
 };
+
+namespace fortran {
+#define DLL_API __declspec(dllimport)
+    extern "C" {
+        DLL_API auto ImprovedNoise_noise_3(const ImprovedNoise* state, double x, double y, double z) -> double;
+        DLL_API auto ImprovedNoise_noise_5(const ImprovedNoise* state, double x, double y, double z, double yScale, double yFudge) -> double;
+        DLL_API auto ImprovedNoise_noise_with_derivative(const ImprovedNoise* state, double x, double y, double z, double* derivativeOut) -> double;
+    }
+}

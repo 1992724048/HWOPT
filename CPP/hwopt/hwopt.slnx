@@ -3,6 +3,9 @@
     <Platform Name="x64" />
     <Platform Name="x86" />
   </Configurations>
+  <Project Path="../../Fortran/Fortran.vfproj" Type="6989167d-11e4-40fe-8c1a-2192a86a7e90">
+    <Platform Solution="*|x86" Project="Win32" />
+  </Project>
   <Project Path="hwopt-sycl/hwopt-sycl.vcxproj" Id="1573e81b-39c2-400a-8587-1462df388ac9">
     <Platform Project="x64" />
   </Project>
