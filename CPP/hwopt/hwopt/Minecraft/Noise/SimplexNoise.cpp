@@ -1,4 +1,5 @@
 ﻿#include "SimplexNoise.h"
+using namespace minecraft;
 
 SimplexNoise::SimplexNoise() {
     std::random_device rd;

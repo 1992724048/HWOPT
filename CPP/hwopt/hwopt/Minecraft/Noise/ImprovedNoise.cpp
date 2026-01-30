@@ -1,6 +1,8 @@
 ﻿#include "ImprovedNoise.h"
+using namespace minecraft;
 
 ImprovedNoise::ImprovedNoise(std::mt19937_64& mt) {
+    touch();
     std::uniform_real_distribution dist_double(0.0, 1.0);
 
     this->xo = dist_double(mt) * 256.0;
@@ -18,6 +20,10 @@ ImprovedNoise::ImprovedNoise(std::mt19937_64& mt) {
         this->p[i] = this->p[i + offset];
         this->p[i + offset] = tmp;
     }
+}
+
+ImprovedNoise::ImprovedNoise() {
+    touch();
 }
 
 auto ImprovedNoise::noise(const double _x, const double _y, const double _z) const -> double {
@@ -62,6 +68,14 @@ auto ImprovedNoise::noise_with_derivative(const double _x, const double _y, cons
     const double yr = y - yf;
     const double zr = z - zf;
     return this->sample_with_derivative(xf, yf, zf, xr, yr, zr, derivativeOut);
+}
+
+auto ImprovedNoise::add_methods() -> void {
+    register_method<static_cast<double(ImprovedNoise::*)(double, double, double) const>(&ImprovedNoise::noise)>("ImprovedNoise::noise3");
+    register_method<static_cast<double(ImprovedNoise::*)(double, double, double, double, double) const>(&ImprovedNoise::noise)>("ImprovedNoise::noise5");
+    register_method<&ImprovedNoise::noise_with_derivative>("ImprovedNoise::noise_with_derivative");
+    register_method<_create>("ImprovedNoise::_create");
+    register_method<&ImprovedNoise::_destroy>("ImprovedNoise::_destroy");
 }
 
 auto ImprovedNoise::grad_dot(const int hash, const double x, const double y, const double z) -> double {
@@ -162,15 +176,35 @@ auto ImprovedNoise::lerp2(const double alpha1, const double alpha2, const double
 }
 
 auto ImprovedNoise::lerp3(const double alpha1,
-        const double alpha2,
-        const double alpha3,
-        const double x000,
-        const double x100,
-        const double x010,
-        const double x110,
-        const double x001,
-        const double x101,
-        const double x011,
-        const double x111) -> double {
+                          const double alpha2,
+                          const double alpha3,
+                          const double x000,
+                          const double x100,
+                          const double x010,
+                          const double x110,
+                          const double x001,
+                          const double x101,
+                          const double x011,
+                          const double x111) -> double {
     return lerp(alpha3, lerp2(alpha1, alpha2, x000, x100, x010, x110), lerp2(alpha1, alpha2, x001, x101, x011, x111));
+}
+
+auto ImprovedNoise::_create(double _x, double _y, double _z, const uint8_t* bytes) -> ImprovedNoise* try {
+    thread_local auto _ = _set_se_translator(stdpp::exception::NativeException::seh_to_ce);
+    const auto ptr = new ImprovedNoise();
+    std::memcpy(ptr->p.data(), bytes, 256);
+    ptr->xo = _x;
+    ptr->yo = _y;
+    ptr->zo = _z;
+    return ptr;
+} catch (const std::exception& exception) {
+    ELOG << "[" << GetCurrentThreadId() << "] " << exception.what();
+    return {};
+} catch (const stdpp::exception::NativeException& exception) {
+    ELOG << "[" << GetCurrentThreadId() << "] " << std::hex << exception.code() << " " << stdpp::encode::gbk_to_utf8(exception.what());
+    return {};
+}
+
+auto ImprovedNoise::_destroy() const -> void {
+    delete this;
 }

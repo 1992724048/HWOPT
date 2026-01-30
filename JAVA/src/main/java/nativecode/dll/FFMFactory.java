@@ -12,7 +12,6 @@ import java.nio.ByteOrder;
 import java.nio.file.*;
 import java.security.MessageDigest;
 import java.util.*;
-import java.util.stream.Stream;
 
 public enum FFMFactory {
     ;
@@ -62,8 +61,7 @@ public enum FFMFactory {
             
             List<Method> nativeMethods = new ArrayList<>();
             for (Method m : allMethods) {
-                if (!m.isAnnotationPresent(Field.class)
-                        && !m.isAnnotationPresent(FieldArray.class)) {
+                if (!m.isAnnotationPresent(Field.class) && !m.isAnnotationPresent(FieldArray.class)) {
                     nativeMethods.add(m);
                 }
             }
@@ -79,14 +77,13 @@ public enum FFMFactory {
                 }
                 
                 FunctionDescriptor fd = buildDescriptor(m);
-                MemorySegment fnPtr =
-                        (MemorySegment) resolverMH.invokeExact(toCString(name.value()));
+                MemorySegment fnPtr = (MemorySegment) resolverMH.invokeExact(toCString(name.value()));
                 
                 if (fnPtr == MemorySegment.NULL) {
                     throw new UnsatisfiedLinkError("Symbol not found: " + name.value());
                 }
                 
-                MethodHandle raw = LINKER.downcallHandle(fnPtr, fd);
+                MethodHandle raw = LINKER.downcallHandle(fnPtr, fd, Linker.Option.critical(true));
                 MethodType nativeMT = buildNativeMethodType(m);
                 handles[i] = raw.asType(nativeMT);
             }
@@ -94,8 +91,7 @@ public enum FFMFactory {
             CURRENT_HANDLES = handles;
             
             byte[] bytecode = StubGenerator.generate(api, allMethods);
-            MethodHandles.Lookup lookup2 =
-                    MethodHandles.privateLookupIn(api, MethodHandles.lookup());
+            MethodHandles.Lookup lookup2 = MethodHandles.privateLookupIn(api, MethodHandles.lookup());
             Class<?> impl = lookup2.defineHiddenClass(bytecode, true).lookupClass();
             return (T) impl.getConstructor().newInstance();
             
@@ -106,13 +102,9 @@ public enum FFMFactory {
     
     private static MethodHandle getResolverHandle(String dllPath, SymbolLookup lookup) {
         return RESOLVER_CACHE.computeIfAbsent(dllPath, k -> {
-            MemorySegment resolverSym = lookup.find("JAVA_ResolveFunction")
-                    .orElseThrow(() -> new UnsatisfiedLinkError("JAVA_ResolveFunction not found"));
+            MemorySegment resolverSym = lookup.find("JAVA_ResolveFunction").orElseThrow(() -> new UnsatisfiedLinkError("JAVA_ResolveFunction not found"));
             
-            return LINKER.downcallHandle(
-                    resolverSym,
-                    FunctionDescriptor.of(ValueLayout.ADDRESS, ValueLayout.ADDRESS)
-            );
+            return LINKER.downcallHandle(resolverSym, FunctionDescriptor.of(ValueLayout.ADDRESS, ValueLayout.ADDRESS));
         });
     }
     
@@ -121,10 +113,11 @@ public enum FFMFactory {
     }
     
     private static FunctionDescriptor buildDescriptor(Method m) {
+        boolean isStatic = m.isAnnotationPresent(Static.class);
         boolean create = isCreate(m);
         
         List<MemoryLayout> layouts = new ArrayList<>();
-        if (!create) {
+        if (!create && !isStatic) {
             layouts.add(ValueLayout.ADDRESS);
         }
         
@@ -136,23 +129,23 @@ public enum FFMFactory {
             return FunctionDescriptor.ofVoid(layouts.toArray(MemoryLayout[]::new));
         }
         if (create || !m.getReturnType().isPrimitive()) {
-            return FunctionDescriptor.of(ValueLayout.ADDRESS,
-                                         layouts.toArray(MemoryLayout[]::new));
+            return FunctionDescriptor.of(ValueLayout.ADDRESS, layouts.toArray(MemoryLayout[]::new));
         }
-        return FunctionDescriptor.of(map(m.getReturnType()),
-                                     layouts.toArray(MemoryLayout[]::new));
+        return FunctionDescriptor.of(map(m.getReturnType()), layouts.toArray(MemoryLayout[]::new));
     }
     
     private static MethodType buildNativeMethodType(Method m) {
         boolean create = isCreate(m);
+        boolean isStatic = m.isAnnotationPresent(Static.class);
+        
         List<Class<?>> pts = new ArrayList<>();
         
-        if (!create) {
+        if (!create && !isStatic) {
             pts.add(MemorySegment.class);
         }
         
         for (Class<?> p : m.getParameterTypes()) {
-            if (p.isArray() || String.class == p || MemorySegment.class == p) {
+            if (p.isArray() || p == String.class || p == MemorySegment.class) {
                 pts.add(MemorySegment.class);
             } else {
                 pts.add(p);
@@ -170,6 +163,12 @@ public enum FFMFactory {
     }
     
     private static MemoryLayout map(Class<?> c) {
+        if (byte.class == c) {
+            return ValueLayout.JAVA_BYTE;
+        }
+        if (short.class == c) {
+            return ValueLayout.JAVA_SHORT;
+        }
         if (int.class == c) {
             return ValueLayout.JAVA_INT;
         }
@@ -195,10 +194,7 @@ public enum FFMFactory {
             return ValueLayout.ADDRESS;
         }
         if (c.isArray()) {
-            Class<?> ct = c.getComponentType();
-            if (ct.isPrimitive() || MemorySegment.class == ct) {
-                return ValueLayout.ADDRESS;
-            }
+            return ValueLayout.ADDRESS;
         }
         throw new UnsupportedOperationException("Unsupported type: " + c);
     }
@@ -208,44 +204,27 @@ public enum FFMFactory {
     }
     
     public static MemorySegment toNative(byte[] arr) {
-        MemorySegment seg = ARENA.allocate(ValueLayout.JAVA_BYTE.byteSize() * arr.length);
-        seg.copyFrom(MemorySegment.ofArray(arr));
-        return seg;
+        return MemorySegment.ofArray(arr);
     }
     
     public static MemorySegment toNative(short[] arr) {
-        MemorySegment seg =
-                ARENA.allocate(ValueLayout.JAVA_SHORT.byteSize() * arr.length);
-        seg.asByteBuffer().order(ByteOrder.nativeOrder()).asShortBuffer().put(arr);
-        return seg;
+        return MemorySegment.ofArray(arr);
     }
     
     public static MemorySegment toNative(int[] arr) {
-        MemorySegment seg =
-                ARENA.allocate(ValueLayout.JAVA_INT.byteSize() * arr.length);
-        seg.asByteBuffer().order(ByteOrder.nativeOrder()).asIntBuffer().put(arr);
-        return seg;
+        return MemorySegment.ofArray(arr);
     }
     
     public static MemorySegment toNative(long[] arr) {
-        MemorySegment seg =
-                ARENA.allocate(ValueLayout.JAVA_LONG.byteSize() * arr.length);
-        seg.asByteBuffer().order(ByteOrder.nativeOrder()).asLongBuffer().put(arr);
-        return seg;
+        return MemorySegment.ofArray(arr);
     }
     
     public static MemorySegment toNative(float[] arr) {
-        MemorySegment seg =
-                ARENA.allocate(ValueLayout.JAVA_FLOAT.byteSize() * arr.length);
-        seg.asByteBuffer().order(ByteOrder.nativeOrder()).asFloatBuffer().put(arr);
-        return seg;
+        return MemorySegment.ofArray(arr);
     }
     
     public static MemorySegment toNative(double[] arr) {
-        MemorySegment seg =
-                ARENA.allocate(ValueLayout.JAVA_DOUBLE.byteSize() * arr.length);
-        seg.asByteBuffer().order(ByteOrder.nativeOrder()).asDoubleBuffer().put(arr);
-        return seg;
+        return MemorySegment.ofArray(arr);
     }
     
     public static MemorySegment toNative(MemorySegment[] arr) {
@@ -272,15 +251,10 @@ public enum FFMFactory {
                 throw new RuntimeException("Resource dir not found in classpath: " + resourceDir);
             }
         } catch (Exception e) {
-            Path devDir = Paths.get(System.getProperty("user.dir"))
-                    .resolve("../src/main/resources/native/win64")
-                    .normalize();
+            Path devDir = Paths.get(System.getProperty("user.dir")).resolve("../src/main/resources/native/win64").normalize();
             
             if (!Files.exists(devDir)) {
-                throw new RuntimeException(
-                        "Resource not found in classpath, and dev dir also not found: " + devDir,
-                        e
-                );
+                throw new RuntimeException("Resource not found in classpath, and dev dir also not found: " + devDir, e);
             }
             
             file_filter(outDir, devDir);
@@ -327,11 +301,7 @@ public enum FFMFactory {
         try (var stream = Files.walk(dir)) {
             stream.filter(Files::isRegularFile).forEach(p -> {
                 try {
-                    copyIfDifferent(
-                            p.getFileName().toString(),
-                            Files.readAllBytes(p),
-                            outDir
-                    );
+                    copyIfDifferent(p.getFileName().toString(), Files.readAllBytes(p), outDir);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
@@ -339,9 +309,7 @@ public enum FFMFactory {
         }
     }
     
-    private static void copyIfDifferent(String fileName,
-                                        byte[] newBytes,
-                                        Path outDir) throws IOException {
+    private static void copyIfDifferent(String fileName, byte[] newBytes, Path outDir) throws IOException {
         Path out = outDir.resolve(fileName);
         
         if (Files.exists(out)) {

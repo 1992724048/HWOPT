@@ -20,20 +20,6 @@ public abstract class NoiseChunkMixin {
 
     @Inject(method = "computePreliminarySurfaceLevel", at = @At("HEAD"), cancellable = true)
     private void hwopt$optComputePreliminarySurfaceLevel(long key, CallbackInfoReturnable<Integer> cir) {
-
-        int blockX = (int)(key >> 32);
-        int blockZ = (int)(key);
-
-        HWMutableContext ctx = HWOPT_CTX.get();
-        ctx.x = blockX;
-        ctx.y = 0;
-        ctx.z = blockZ;
-
-        double v = preliminarySurfaceLevel.compute(ctx);
-
-        int y = (int)v;
-        if (v < y) y--;
-
-        cir.setReturnValue(y);
+    
     }
 }

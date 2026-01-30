@@ -1,5 +1,6 @@
 package nativecode.dll;
 
+import java.lang.foreign.ValueLayout;
 import java.lang.invoke.MethodType;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -41,20 +42,14 @@ enum StubGenerator {
         }
         
         ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS);
-        cw.visit(V21, ACC_PUBLIC | ACC_FINAL, implName, null,
-                 "java/lang/Object", new String[]{apiName});
+        cw.visit(V21, ACC_PUBLIC | ACC_FINAL, implName, null, "java/lang/Object", new String[]{apiName});
         
         for (int i = 0; i < nativeMethods.size(); i++) {
-            cw.visitField(ACC_PRIVATE | ACC_STATIC | ACC_FINAL,
-                          "MH" + i,
-                          "Ljava/lang/invoke/MethodHandle;",
-                          null, null).visitEnd();
+            cw.visitField(ACC_PRIVATE | ACC_STATIC | ACC_FINAL, "MH" + i, "Ljava/lang/invoke/MethodHandle;", null,
+                          null).visitEnd();
         }
         
-        cw.visitField(ACC_PRIVATE | ACC_FINAL,
-                      "ptr",
-                      "Ljava/lang/foreign/MemorySegment;",
-                      null, null).visitEnd();
+        cw.visitField(ACC_PRIVATE | ACC_FINAL, "ptr", "Ljava/lang/foreign/MemorySegment;", null, null).visitEnd();
         
         emitClinit(cw, implName, nativeMethods.size());
         emitCtor(cw, implName);
@@ -80,14 +75,9 @@ enum StubGenerator {
         mv.visitCode();
         for (int i = 0; i < count; i++) {
             mv.visitLdcInsn(i);
-            mv.visitMethodInsn(INVOKESTATIC,
-                               "nativecode/dll/FFMFactory",
-                               "getHandle",
-                               "(I)Ljava/lang/invoke/MethodHandle;",
-                               false);
-            mv.visitFieldInsn(PUTSTATIC, implName,
-                              "MH" + i,
-                              "Ljava/lang/invoke/MethodHandle;");
+            mv.visitMethodInsn(INVOKESTATIC, "nativecode/dll/FFMFactory", "getHandle",
+                               "(I)Ljava/lang/invoke/MethodHandle;", false);
+            mv.visitFieldInsn(PUTSTATIC, implName, "MH" + i, "Ljava/lang/invoke/MethodHandle;");
         }
         mv.visitInsn(RETURN);
         mv.visitMaxs(0, 0);
@@ -95,28 +85,20 @@ enum StubGenerator {
     }
     
     private static void emitCtor(ClassWriter cw, String implName) {
-        MethodVisitor mv = cw.visitMethod(ACC_PRIVATE,
-                                          "<init>",
-                                          "(Ljava/lang/foreign/MemorySegment;)V",
-                                          null, null);
+        MethodVisitor mv = cw.visitMethod(ACC_PRIVATE, "<init>", "(Ljava/lang/foreign/MemorySegment;)V", null, null);
         mv.visitCode();
         mv.visitVarInsn(ALOAD, 0);
         mv.visitMethodInsn(INVOKESPECIAL, "java/lang/Object", "<init>", "()V", false);
         mv.visitVarInsn(ALOAD, 0);
         mv.visitVarInsn(ALOAD, 1);
-        mv.visitFieldInsn(PUTFIELD, implName,
-                          "ptr",
-                          "Ljava/lang/foreign/MemorySegment;");
+        mv.visitFieldInsn(PUTFIELD, implName, "ptr", "Ljava/lang/foreign/MemorySegment;");
         mv.visitInsn(RETURN);
         mv.visitMaxs(0, 0);
         mv.visitEnd();
     }
     
     private static void emitDefaultCtor(ClassWriter cw, String implName) {
-        MethodVisitor mv = cw.visitMethod(ACC_PUBLIC,
-                                          "<init>",
-                                          "()V",
-                                          null, null);
+        MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "<init>", "()V", null, null);
         mv.visitCode();
         mv.visitVarInsn(ALOAD, 0);
         mv.visitMethodInsn(INVOKESPECIAL, "java/lang/Object", "<init>", "()V", false);
@@ -125,10 +107,7 @@ enum StubGenerator {
         mv.visitEnd();
     }
     
-    private static void emitFieldArrayMethod(ClassWriter cw,
-                                             String implName,
-                                             Method m,
-                                             FieldArray fa) {
+    private static void emitFieldArrayMethod(ClassWriter cw, String implName, Method m, FieldArray fa) {
         
         Class<?> rt = m.getReturnType();
         if (!rt.isArray()) {
@@ -152,10 +131,7 @@ enum StubGenerator {
         }
         
         MethodType mt = MethodType.methodType(rt);
-        MethodVisitor mv = cw.visitMethod(ACC_PUBLIC,
-                                          m.getName(),
-                                          mt.toMethodDescriptorString(),
-                                          null, null);
+        MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, m.getName(), mt.toMethodDescriptorString(), null, null);
         
         mv.visitCode();
         
@@ -167,28 +143,18 @@ enum StubGenerator {
         mv.visitFieldInsn(GETFIELD, implName, "ptr", "Ljava/lang/foreign/MemorySegment;");
         mv.visitLdcInsn(offset);
         mv.visitLdcInsn((long) len * elemSize);
-        mv.visitMethodInsn(INVOKEINTERFACE,
-                           "java/lang/foreign/MemorySegment",
-                           "asSlice",
-                           "(JJ)Ljava/lang/foreign/MemorySegment;",
-                           true);
+        mv.visitMethodInsn(INVOKEINTERFACE, "java/lang/foreign/MemorySegment", "asSlice",
+                           "(JJ)Ljava/lang/foreign/MemorySegment;", true);
         mv.visitVarInsn(ASTORE, 2);
         
         mv.visitVarInsn(ALOAD, 1);
-        mv.visitMethodInsn(INVOKESTATIC,
-                           "java/lang/foreign/MemorySegment",
-                           "ofArray",
-                           ofArrayDesc,
-                           false);
+        mv.visitMethodInsn(INVOKESTATIC, "java/lang/foreign/MemorySegment", "ofArray", ofArrayDesc, false);
         mv.visitVarInsn(ASTORE, 3);
         
         mv.visitVarInsn(ALOAD, 3);
         mv.visitVarInsn(ALOAD, 2);
-        mv.visitMethodInsn(INVOKEINTERFACE,
-                           "java/lang/foreign/MemorySegment",
-                           "copyFrom",
-                           "(Ljava/lang/foreign/MemorySegment;)V",
-                           true);
+        mv.visitMethodInsn(INVOKEINTERFACE, "java/lang/foreign/MemorySegment", "copyFrom",
+                           "(Ljava/lang/foreign/MemorySegment;)V", true);
         
         mv.visitVarInsn(ALOAD, 1);
         mv.visitInsn(ARETURN);
@@ -197,23 +163,14 @@ enum StubGenerator {
         mv.visitEnd();
     }
     
-    private static void emitFieldMethod(ClassWriter cw,
-                                        String implName,
-                                        Method m,
-                                        long offset) {
+    private static void emitFieldMethod(ClassWriter cw, String implName, Method m, long offset) {
         
         MethodType mt = MethodType.methodType(m.getReturnType(), m.getParameterTypes());
-        MethodVisitor mv = cw.visitMethod(ACC_PUBLIC,
-                                          m.getName(),
-                                          mt.toMethodDescriptorString(),
-                                          null, null);
+        MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, m.getName(), mt.toMethodDescriptorString(), null, null);
         
         mv.visitCode();
         mv.visitVarInsn(ALOAD, 0);
-        mv.visitFieldInsn(GETFIELD,
-                          implName,
-                          "ptr",
-                          "Ljava/lang/foreign/MemorySegment;");
+        mv.visitFieldInsn(GETFIELD, implName, "ptr", "Ljava/lang/foreign/MemorySegment;");
         
         boolean getter = m.getParameterCount() == 0;
         
@@ -284,19 +241,11 @@ enum StubGenerator {
         mv.visitLdcInsn(offset);
         
         if (getter) {
-            mv.visitMethodInsn(INVOKEINTERFACE,
-                               "java/lang/foreign/MemorySegment",
-                               "get",
-                               getDesc,
-                               true);
+            mv.visitMethodInsn(INVOKEINTERFACE, "java/lang/foreign/MemorySegment", "get", getDesc, true);
             mv.visitInsn(returnOpcode);
         } else {
             mv.visitVarInsn(loadOpcode, 1);
-            mv.visitMethodInsn(INVOKEINTERFACE,
-                               "java/lang/foreign/MemorySegment",
-                               "set",
-                               setDesc,
-                               true);
+            mv.visitMethodInsn(INVOKEINTERFACE, "java/lang/foreign/MemorySegment", "set", setDesc, true);
             mv.visitInsn(RETURN);
         }
         
@@ -304,11 +253,7 @@ enum StubGenerator {
         mv.visitEnd();
     }
     
-    private static void emitMethod(ClassWriter cw,
-                                   String implName,
-                                   Method m,
-                                   int index,
-                                   long structSize) {
+    private static void emitMethod(ClassWriter cw, String implName, Method m, int index, long structSize) {
         
         MethodType javaMT = MethodType.methodType(m.getReturnType(), m.getParameterTypes());
         MethodType nativeMT = buildNativeMethodType(m);
@@ -316,31 +261,24 @@ enum StubGenerator {
         String javaDesc = javaMT.toMethodDescriptorString();
         String nativeDesc = nativeMT.toMethodDescriptorString();
         
-        MethodVisitor mv = cw.visitMethod(ACC_PUBLIC,
-                                          m.getName(),
-                                          javaDesc,
-                                          null, null);
+        MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, m.getName(), javaDesc, null, null);
         
         mv.visitCode();
         
         boolean isCreate = m.getReturnType().isInterface();
         
-        mv.visitFieldInsn(GETSTATIC,
-                          implName,
-                          "MH" + index,
-                          "Ljava/lang/invoke/MethodHandle;");
+        mv.visitFieldInsn(GETSTATIC, implName, "MH" + index, "Ljava/lang/invoke/MethodHandle;");
+        
+        boolean isStatic = m.isAnnotationPresent(Static.class);
         
         int slot = 1;
-        if (!isCreate) {
+        if (!isCreate && !isStatic) {
             mv.visitVarInsn(ALOAD, 0);
-            mv.visitFieldInsn(GETFIELD,
-                              implName,
-                              "ptr",
-                              "Ljava/lang/foreign/MemorySegment;");
+            mv.visitFieldInsn(GETFIELD, implName, "ptr", "Ljava/lang/foreign/MemorySegment;");
         }
         
         for (Class<?> p : m.getParameterTypes()) {
-            if (boolean.class == p || int.class == p) {
+            if (boolean.class == p || int.class == p || byte.class == p || short.class == p) {
                 mv.visitVarInsn(ILOAD, slot);
             } else if (long.class == p) {
                 mv.visitVarInsn(LLOAD, slot);
@@ -350,19 +288,12 @@ enum StubGenerator {
                 mv.visitVarInsn(DLOAD, slot);
             } else if (String.class == p) {
                 mv.visitVarInsn(ALOAD, slot);
-                mv.visitMethodInsn(INVOKESTATIC,
-                                   "nativecode/dll/FFMFactory",
-                                   "toCString",
-                                   "(Ljava/lang/String;)Ljava/lang/foreign/MemorySegment;",
-                                   false);
+                mv.visitMethodInsn(INVOKESTATIC, "nativecode/dll/FFMFactory", "toCString",
+                                   "(Ljava/lang/String;)Ljava/lang/foreign/MemorySegment;", false);
             } else if (p.isArray()) {
                 mv.visitVarInsn(ALOAD, slot);
                 String sig = "(" + p.descriptorString() + ")Ljava/lang/foreign/MemorySegment;";
-                mv.visitMethodInsn(INVOKESTATIC,
-                                   "nativecode/dll/FFMFactory",
-                                   "toNative",
-                                   sig,
-                                   false);
+                mv.visitMethodInsn(INVOKESTATIC, "nativecode/dll/FFMFactory", "toNative", sig, false);
             } else {
                 mv.visitVarInsn(ALOAD, slot);
             }
@@ -370,28 +301,17 @@ enum StubGenerator {
             slot += (p == long.class || p == double.class) ? 2 : 1;
         }
         
-        mv.visitMethodInsn(INVOKEVIRTUAL,
-                           "java/lang/invoke/MethodHandle",
-                           "invokeExact",
-                           nativeDesc,
-                           false);
+        mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/invoke/MethodHandle", "invokeExact", nativeDesc, false);
         
         if (isCreate) {
             mv.visitLdcInsn(structSize);
-            mv.visitMethodInsn(INVOKEINTERFACE,
-                               "java/lang/foreign/MemorySegment",
-                               "reinterpret",
-                               "(J)Ljava/lang/foreign/MemorySegment;",
-                               true);
+            mv.visitMethodInsn(INVOKEINTERFACE, "java/lang/foreign/MemorySegment", "reinterpret",
+                               "(J)Ljava/lang/foreign/MemorySegment;", true);
             
             mv.visitTypeInsn(NEW, implName);
             mv.visitInsn(DUP_X1);
             mv.visitInsn(SWAP);
-            mv.visitMethodInsn(INVOKESPECIAL,
-                               implName,
-                               "<init>",
-                               "(Ljava/lang/foreign/MemorySegment;)V",
-                               false);
+            mv.visitMethodInsn(INVOKESPECIAL, implName, "<init>", "(Ljava/lang/foreign/MemorySegment;)V", false);
             mv.visitInsn(ARETURN);
             mv.visitMaxs(0, 0);
             mv.visitEnd();
@@ -419,12 +339,14 @@ enum StubGenerator {
     
     private static MethodType buildNativeMethodType(Method m) {
         boolean isCreate = m.getReturnType().isInterface();
+        boolean isStatic = m.isAnnotationPresent(Static.class);
         
         Class<?>[] pts = m.getParameterTypes();
-        Class<?>[] nativePts = new Class<?>[pts.length + (isCreate ? 0 : 1)];
+        Class<?>[] nativePts =
+                new Class<?>[pts.length + ((isCreate || isStatic) ? 0 : 1)];
         
         int i = 0;
-        if (!isCreate) {
+        if (!isCreate && !isStatic) {
             nativePts[i++] = java.lang.foreign.MemorySegment.class;
         }
         

@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\fmt.12.1.0\build\native\fmt.props" Condition="Exists('..\packages\fmt.12.1.0\build\native\fmt.props')" />
+  <Import Project="..\packages\xsimd.14.0.0\build\native\xsimd.props" Condition="Exists('..\packages\xsimd.14.0.0\build\native\xsimd.props')" />
+  <Import Project="..\packages\parallel_hashmap.2.0.0\build\native\parallel_hashmap.props" Condition="Exists('..\packages\parallel_hashmap.2.0.0\build\native\parallel_hashmap.props')" />
   <Import Project="..\packages\encode.1.0.0\build\native\encode.props" Condition="Exists('..\packages\encode.1.0.0\build\native\encode.props')" />
   <Import Project="..\packages\mimalloc.3.2.6\build\native\mimalloc.props" Condition="Exists('..\packages\mimalloc.3.2.6\build\native\mimalloc.props')" />
   <Import Project="..\packages\exception.1.0.0\build\native\exception.props" Condition="Exists('..\packages\exception.1.0.0\build\native\exception.props')" />
@@ -143,18 +146,22 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
-    <ClCompile Include="Noise\ImprovedNoise.cpp" />
-    <ClCompile Include="Noise\PerlinNoise.cpp" />
-    <ClCompile Include="Noise\SimplexNoise.cpp" />
+    <ClCompile Include="Minecraft\Block\BlockIdRegistry.cpp" />
+    <ClCompile Include="Minecraft\Chunk\NoiseChunkGenerator.cpp" />
+    <ClCompile Include="Minecraft\Noise\ImprovedNoise.cpp" />
+    <ClCompile Include="Minecraft\Noise\PerlinNoise.cpp" />
+    <ClCompile Include="Minecraft\Noise\SimplexNoise.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Noise\ImprovedNoise.h" />
+    <ClInclude Include="Minecraft\Block\BlockIdRegistry.h" />
+    <ClInclude Include="Minecraft\Chunk\NoiseChunkGenerator.h" />
+    <ClInclude Include="Minecraft\Noise\ImprovedNoise.h" />
     <ClInclude Include="JavaNative.h" />
-    <ClInclude Include="Noise\PerlinNoise.h" />
-    <ClInclude Include="Noise\SimplexNoise.h" />
+    <ClInclude Include="Minecraft\Noise\PerlinNoise.h" />
+    <ClInclude Include="Minecraft\Noise\SimplexNoise.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
@@ -171,5 +178,8 @@
     <Error Condition="!Exists('..\packages\mimalloc.3.2.6\build\native\mimalloc.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\mimalloc.3.2.6\build\native\mimalloc.props'))" />
     <Error Condition="!Exists('..\packages\mimalloc.3.2.6\build\native\mimalloc.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\mimalloc.3.2.6\build\native\mimalloc.targets'))" />
     <Error Condition="!Exists('..\packages\encode.1.0.0\build\native\encode.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\encode.1.0.0\build\native\encode.props'))" />
+    <Error Condition="!Exists('..\packages\parallel_hashmap.2.0.0\build\native\parallel_hashmap.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\parallel_hashmap.2.0.0\build\native\parallel_hashmap.props'))" />
+    <Error Condition="!Exists('..\packages\xsimd.14.0.0\build\native\xsimd.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\xsimd.14.0.0\build\native\xsimd.props'))" />
+    <Error Condition="!Exists('..\packages\fmt.12.1.0\build\native\fmt.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\fmt.12.1.0\build\native\fmt.props'))" />
   </Target>
 </Project>

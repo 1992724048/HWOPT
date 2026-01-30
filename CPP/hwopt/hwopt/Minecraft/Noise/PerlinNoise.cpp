@@ -1,7 +1,8 @@
 ﻿#include "PerlinNoise.h"
+using namespace minecraft;
 
 PerlinNoise::PerlinNoise(const uint64_t seed, const std::pair<int, std::vector<double>>& pair, const bool use_new_initialization) {
-    touch();
+    JavaNative::touch();
     std::mt19937_64 mt(seed);
     this->first_octave = pair.first;
     this->amplitudes = pair.second;

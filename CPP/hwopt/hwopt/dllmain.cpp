@@ -4,7 +4,9 @@
 
 #include "stdpp/logger.h"
 #include "stdpp/exception.h"
-#include "Noise/PerlinNoise.h"
+#include "Minecraft/Noise/PerlinNoise.h"
+#include "Minecraft/Block/BlockIdRegistry.h"
+#include "Minecraft/Chunk/NoiseChunkGenerator.h"
 
 #define API __declspec(dllexport)
 
@@ -30,5 +32,6 @@ extern "C" API auto JAVA_ResolveFunction(const char* name) -> void* {
     if (const auto opt = JavaNativeBase::get_method(name)) {
         return opt.value();
     }
+    WLOG << name << " not found!"; WLOG << name << " not found!";
     return nullptr;
 }

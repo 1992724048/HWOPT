@@ -18,13 +18,19 @@
     <ClCompile Include="dllmain.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Noise\ImprovedNoise.cpp">
+    <ClCompile Include="Minecraft\Noise\ImprovedNoise.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Noise\PerlinNoise.cpp">
+    <ClCompile Include="Minecraft\Noise\PerlinNoise.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Noise\SimplexNoise.cpp">
+    <ClCompile Include="Minecraft\Noise\SimplexNoise.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Minecraft\Block\BlockIdRegistry.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Minecraft\Chunk\NoiseChunkGenerator.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
@@ -32,16 +38,22 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Noise\ImprovedNoise.h">
+    <ClInclude Include="Minecraft\Noise\ImprovedNoise.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Noise\PerlinNoise.h">
+    <ClInclude Include="Minecraft\Noise\PerlinNoise.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Noise\SimplexNoise.h">
+    <ClInclude Include="Minecraft\Noise\SimplexNoise.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="JavaNative.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Minecraft\Block\BlockIdRegistry.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Minecraft\Chunk\NoiseChunkGenerator.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

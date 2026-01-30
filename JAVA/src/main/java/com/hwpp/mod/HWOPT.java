@@ -1,6 +1,8 @@
 package com.hwpp.mod;
 
 import benchmark.NoiseBench;
+import com.worldgen.util.BlockIdRegistry;
+import library.dll.BlockIdRegistryNative;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
