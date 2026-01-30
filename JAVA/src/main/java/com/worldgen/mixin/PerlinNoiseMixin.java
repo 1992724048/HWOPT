@@ -4,10 +4,10 @@ import com.hwpp.mod.HWOPT;
 import com.mojang.datafixers.util.Pair;
 import it.unimi.dsi.fastutil.doubles.DoubleArrayList;
 import library.dll.PerlinNoiseNative;
-import net.minecraft.client.Minecraft;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.level.levelgen.synth.PerlinNoise;
+import net.minecraft.world.level.levelgen.synth.NormalNoise;
 import it.unimi.dsi.fastutil.doubles.DoubleList;
+import net.minecraft.world.level.levelgen.synth.PerlinNoise;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -21,7 +21,6 @@ import java.lang.foreign.ValueLayout;
 import java.lang.ref.Cleaner;
 
 import static library.dll.PerlinNoiseNative.NATIVE;
-import static net.neoforged.neoforgespi.ILaunchContext.LOGGER;
 
 @Mixin(PerlinNoise.class)
 public abstract class PerlinNoiseMixin implements AutoCloseable {
@@ -57,7 +56,7 @@ public abstract class PerlinNoiseMixin implements AutoCloseable {
                 useNewInitialization
         );
         final PerlinNoiseNative capturedPtr = this.hwopt$nativePtr;
-        this.hwopt$cleanable = PerlinNoiseMixin.hwopt$CLEANER.register(this, () -> {
+        this.hwopt$cleanable = hwopt$CLEANER.register(this, () -> {
             if (null != capturedPtr) {
                 capturedPtr.destroy();
             }
