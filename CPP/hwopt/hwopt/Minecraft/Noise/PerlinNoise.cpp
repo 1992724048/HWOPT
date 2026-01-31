@@ -1,6 +1,8 @@
 ﻿#include "PerlinNoise.h"
 using namespace minecraft;
 
+#include <stdpp/exception.h>
+
 PerlinNoise::PerlinNoise(const uint64_t seed, const std::pair<int, std::vector<double>>& pair, const bool use_new_initialization) {
     JavaNative::touch();
     std::mt19937_64 mt(seed);
@@ -14,21 +16,20 @@ PerlinNoise::PerlinNoise(const uint64_t seed, const std::pair<int, std::vector<d
             if (this->amplitudes[i] != 0.0) {
                 const int octave = this->first_octave + i;
                 std::mt19937_64 mt_(octave);
-                this->noise_levels[i] = std::make_shared<ImprovedNoise>(mt_);
+                this->noise_levels[i] = ImprovedNoise(mt);
             }
         }
     } else {
-        const auto zero_octave = std::make_shared<ImprovedNoise>(mt);
         if (zero_octave_index >= 0 && zero_octave_index < octaves) {
             if (this->amplitudes[zero_octave_index]) {
-                this->noise_levels[zero_octave_index] = zero_octave;
+                this->noise_levels[zero_octave_index] = ImprovedNoise(mt);
             }
         }
 
         for (int ix = zero_octave_index - 1; ix >= 0; ix--) {
             if (ix < octaves) {
                 if (this->amplitudes[ix]) {
-                    this->noise_levels[ix] = std::make_shared<ImprovedNoise>(mt);
+                    this->noise_levels[ix] = ImprovedNoise(mt);
                 }
             }
         }
@@ -56,14 +57,23 @@ auto PerlinNoise::get_value(const double x, const double y, const double z, cons
     double factor = this->lowest_freq_input_factor;
     double value_factor = this->lowest_freq_value_factor;
 
-    for (int i = 0; i < this->noise_levels.size(); i++) {
-        if (const auto noise = this->noise_levels[i]) {
-            const double noise_val = noise->noise(wrap(x * factor), y_flat_hack ? -noise->yo : wrap(y * factor), wrap(z * factor), y_scale * factor, y_fudge * factor);
-            value += this->amplitudes[i] * noise_val * value_factor;
-        }
+    const size_t n = this->noise_levels.size();
+    const auto* __restrict noises = this->noise_levels.data();
+    const auto* __restrict amps = this->amplitudes.data();
+
+    for (size_t i = 0; i < n; ++i) {
+        const ImprovedNoise& noise = noises[i];
+
+        const double xf = wrap(x * factor);
+        const double yf = y_flat_hack ? -noise.yo : wrap(y * factor);
+        const double zf = wrap(z * factor);
+
+        const double noise_val = noise.noise(xf, yf, zf, y_scale * factor, y_fudge * factor);
+
+        value += amps[i] * noise_val * value_factor;
 
         factor *= 2.0;
-        value_factor /= 2.0;
+        value_factor *= 0.5;
     }
 
     return value;
@@ -73,12 +83,15 @@ auto PerlinNoise::max_broken_value(const double y_scale) const -> double {
     return this->edge_value(y_scale + 2.0);
 }
 
-auto PerlinNoise::get_octave_noise(const int i) -> std::shared_ptr<ImprovedNoise> {
+auto PerlinNoise::get_octave_noise(const int i) -> ImprovedNoise& {
     return this->noise_levels[this->noise_levels.size() - 1 - i];
 }
 
 auto PerlinNoise::wrap(const double x) -> double {
-    return x - std::floor(x / 3.3554432E7 + 0.5) * 3.3554432E7;
+    constexpr double c = 3.3554432E7;
+    constexpr double inv_c = 1.0 / c;
+    const double k = std::floor(x * inv_c + 0.5);
+    return std::fma(-k, c, x);
 }
 
 auto PerlinNoise::get_first_octave() const -> int {
@@ -94,10 +107,7 @@ auto PerlinNoise::edge_value(const double noise_value) const -> double {
     double value_factor = this->lowest_freq_value_factor;
 
     for (int i = 0; i < this->noise_levels.size(); i++) {
-        if (this->noise_levels[i]) {
-            value += this->amplitudes[i] * noise_value * value_factor;
-        }
-
+        value += this->amplitudes[i] * noise_value * value_factor;
         value_factor /= 2.0;
     }
 

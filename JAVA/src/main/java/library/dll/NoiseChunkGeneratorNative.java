@@ -11,5 +11,5 @@ public interface NoiseChunkGeneratorNative {
     
     @Static
     @Name("NoiseChunkGenerator::get_interpolated_state")
-    void getInterpolatedState(short[] id, int size, int x, int y, int z);
+    void getInterpolatedState(short[] array, int arraySize, int sizeX, int sizeY, int sizeZ);
 }

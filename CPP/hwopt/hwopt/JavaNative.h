@@ -7,9 +7,9 @@
 #include <type_traits>
 #include <exception>
 
-#include <stdpp/logger.h>
 #include <stdpp/encode.h>
 #include <stdpp/exception.h>
+#include <stdpp/logger.h>
 
 template<auto MemFn>
 struct MethodThunk;
@@ -51,7 +51,6 @@ public:
     static auto get_method(const std::string& name) -> std::optional<Method> {
         auto& m = methods();
         if (!m.contains(name)) {
-            WLOG << name << " not found";
             return std::nullopt;
         }
         return m[name];

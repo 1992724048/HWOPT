@@ -5,8 +5,7 @@
 
 namespace minecraft {
     class SimplexNoise {
-        public
-        :
+    public :
         double xo;
         double yo;
         double zo;
@@ -38,8 +37,7 @@ namespace minecraft {
 
         static auto dot(const int* g, double x, double y, double z) -> double;
 
-        private
-        :
+    private:
         static constexpr double SQRT_3 = std::numbers::sqrt3;
         static constexpr double F2 = 0.5 * (SQRT_3 - 1.0);
         static constexpr double G2 = (3.0 - SQRT_3) / 6.0;

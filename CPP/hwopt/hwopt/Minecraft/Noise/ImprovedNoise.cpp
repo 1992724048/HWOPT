@@ -34,9 +34,9 @@ auto ImprovedNoise::noise(const double _x, const double _y, const double _z, con
     const double x = _x + this->xo;
     const double y = _y + this->yo;
     const double z = _z + this->zo;
-    const int xf = std::floor(x);
-    const int yf = std::floor(y);
-    const int zf = std::floor(z);
+    const double xf = std::floor(x);
+    const double yf = std::floor(y);
+    const double zf = std::floor(z);
     const double xr = x - xf;
     const double yr = y - yf;
     const double zr = z - zf;
@@ -78,8 +78,9 @@ auto ImprovedNoise::add_methods() -> void {
     register_method<&ImprovedNoise::_destroy>("ImprovedNoise::_destroy");
 }
 
-auto ImprovedNoise::grad_dot(const int hash, const double x, const double y, const double z) -> double {
-    return SimplexNoise::dot(SimplexNoise::GRADIENT[hash & 15], x, y, z);
+inline auto ImprovedNoise::grad_dot(const int hash, const double x, const double y, const double z) -> double {
+    const int* g = SimplexNoise::GRADIENT[hash & 15];
+    return g[0] * x + g[1] * y + g[2] * z;
 }
 
 auto ImprovedNoise::perm(const int x) const -> int {
@@ -159,23 +160,23 @@ auto ImprovedNoise::sample_with_derivative(const int x, const int y, const int z
     return lerp3(xAlpha, yAlpha, zAlpha, d000, d100, d010, d110, d001, d101, d011, d111);
 }
 
-auto ImprovedNoise::smoothstep(const double x) -> double {
+inline auto ImprovedNoise::smoothstep(const double x) -> double {
     return x * x * x * (x * (x * 6.0 - 15.0) + 10.0);
 }
 
-auto ImprovedNoise::smoothstep_derivative(const double x) -> double {
+inline auto ImprovedNoise::smoothstep_derivative(const double x) -> double {
     return 30.0 * x * x * (x - 1.0) * (x - 1.0);
 }
 
-auto ImprovedNoise::lerp(const double alpha1, const double p0, const double p1) -> double {
+inline auto ImprovedNoise::lerp(const double alpha1, const double p0, const double p1) -> double {
     return p0 + alpha1 * (p1 - p0);
 }
 
-auto ImprovedNoise::lerp2(const double alpha1, const double alpha2, const double x00, const double x10, const double x01, const double x11) -> double {
+inline auto ImprovedNoise::lerp2(const double alpha1, const double alpha2, const double x00, const double x10, const double x01, const double x11) -> double {
     return lerp(alpha2, lerp(alpha1, x00, x10), lerp(alpha1, x01, x11));
 }
 
-auto ImprovedNoise::lerp3(const double alpha1,
+inline auto ImprovedNoise::lerp3(const double alpha1,
                           const double alpha2,
                           const double alpha3,
                           const double x000,

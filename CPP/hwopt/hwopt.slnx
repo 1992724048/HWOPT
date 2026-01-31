@@ -9,6 +9,7 @@
   <Project Path="hwopt-sycl/hwopt-sycl.vcxproj" Id="1573e81b-39c2-400a-8587-1462df388ac9">
     <Platform Project="x64" />
   </Project>
+  <Project Path="hwopt-test/hwopt-test.vcxproj" Id="45e767c2-2b48-4264-b157-6dd0c78250a9" />
   <Project Path="hwopt/hwopt.vcxproj" Id="8336a515-3f32-4610-bf87-3ccfb9350a8b">
     <Build Solution="*|x86" Project="false" />
   </Project>

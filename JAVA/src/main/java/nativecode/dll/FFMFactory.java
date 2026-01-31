@@ -33,6 +33,7 @@ public enum FFMFactory {
         }
         
         if (!isWrite) {
+            System.load("F:\\CODE\\hwopt\\JAVA\\src\\main\\resources\\native\\win64\\libmmd.dll");
             try {
                 ensureNativeDir();
                 isWrite = true;
@@ -302,6 +303,17 @@ public enum FFMFactory {
             stream.filter(Files::isRegularFile).forEach(p -> {
                 try {
                     copyIfDifferent(p.getFileName().toString(), Files.readAllBytes(p), outDir);
+                    if (p.getFileName().toString().endsWith(".dll")) {
+                        try {
+                            System.load(outDir + "\\" + p.getFileName());
+                        } catch (UnsatisfiedLinkError ex) {
+                            System.out.println("Failed to load " + p.getFileName());
+                        } catch (NullPointerException ex) {
+                            System.out.println("Failed to load " + p.getFileName());
+                        } catch (IllegalCallerException ex) {
+                            System.out.println("Failed to load " + p.getFileName());
+                        }
+                    }
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }

@@ -8,6 +8,12 @@
 #include "Minecraft/Block/BlockIdRegistry.h"
 #include "Minecraft/Chunk/NoiseChunkGenerator.h"
 
+#include <magic_enum/magic_enum.hpp>
+
+#include <sycl-plugin.h>
+
+using namespace std::chrono_literals;
+
 #define API __declspec(dllexport)
 
 auto APIENTRY DllMain(HMODULE hModule, const DWORD ul_reason_for_call, LPVOID lpReserved) -> BOOL {
@@ -28,10 +34,22 @@ auto APIENTRY DllMain(HMODULE hModule, const DWORD ul_reason_for_call, LPVOID lp
 }
 
 extern "C" API auto JAVA_ResolveFunction(const char* name) -> void* {
+    static std::once_flag flag;
+    std::call_once(flag,
+                   [] {
+                       if (auto exp = stdpp::sycl::Device::get_device()) {
+                           for (auto& [type, names] : exp.value()) {
+                               for (auto& [device, platform] : names) {
+                                   ILOG << magic_enum::enum_name<decltype(type)>(type) << ": " << device << " (" << platform << ")";
+                               }
+                           }
+                       }
+                   });
+
     thread_local auto _ = _set_se_translator(stdpp::exception::NativeException::seh_to_ce);
     if (const auto opt = JavaNativeBase::get_method(name)) {
         return opt.value();
     }
-    WLOG << name << " not found!"; WLOG << name << " not found!";
+    WLOG << name << " not found!";
     return nullptr;
 }

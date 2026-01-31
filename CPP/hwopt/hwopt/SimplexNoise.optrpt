@@ -1,0 +1,569 @@
+Begin optimization report for: public: __cdecl minecraft::SimplexNoise::SimplexNoise(void)
+
+LOOP BEGIN at C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.50.35717\include\random (1305, 0)
+LOOP END
+
+LOOP BEGIN at Minecraft\Noise\SimplexNoise.cpp (14, 0)
+LOOP END
+
+LOOP BEGIN at Minecraft\Noise\SimplexNoise.cpp (18, 0)
+
+    LOOP BEGIN at C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.50.35717\include\random (2170, 0)
+    LOOP END
+
+    LOOP BEGIN at C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.50.35717\include\random (2170, 0)
+    LOOP END
+
+    LOOP BEGIN at C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.50.35717\include\random (2134, 0)
+
+        LOOP BEGIN at C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.50.35717\include\random (2170, 0)
+        LOOP END
+
+        LOOP BEGIN at C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.50.35717\include\random (1424, 0)
+        LOOP END
+
+        LOOP BEGIN at C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.50.35717\include\random (1401, 0)
+        LOOP END
+
+        LOOP BEGIN at C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.50.35717\include\random (1406, 0)
+        LOOP END
+    LOOP END
+
+    LOOP BEGIN at C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.50.35717\include\__msvc_int128.hpp (302, 0)
+    LOOP END
+LOOP END
+=================================================================
+
+Begin optimization report for: public: unsigned int __cdecl std::random_device::operator()(void)
+=================================================================
+
+Begin optimization report for: public: __cdecl std::mersenne_twister_engine<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 6148914691236517205, 17, 8202884508482404352, 37, -2270628950310912, 43, 6364136223846793005>::mersenne_twister_engine<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 6148914691236517205, 17, 8202884508482404352, 37, -2270628950310912, 43, 6364136223846793005>(unsigned __int64)
+
+LOOP BEGIN at C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.50.35717\include\random (1305, 0)
+LOOP END
+=================================================================
+
+Begin optimization report for: public: __cdecl std::uniform_real_distribution<double>::uniform_real_distribution<double>(double, double)
+=================================================================
+
+Begin optimization report for: public: double __cdecl std::uniform_real_distribution<double>::operator()<class std::mersenne_twister_engine<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 6148914691236517205, 17, 8202884508482404352, 37, -2270628950310912, 43, 6364136223846793005>>(class std::mersenne_twister_engine<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 6148914691236517205, 17, 8202884508482404352, 37, -2270628950310912, 43, 6364136223846793005> &)
+=================================================================
+
+Begin optimization report for: public: int & __cdecl std::array<int, 512>::operator[](unsigned __int64)
+=================================================================
+
+Begin optimization report for: public: __cdecl std::uniform_int_distribution<int>::uniform_int_distribution<int>(int, int)
+=================================================================
+
+Begin optimization report for: public: int __cdecl std::uniform_int_distribution<int>::operator()<class std::mersenne_twister_engine<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 6148914691236517205, 17, 8202884508482404352, 37, -2270628950310912, 43, 6364136223846793005>>(class std::mersenne_twister_engine<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 6148914691236517205, 17, 8202884508482404352, 37, -2270628950310912, 43, 6364136223846793005> &)
+
+LOOP BEGIN at C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.50.35717\include\random (2170, 0)
+LOOP END
+
+LOOP BEGIN at C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.50.35717\include\random (2170, 0)
+LOOP END
+
+LOOP BEGIN at C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.50.35717\include\random (2134, 0)
+
+    LOOP BEGIN at C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.50.35717\include\random (2170, 0)
+    LOOP END
+LOOP END
+
+LOOP BEGIN at C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.50.35717\include\__msvc_int128.hpp (302, 0)
+LOOP END
+=================================================================
+
+Begin optimization report for: public: __cdecl std::mersenne_twister<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 17, 8202884508482404352, 37, -2270628950310912, 43>::mersenne_twister<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 17, 8202884508482404352, 37, -2270628950310912, 43>(unsigned __int64, unsigned __int64, unsigned __int64)
+
+LOOP BEGIN at C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.50.35717\include\random (1305, 0)
+LOOP END
+=================================================================
+
+Begin optimization report for: public: void __cdecl std::mersenne_twister<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 17, 8202884508482404352, 37, -2270628950310912, 43>::seed(unsigned __int64, unsigned __int64)
+
+LOOP BEGIN at C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.50.35717\include\random (1305, 0)
+LOOP END
+=================================================================
+
+Begin optimization report for: public: __cdecl std::uniform_real<double>::uniform_real<double>(double, double)
+=================================================================
+
+Begin optimization report for: public: __cdecl std::uniform_real<double>::param_type::param_type(double, double)
+=================================================================
+
+Begin optimization report for: public: void __cdecl std::uniform_real<double>::param_type::_Init(double, double)
+=================================================================
+
+Begin optimization report for: public: double __cdecl std::uniform_real<double>::operator()<class std::mersenne_twister_engine<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 6148914691236517205, 17, 8202884508482404352, 37, -2270628950310912, 43, 6364136223846793005>>(class std::mersenne_twister_engine<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 6148914691236517205, 17, 8202884508482404352, 37, -2270628950310912, 43, 6364136223846793005> &)
+=================================================================
+
+Begin optimization report for: private: double __cdecl std::uniform_real<double>::_Eval<class std::mersenne_twister_engine<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 6148914691236517205, 17, 8202884508482404352, 37, -2270628950310912, 43, 6364136223846793005>>(class std::mersenne_twister_engine<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 6148914691236517205, 17, 8202884508482404352, 37, -2270628950310912, 43, 6364136223846793005> &, struct std::uniform_real<double>::param_type const &) const
+=================================================================
+
+Begin optimization report for: double __cdecl std::_Nrand_impl<double, class std::mersenne_twister_engine<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 6148914691236517205, 17, 8202884508482404352, 37, -2270628950310912, 43, 6364136223846793005>>(class std::mersenne_twister_engine<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 6148914691236517205, 17, 8202884508482404352, 37, -2270628950310912, 43, 6364136223846793005> &)
+=================================================================
+
+Begin optimization report for: double __cdecl std::generate_canonical<double, 53, class std::mersenne_twister_engine<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 6148914691236517205, 17, 8202884508482404352, 37, -2270628950310912, 43, 6364136223846793005>>(class std::mersenne_twister_engine<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 6148914691236517205, 17, 8202884508482404352, 37, -2270628950310912, 43, 6364136223846793005> &)
+=================================================================
+
+Begin optimization report for: public: unsigned __int64 __cdecl std::mersenne_twister_engine<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 6148914691236517205, 17, 8202884508482404352, 37, -2270628950310912, 43, 6364136223846793005>::operator()(void)
+
+LOOP BEGIN at C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.50.35717\include\random (1424, 0)
+LOOP END
+
+LOOP BEGIN at C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.50.35717\include\random (1401, 0)
+LOOP END
+
+LOOP BEGIN at C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.50.35717\include\random (1406, 0)
+LOOP END
+=================================================================
+
+Begin optimization report for: public: unsigned __int64 __cdecl std::mersenne_twister<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 17, 8202884508482404352, 37, -2270628950310912, 43>::operator()(void)
+
+LOOP BEGIN at C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.50.35717\include\random (1424, 0)
+LOOP END
+
+LOOP BEGIN at C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.50.35717\include\random (1401, 0)
+LOOP END
+
+LOOP BEGIN at C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.50.35717\include\random (1406, 0)
+LOOP END
+=================================================================
+
+Begin optimization report for: protected: void __cdecl std::mersenne_twister<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 17, 8202884508482404352, 37, -2270628950310912, 43>::_Refill_upper(void)
+
+LOOP BEGIN at C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.50.35717\include\random (1424, 0)
+LOOP END
+=================================================================
+
+Begin optimization report for: protected: void __cdecl std::mersenne_twister<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 17, 8202884508482404352, 37, -2270628950310912, 43>::_Refill_lower(void)
+
+LOOP BEGIN at C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.50.35717\include\random (1401, 0)
+LOOP END
+
+LOOP BEGIN at C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.50.35717\include\random (1406, 0)
+LOOP END
+=================================================================
+
+Begin optimization report for: public: __cdecl std::uniform_int<int>::uniform_int<int>(int, int)
+=================================================================
+
+Begin optimization report for: public: __cdecl std::uniform_int<int>::param_type::param_type(int, int)
+=================================================================
+
+Begin optimization report for: public: void __cdecl std::uniform_int<int>::param_type::_Init(int, int)
+=================================================================
+
+Begin optimization report for: public: int __cdecl std::uniform_int<int>::operator()<class std::mersenne_twister_engine<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 6148914691236517205, 17, 8202884508482404352, 37, -2270628950310912, 43, 6364136223846793005>>(class std::mersenne_twister_engine<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 6148914691236517205, 17, 8202884508482404352, 37, -2270628950310912, 43, 6364136223846793005> &)
+
+LOOP BEGIN at C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.50.35717\include\random (2170, 0)
+LOOP END
+
+LOOP BEGIN at C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.50.35717\include\random (2170, 0)
+LOOP END
+
+LOOP BEGIN at C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.50.35717\include\random (2134, 0)
+
+    LOOP BEGIN at C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.50.35717\include\random (2170, 0)
+    LOOP END
+LOOP END
+
+LOOP BEGIN at C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.50.35717\include\__msvc_int128.hpp (302, 0)
+LOOP END
+=================================================================
+
+Begin optimization report for: private: int __cdecl std::uniform_int<int>::_Eval<class std::mersenne_twister_engine<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 6148914691236517205, 17, 8202884508482404352, 37, -2270628950310912, 43, 6364136223846793005>>(class std::mersenne_twister_engine<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 6148914691236517205, 17, 8202884508482404352, 37, -2270628950310912, 43, 6364136223846793005> &, int, int) const
+
+LOOP BEGIN at C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.50.35717\include\random (2170, 0)
+LOOP END
+
+LOOP BEGIN at C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.50.35717\include\random (2170, 0)
+LOOP END
+
+LOOP BEGIN at C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.50.35717\include\random (2134, 0)
+
+    LOOP BEGIN at C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.50.35717\include\random (2170, 0)
+    LOOP END
+LOOP END
+
+LOOP BEGIN at C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.50.35717\include\__msvc_int128.hpp (302, 0)
+LOOP END
+=================================================================
+
+Begin optimization report for: public: __cdecl std::_Rng_from_urng_v2<unsigned int, class std::mersenne_twister_engine<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 6148914691236517205, 17, 8202884508482404352, 37, -2270628950310912, 43, 6364136223846793005>>::_Rng_from_urng_v2<unsigned int, class std::mersenne_twister_engine<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 6148914691236517205, 17, 8202884508482404352, 37, -2270628950310912, 43, 6364136223846793005>>(class std::mersenne_twister_engine<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 6148914691236517205, 17, 8202884508482404352, 37, -2270628950310912, 43, 6364136223846793005> &)
+=================================================================
+
+Begin optimization report for: private: static unsigned int __cdecl std::uniform_int<int>::_Adjust(unsigned int)
+=================================================================
+
+Begin optimization report for: public: unsigned __int64 __cdecl std::_Rng_from_urng_v2<unsigned int, class std::mersenne_twister_engine<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 6148914691236517205, 17, 8202884508482404352, 37, -2270628950310912, 43, 6364136223846793005>>::_Get_all_bits(void)
+
+LOOP BEGIN at C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.50.35717\include\random (2170, 0)
+LOOP END
+=================================================================
+
+Begin optimization report for: public: unsigned int __cdecl std::_Rng_from_urng_v2<unsigned int, class std::mersenne_twister_engine<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 6148914691236517205, 17, 8202884508482404352, 37, -2270628950310912, 43, 6364136223846793005>>::operator()(unsigned int)
+
+LOOP BEGIN at C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.50.35717\include\random (2170, 0)
+LOOP END
+
+LOOP BEGIN at C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.50.35717\include\random (2134, 0)
+
+    LOOP BEGIN at C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.50.35717\include\random (2170, 0)
+    LOOP END
+LOOP END
+
+LOOP BEGIN at C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.50.35717\include\__msvc_int128.hpp (302, 0)
+LOOP END
+=================================================================
+
+Begin optimization report for: private: unsigned __int64 __cdecl std::_Rng_from_urng_v2<unsigned int, class std::mersenne_twister_engine<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 6148914691236517205, 17, 8202884508482404352, 37, -2270628950310912, 43, 6364136223846793005>>::_Get_bits(void)
+
+LOOP BEGIN at C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.50.35717\include\random (2170, 0)
+LOOP END
+=================================================================
+
+Begin optimization report for: private: struct std::_Unsigned128 __cdecl std::_Rng_from_urng_v2<unsigned int, class std::mersenne_twister_engine<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 6148914691236517205, 17, 8202884508482404352, 37, -2270628950310912, 43, 6364136223846793005>>::_Get_random_product(unsigned int, unsigned int)
+
+LOOP BEGIN at C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.50.35717\include\random (2170, 0)
+LOOP END
+=================================================================
+
+Begin optimization report for: public: unsigned __int64 __cdecl std::_Base128::operator<unsigned __int64> unsigned __int64(void) const
+=================================================================
+
+Begin optimization report for: struct std::_Unsigned128 __cdecl std::operator>>(struct std::_Unsigned128 const &, struct std::_Base128 const &)
+=================================================================
+
+Begin optimization report for: public: __cdecl std::_Base128::_Base128<unsigned int>(unsigned int)
+
+LOOP BEGIN at C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.50.35717\include\__msvc_int128.hpp (302, 0)
+LOOP END
+=================================================================
+
+Begin optimization report for: public: unsigned int __cdecl std::_Base128::operator<unsigned int> unsigned int(void) const
+=================================================================
+
+Begin optimization report for: public: static unsigned __int64 __cdecl std::_Base128::_UMul128(unsigned __int64, unsigned __int64, unsigned __int64 &)
+=================================================================
+
+Begin optimization report for: public: __cdecl std::_Unsigned128::_Unsigned128(unsigned __int64, unsigned __int64)
+=================================================================
+
+Begin optimization report for: public: __cdecl std::_Base128::_Base128(unsigned __int64, unsigned __int64)
+=================================================================
+
+Begin optimization report for: public: void __cdecl std::_Base128::_Unsigned_right_shift(unsigned char)
+=================================================================
+
+Begin optimization report for: public: double __cdecl minecraft::SimplexNoise::get_value(double, double) const
+=================================================================
+
+Begin optimization report for: private: int __cdecl minecraft::SimplexNoise::perm(int) const
+=================================================================
+
+Begin optimization report for: private: static double __cdecl minecraft::SimplexNoise::get_corner_noise_3d(int, double, double, double, double)
+=================================================================
+
+Begin optimization report for: public: double __cdecl minecraft::SimplexNoise::get_value(double, double, double) const
+=================================================================
+
+Begin optimization report for: public: static double __cdecl minecraft::SimplexNoise::dot(int const *, double, double, double)
+=================================================================
+
+Begin optimization report for: public: int const & __cdecl std::array<int, 512>::operator[](unsigned __int64) const
+=================================================================
+
+---- Begin Inlining Report ----
+Option Values:
+  inline-threshold: 225
+  inlinehint-threshold: 325
+  inlinecold-threshold: 45
+  inlineoptsize-threshold: 15
+
+DEAD STATIC FUNC: public: __cdecl std::_Base128::_Base128<unsigned int>(unsigned int)
+
+DEAD STATIC FUNC: public: unsigned int __cdecl std::_Base128::operator<unsigned int> unsigned int(void) const
+
+DEAD STATIC FUNC: public: unsigned __int64 __cdecl std::_Base128::operator<unsigned __int64> unsigned __int64(void) const
+
+DEAD STATIC FUNC: public: int __cdecl std::uniform_int<int>::operator()<class std::mersenne_twister_engine<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 6148914691236517205, 17, 8202884508482404352, 37, -2270628950310912, 43, 6364136223846793005>>(class std::mersenne_twister_engine<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 6148914691236517205, 17, 8202884508482404352, 37, -2270628950310912, 43, 6364136223846793005> &)
+
+DEAD STATIC FUNC: public: int __cdecl std::uniform_int_distribution<int>::operator()<class std::mersenne_twister_engine<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 6148914691236517205, 17, 8202884508482404352, 37, -2270628950310912, 43, 6364136223846793005>>(class std::mersenne_twister_engine<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 6148914691236517205, 17, 8202884508482404352, 37, -2270628950310912, 43, 6364136223846793005> &)
+
+DEAD STATIC FUNC: public: double __cdecl std::uniform_real<double>::operator()<class std::mersenne_twister_engine<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 6148914691236517205, 17, 8202884508482404352, 37, -2270628950310912, 43, 6364136223846793005>>(class std::mersenne_twister_engine<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 6148914691236517205, 17, 8202884508482404352, 37, -2270628950310912, 43, 6364136223846793005> &)
+
+DEAD STATIC FUNC: public: double __cdecl std::uniform_real_distribution<double>::operator()<class std::mersenne_twister_engine<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 6148914691236517205, 17, 8202884508482404352, 37, -2270628950310912, 43, 6364136223846793005>>(class std::mersenne_twister_engine<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 6148914691236517205, 17, 8202884508482404352, 37, -2270628950310912, 43, 6364136223846793005> &)
+
+DEAD STATIC FUNC: private: int __cdecl std::uniform_int<int>::_Eval<class std::mersenne_twister_engine<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 6148914691236517205, 17, 8202884508482404352, 37, -2270628950310912, 43, 6364136223846793005>>(class std::mersenne_twister_engine<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 6148914691236517205, 17, 8202884508482404352, 37, -2270628950310912, 43, 6364136223846793005> &, int, int) const
+
+DEAD STATIC FUNC: private: double __cdecl std::uniform_real<double>::_Eval<class std::mersenne_twister_engine<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 6148914691236517205, 17, 8202884508482404352, 37, -2270628950310912, 43, 6364136223846793005>>(class std::mersenne_twister_engine<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 6148914691236517205, 17, 8202884508482404352, 37, -2270628950310912, 43, 6364136223846793005> &, struct std::uniform_real<double>::param_type const &) const
+
+DEAD STATIC FUNC: double __cdecl std::_Nrand_impl<double, class std::mersenne_twister_engine<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 6148914691236517205, 17, 8202884508482404352, 37, -2270628950310912, 43, 6364136223846793005>>(class std::mersenne_twister_engine<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 6148914691236517205, 17, 8202884508482404352, 37, -2270628950310912, 43, 6364136223846793005> &)
+
+DEAD STATIC FUNC: double __cdecl std::generate_canonical<double, 53, class std::mersenne_twister_engine<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 6148914691236517205, 17, 8202884508482404352, 37, -2270628950310912, 43, 6364136223846793005>>(class std::mersenne_twister_engine<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 6148914691236517205, 17, 8202884508482404352, 37, -2270628950310912, 43, 6364136223846793005> &)
+
+DEAD STATIC FUNC: public: __cdecl std::_Rng_from_urng_v2<unsigned int, class std::mersenne_twister_engine<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 6148914691236517205, 17, 8202884508482404352, 37, -2270628950310912, 43, 6364136223846793005>>::_Rng_from_urng_v2<unsigned int, class std::mersenne_twister_engine<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 6148914691236517205, 17, 8202884508482404352, 37, -2270628950310912, 43, 6364136223846793005>>(class std::mersenne_twister_engine<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 6148914691236517205, 17, 8202884508482404352, 37, -2270628950310912, 43, 6364136223846793005> &)
+
+DEAD STATIC FUNC: public: __cdecl std::mersenne_twister<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 17, 8202884508482404352, 37, -2270628950310912, 43>::mersenne_twister<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 17, 8202884508482404352, 37, -2270628950310912, 43>(unsigned __int64, unsigned __int64, unsigned __int64)
+
+DEAD STATIC FUNC: public: __cdecl std::mersenne_twister_engine<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 6148914691236517205, 17, 8202884508482404352, 37, -2270628950310912, 43, 6364136223846793005>::mersenne_twister_engine<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 6148914691236517205, 17, 8202884508482404352, 37, -2270628950310912, 43, 6364136223846793005>(unsigned __int64)
+
+DEAD STATIC FUNC: public: __cdecl std::uniform_int<int>::uniform_int<int>(int, int)
+
+DEAD STATIC FUNC: public: __cdecl std::uniform_int_distribution<int>::uniform_int_distribution<int>(int, int)
+
+DEAD STATIC FUNC: public: __cdecl std::uniform_real<double>::uniform_real<double>(double, double)
+
+DEAD STATIC FUNC: public: __cdecl std::uniform_real_distribution<double>::uniform_real_distribution<double>(double, double)
+
+DEAD STATIC FUNC: public: __cdecl std::_Base128::_Base128(unsigned __int64, unsigned __int64)
+
+DEAD STATIC FUNC: public: __cdecl std::_Unsigned128::_Unsigned128(unsigned __int64, unsigned __int64)
+
+DEAD STATIC FUNC: public: __cdecl std::uniform_int<int>::param_type::param_type(int, int)
+
+DEAD STATIC FUNC: public: __cdecl std::uniform_real<double>::param_type::param_type(double, double)
+
+DEAD STATIC FUNC: struct std::_Unsigned128 __cdecl std::operator>>(struct std::_Unsigned128 const &, struct std::_Base128 const &)
+
+DEAD STATIC FUNC: public: int & __cdecl std::array<int, 512>::operator[](unsigned __int64)
+
+DEAD STATIC FUNC: public: int const & __cdecl std::array<int, 512>::operator[](unsigned __int64) const
+
+DEAD STATIC FUNC: public: unsigned int __cdecl std::_Rng_from_urng_v2<unsigned int, class std::mersenne_twister_engine<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 6148914691236517205, 17, 8202884508482404352, 37, -2270628950310912, 43, 6364136223846793005>>::operator()(unsigned int)
+
+DEAD STATIC FUNC: public: unsigned __int64 __cdecl std::mersenne_twister<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 17, 8202884508482404352, 37, -2270628950310912, 43>::operator()(void)
+
+DEAD STATIC FUNC: public: unsigned int __cdecl std::random_device::operator()(void)
+
+DEAD STATIC FUNC: private: static unsigned int __cdecl std::uniform_int<int>::_Adjust(unsigned int)
+
+DEAD STATIC FUNC: public: unsigned __int64 __cdecl std::_Rng_from_urng_v2<unsigned int, class std::mersenne_twister_engine<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 6148914691236517205, 17, 8202884508482404352, 37, -2270628950310912, 43, 6364136223846793005>>::_Get_all_bits(void)
+
+DEAD STATIC FUNC: private: unsigned __int64 __cdecl std::_Rng_from_urng_v2<unsigned int, class std::mersenne_twister_engine<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 6148914691236517205, 17, 8202884508482404352, 37, -2270628950310912, 43, 6364136223846793005>>::_Get_bits(void)
+
+DEAD STATIC FUNC: private: struct std::_Unsigned128 __cdecl std::_Rng_from_urng_v2<unsigned int, class std::mersenne_twister_engine<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 6148914691236517205, 17, 8202884508482404352, 37, -2270628950310912, 43, 6364136223846793005>>::_Get_random_product(unsigned int, unsigned int)
+
+DEAD STATIC FUNC: public: void __cdecl std::uniform_int<int>::param_type::_Init(int, int)
+
+DEAD STATIC FUNC: public: void __cdecl std::uniform_real<double>::param_type::_Init(double, double)
+
+DEAD STATIC FUNC: protected: void __cdecl std::mersenne_twister<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 17, 8202884508482404352, 37, -2270628950310912, 43>::_Refill_lower(void)
+
+DEAD STATIC FUNC: protected: void __cdecl std::mersenne_twister<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 17, 8202884508482404352, 37, -2270628950310912, 43>::_Refill_upper(void)
+
+DEAD STATIC FUNC: public: static unsigned __int64 __cdecl std::_Base128::_UMul128(unsigned __int64, unsigned __int64, unsigned __int64 &)
+
+DEAD STATIC FUNC: public: void __cdecl std::_Base128::_Unsigned_right_shift(unsigned char)
+
+DEAD STATIC FUNC: public: void __cdecl std::mersenne_twister<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 17, 8202884508482404352, 37, -2270628950310912, 43>::seed(unsigned __int64, unsigned __int64)
+
+DEAD STATIC FUNC: llvm.experimental.noalias.scope.decl
+
+DEAD STATIC FUNC: llvm.fshr.i64
+
+DEAD STATIC FUNC: llvm.intel.fakeload.p0
+
+DEAD STATIC FUNC: llvm.memcpy.p0.p0.i64
+
+COMPILE FUNC: public: unsigned __int64 __cdecl std::mersenne_twister_engine<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 6148914691236517205, 17, 8202884508482404352, 37, -2270628950310912, 43, 6364136223846793005>::operator()(void)
+   -> INLINE: public: unsigned __int64 __cdecl std::mersenne_twister<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 17, 8202884508482404352, 37, -2270628950310912, 43>::operator()(void) random(1549,0) (-14575<=225)
+      -> INLINE: protected: void __cdecl std::mersenne_twister<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 17, 8202884508482404352, 37, -2270628950310912, 43>::_Refill_upper(void) random(1363,0) (-14940<=225)
+      -> INLINE: protected: void __cdecl std::mersenne_twister<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 17, 8202884508482404352, 37, -2270628950310912, 43>::_Refill_lower(void) random(1365,0) (-14775<=225)
+
+COMPILE FUNC: public: __cdecl minecraft::SimplexNoise::SimplexNoise(void)
+   -> INLINE: public: unsigned int __cdecl std::random_device::operator()(void) SimplexNoise.cpp(6,0) (-15005<=337)
+      -> EXTERN: unsigned int __cdecl std::_Random_device(void) random(5659,0)
+   -> INLINE: public: __cdecl std::mersenne_twister_engine<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 6148914691236517205, 17, 8202884508482404352, 37, -2270628950310912, 43, 6364136223846793005>::mersenne_twister_engine<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 6148914691236517205, 17, 8202884508482404352, 37, -2270628950310912, 43, 6364136223846793005>(unsigned __int64) SimplexNoise.cpp(6,0) (-14985<=225)
+      -> INLINE: public: __cdecl std::mersenne_twister<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 17, 8202884508482404352, 37, -2270628950310912, 43>::mersenne_twister<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 17, 8202884508482404352, 37, -2270628950310912, 43>(unsigned __int64, unsigned __int64, unsigned __int64) random(1475,0) (-14995<=225)
+         -> INLINE: public: void __cdecl std::mersenne_twister<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 17, 8202884508482404352, 37, -2270628950310912, 43>::seed(unsigned __int64, unsigned __int64) random(1294,0) (-14995<=225)
+   -> INLINE: public: __cdecl std::uniform_real_distribution<double>::uniform_real_distribution<double>(double, double) SimplexNoise.cpp(7,0) (-15045<=337)
+      -> INLINE: public: __cdecl std::uniform_real<double>::uniform_real<double>(double, double) random(3278,0) (-15035<=337)
+         -> INLINE: public: __cdecl std::uniform_real<double>::param_type::param_type(double, double) random(3174,0) (-15035<=337)
+            -> INLINE: public: void __cdecl std::uniform_real<double>::param_type::_Init(double, double) random(3138,0) (-15035<=337)
+   -> INLINE: public: double __cdecl std::uniform_real_distribution<double>::operator()<class std::mersenne_twister_engine<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 6148914691236517205, 17, 8202884508482404352, 37, -2270628950310912, 43, 6364136223846793005>>(class std::mersenne_twister_engine<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 6148914691236517205, 17, 8202884508482404352, 37, -2270628950310912, 43, 6364136223846793005> &) SimplexNoise.cpp(9,0) (20<=337)
+      -> INLINE: public: double __cdecl std::uniform_real<double>::operator()<class std::mersenne_twister_engine<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 6148914691236517205, 17, 8202884508482404352, 37, -2270628950310912, 43, 6364136223846793005>>(class std::mersenne_twister_engine<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 6148914691236517205, 17, 8202884508482404352, 37, -2270628950310912, 43, 6364136223846793005> &) random(3311,0) (-14970<=337)
+         -> INLINE: private: double __cdecl std::uniform_real<double>::_Eval<class std::mersenne_twister_engine<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 6148914691236517205, 17, 8202884508482404352, 37, -2270628950310912, 43, 6364136223846793005>>(class std::mersenne_twister_engine<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 6148914691236517205, 17, 8202884508482404352, 37, -2270628950310912, 43, 6364136223846793005> &, struct std::uniform_real<double>::param_type const &) const random(3206,0) (-14975<=337)
+            -> INLINE: double __cdecl std::_Nrand_impl<double, class std::mersenne_twister_engine<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 6148914691236517205, 17, 8202884508482404352, 37, -2270628950310912, 43, 6364136223846793005>>(class std::mersenne_twister_engine<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 6148914691236517205, 17, 8202884508482404352, 37, -2270628950310912, 43, 6364136223846793005> &) random(3246,0) (-14985<=337)
+               -> INLINE: double __cdecl std::generate_canonical<double, 53, class std::mersenne_twister_engine<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 6148914691236517205, 17, 8202884508482404352, 37, -2270628950310912, 43, 6364136223846793005>>(class std::mersenne_twister_engine<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 6148914691236517205, 17, 8202884508482404352, 37, -2270628950310912, 43, 6364136223846793005> &) random(419,0) (-14985<=337)
+                  -> public: unsigned __int64 __cdecl std::mersenne_twister_engine<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 6148914691236517205, 17, 8202884508482404352, 37, -2270628950310912, 43, 6364136223846793005>::operator()(void) random(318,0) (415>225)
+            -> DELETE: llvm.fmuladd.f64 random(3246,0)
+   -> INLINE: public: double __cdecl std::uniform_real_distribution<double>::operator()<class std::mersenne_twister_engine<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 6148914691236517205, 17, 8202884508482404352, 37, -2270628950310912, 43, 6364136223846793005>>(class std::mersenne_twister_engine<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 6148914691236517205, 17, 8202884508482404352, 37, -2270628950310912, 43, 6364136223846793005> &) SimplexNoise.cpp(10,0) (20<=337)
+      -> INLINE: public: double __cdecl std::uniform_real<double>::operator()<class std::mersenne_twister_engine<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 6148914691236517205, 17, 8202884508482404352, 37, -2270628950310912, 43, 6364136223846793005>>(class std::mersenne_twister_engine<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 6148914691236517205, 17, 8202884508482404352, 37, -2270628950310912, 43, 6364136223846793005> &) random(3311,0) (-14970<=337)
+         -> INLINE: private: double __cdecl std::uniform_real<double>::_Eval<class std::mersenne_twister_engine<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 6148914691236517205, 17, 8202884508482404352, 37, -2270628950310912, 43, 6364136223846793005>>(class std::mersenne_twister_engine<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 6148914691236517205, 17, 8202884508482404352, 37, -2270628950310912, 43, 6364136223846793005> &, struct std::uniform_real<double>::param_type const &) const random(3206,0) (-14975<=337)
+            -> INLINE: double __cdecl std::_Nrand_impl<double, class std::mersenne_twister_engine<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 6148914691236517205, 17, 8202884508482404352, 37, -2270628950310912, 43, 6364136223846793005>>(class std::mersenne_twister_engine<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 6148914691236517205, 17, 8202884508482404352, 37, -2270628950310912, 43, 6364136223846793005> &) random(3246,0) (-14985<=337)
+               -> INLINE: double __cdecl std::generate_canonical<double, 53, class std::mersenne_twister_engine<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 6148914691236517205, 17, 8202884508482404352, 37, -2270628950310912, 43, 6364136223846793005>>(class std::mersenne_twister_engine<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 6148914691236517205, 17, 8202884508482404352, 37, -2270628950310912, 43, 6364136223846793005> &) random(419,0) (-14985<=337)
+                  -> public: unsigned __int64 __cdecl std::mersenne_twister_engine<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 6148914691236517205, 17, 8202884508482404352, 37, -2270628950310912, 43, 6364136223846793005>::operator()(void) random(318,0) (415>225)
+            -> DELETE: llvm.fmuladd.f64 random(3246,0)
+   -> INLINE: public: double __cdecl std::uniform_real_distribution<double>::operator()<class std::mersenne_twister_engine<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 6148914691236517205, 17, 8202884508482404352, 37, -2270628950310912, 43, 6364136223846793005>>(class std::mersenne_twister_engine<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 6148914691236517205, 17, 8202884508482404352, 37, -2270628950310912, 43, 6364136223846793005> &) SimplexNoise.cpp(11,0) (-14980<=337)
+      -> INLINE: public: double __cdecl std::uniform_real<double>::operator()<class std::mersenne_twister_engine<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 6148914691236517205, 17, 8202884508482404352, 37, -2270628950310912, 43, 6364136223846793005>>(class std::mersenne_twister_engine<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 6148914691236517205, 17, 8202884508482404352, 37, -2270628950310912, 43, 6364136223846793005> &) random(3311,0) (-14970<=337)
+         -> INLINE: private: double __cdecl std::uniform_real<double>::_Eval<class std::mersenne_twister_engine<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 6148914691236517205, 17, 8202884508482404352, 37, -2270628950310912, 43, 6364136223846793005>>(class std::mersenne_twister_engine<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 6148914691236517205, 17, 8202884508482404352, 37, -2270628950310912, 43, 6364136223846793005> &, struct std::uniform_real<double>::param_type const &) const random(3206,0) (-14975<=337)
+            -> INLINE: double __cdecl std::_Nrand_impl<double, class std::mersenne_twister_engine<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 6148914691236517205, 17, 8202884508482404352, 37, -2270628950310912, 43, 6364136223846793005>>(class std::mersenne_twister_engine<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 6148914691236517205, 17, 8202884508482404352, 37, -2270628950310912, 43, 6364136223846793005> &) random(3246,0) (-14985<=337)
+               -> INLINE: double __cdecl std::generate_canonical<double, 53, class std::mersenne_twister_engine<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 6148914691236517205, 17, 8202884508482404352, 37, -2270628950310912, 43, 6364136223846793005>>(class std::mersenne_twister_engine<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 6148914691236517205, 17, 8202884508482404352, 37, -2270628950310912, 43, 6364136223846793005> &) random(419,0) (-14985<=337)
+                  -> public: unsigned __int64 __cdecl std::mersenne_twister_engine<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 6148914691236517205, 17, 8202884508482404352, 37, -2270628950310912, 43, 6364136223846793005>::operator()(void) random(318,0) (415>225)
+            -> DELETE: llvm.fmuladd.f64 random(3246,0)
+   -> INLINE: public: int & __cdecl std::array<int, 512>::operator[](unsigned __int64) SimplexNoise.cpp(15,0) (-35<=337)
+      -> DELETE: llvm.intel.fakeload.p0 array(534,0)
+   -> INLINE: public: __cdecl std::uniform_int_distribution<int>::uniform_int_distribution<int>(int, int) SimplexNoise.cpp(19,0) (-15045<=337)
+      -> INLINE: public: __cdecl std::uniform_int<int>::uniform_int<int>(int, int) random(2382,0) (-15035<=337)
+         -> INLINE: public: __cdecl std::uniform_int<int>::param_type::param_type(int, int) random(2260,0) (-15035<=337)
+            -> INLINE: public: void __cdecl std::uniform_int<int>::param_type::_Init(int, int) random(2225,0) (-15035<=337)
+   -> INLINE: public: int __cdecl std::uniform_int_distribution<int>::operator()<class std::mersenne_twister_engine<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 6148914691236517205, 17, 8202884508482404352, 37, -2270628950310912, 43, 6364136223846793005>>(class std::mersenne_twister_engine<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 6148914691236517205, 17, 8202884508482404352, 37, -2270628950310912, 43, 6364136223846793005> &) SimplexNoise.cpp(20,0) (-14590<=225)
+      -> INLINE: public: int __cdecl std::uniform_int<int>::operator()<class std::mersenne_twister_engine<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 6148914691236517205, 17, 8202884508482404352, 37, -2270628950310912, 43, 6364136223846793005>>(class std::mersenne_twister_engine<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 6148914691236517205, 17, 8202884508482404352, 37, -2270628950310912, 43, 6364136223846793005> &) random(2415,0) (-14580<=225)
+         -> INLINE: private: int __cdecl std::uniform_int<int>::_Eval<class std::mersenne_twister_engine<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 6148914691236517205, 17, 8202884508482404352, 37, -2270628950310912, 43, 6364136223846793005>>(class std::mersenne_twister_engine<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 6148914691236517205, 17, 8202884508482404352, 37, -2270628950310912, 43, 6364136223846793005> &, int, int) const random(2292,0) (-14600<=225)
+            -> INLINE: public: __cdecl std::_Rng_from_urng_v2<unsigned int, class std::mersenne_twister_engine<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 6148914691236517205, 17, 8202884508482404352, 37, -2270628950310912, 43, 6364136223846793005>>::_Rng_from_urng_v2<unsigned int, class std::mersenne_twister_engine<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 6148914691236517205, 17, 8202884508482404352, 37, -2270628950310912, 43, 6364136223846793005>>(class std::mersenne_twister_engine<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 6148914691236517205, 17, 8202884508482404352, 37, -2270628950310912, 43, 6364136223846793005> &) random(2326,0) (-15040<=337)
+            -> INLINE: private: static unsigned int __cdecl std::uniform_int<int>::_Adjust(unsigned int) random(2329,0) (-30<=337)
+            -> INLINE: private: static unsigned int __cdecl std::uniform_int<int>::_Adjust(unsigned int) random(2330,0) (-30<=337)
+            -> INLINE: public: unsigned __int64 __cdecl std::_Rng_from_urng_v2<unsigned int, class std::mersenne_twister_engine<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 6148914691236517205, 17, 8202884508482404352, 37, -2270628950310912, 43, 6364136223846793005>>::_Get_all_bits(void) random(2335,0) (-15000<=337)
+               -> INLINE: private: unsigned __int64 __cdecl std::_Rng_from_urng_v2<unsigned int, class std::mersenne_twister_engine<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 6148914691236517205, 17, 8202884508482404352, 37, -2270628950310912, 43, 6364136223846793005>>::_Get_bits(void) random(2152,0) (5<=337)
+                  -> DELETE: public: unsigned __int64 __cdecl std::mersenne_twister_engine<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 6148914691236517205, 17, 8202884508482404352, 37, -2270628950310912, 43, 6364136223846793005>::operator()(void) random(2171,0)
+            -> INLINE: public: unsigned int __cdecl std::_Rng_from_urng_v2<unsigned int, class std::mersenne_twister_engine<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 6148914691236517205, 17, 8202884508482404352, 37, -2270628950310912, 43, 6364136223846793005>>::operator()(unsigned int) random(2337,0) (-14690<=225)
+               -> INLINE: private: struct std::_Unsigned128 __cdecl std::_Rng_from_urng_v2<unsigned int, class std::mersenne_twister_engine<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 6148914691236517205, 17, 8202884508482404352, 37, -2270628950310912, 43, 6364136223846793005>>::_Get_random_product(unsigned int, unsigned int) random(2127,0) (25<=337)
+                  -> INLINE: public: __cdecl std::_Unsigned128::_Unsigned128(unsigned __int64, unsigned __int64) random(2201,0)
+                     -> INLINE: public: __cdecl std::_Base128::_Base128(unsigned __int64, unsigned __int64) __msvc_int128.hpp(710,0) (-15035<=337)
+                  -> INLINE: private: unsigned __int64 __cdecl std::_Rng_from_urng_v2<unsigned int, class std::mersenne_twister_engine<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 6148914691236517205, 17, 8202884508482404352, 37, -2270628950310912, 43, 6364136223846793005>>::_Get_bits(void) random(2190,0) (-14995<=337)
+                     -> public: unsigned __int64 __cdecl std::mersenne_twister_engine<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 6148914691236517205, 17, 8202884508482404352, 37, -2270628950310912, 43, 6364136223846793005>::operator()(void) random(2171,0) (415>225)
+                  -> INLINE: public: static unsigned __int64 __cdecl std::_Base128::_UMul128(unsigned __int64, unsigned __int64, unsigned __int64 &) random(2200,0) (-15025<=337)
+               -> INLINE: public: unsigned __int64 __cdecl std::_Base128::operator<unsigned __int64> unsigned __int64(void) const random(2129,0) (-35<=337)
+               -> INLINE: private: struct std::_Unsigned128 __cdecl std::_Rng_from_urng_v2<unsigned int, class std::mersenne_twister_engine<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 6148914691236517205, 17, 8202884508482404352, 37, -2270628950310912, 43, 6364136223846793005>>::_Get_random_product(unsigned int, unsigned int) random(2135,0) (-14975<=337)
+                  -> INLINE: public: __cdecl std::_Unsigned128::_Unsigned128(unsigned __int64, unsigned __int64) random(2201,0)
+                     -> INLINE: public: __cdecl std::_Base128::_Base128(unsigned __int64, unsigned __int64) __msvc_int128.hpp(710,0) (-15035<=337)
+                  -> INLINE: private: unsigned __int64 __cdecl std::_Rng_from_urng_v2<unsigned int, class std::mersenne_twister_engine<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 6148914691236517205, 17, 8202884508482404352, 37, -2270628950310912, 43, 6364136223846793005>>::_Get_bits(void) random(2190,0) (-14995<=337)
+                     -> INLINE: public: unsigned __int64 __cdecl std::mersenne_twister_engine<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 6148914691236517205, 17, 8202884508482404352, 37, -2270628950310912, 43, 6364136223846793005>::operator()(void) random(2171,0) (-1999999575<=225)
+                        -> INLINE: public: unsigned __int64 __cdecl std::mersenne_twister<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 17, 8202884508482404352, 37, -2270628950310912, 43>::operator()(void) random(1549,0) (-14575<=225)
+                           -> INLINE: protected: void __cdecl std::mersenne_twister<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 17, 8202884508482404352, 37, -2270628950310912, 43>::_Refill_upper(void) random(1363,0) (-14940<=225)
+                           -> INLINE: protected: void __cdecl std::mersenne_twister<unsigned __int64, 64, 312, 156, 31, -5403634167711393303, 29, 17, 8202884508482404352, 37, -2270628950310912, 43>::_Refill_lower(void) random(1365,0) (-14775<=225)
+                  -> INLINE: public: static unsigned __int64 __cdecl std::_Base128::_UMul128(unsigned __int64, unsigned __int64, unsigned __int64 &) random(2200,0) (-15025<=337)
+               -> DELETE: llvm.memcpy.p0.p0.i64 random(2135,0)
+               -> INLINE: public: unsigned __int64 __cdecl std::_Base128::operator<unsigned __int64> unsigned __int64(void) const random(2136,0) (-15035<=337)
+               -> INLINE: public: __cdecl std::_Base128::_Base128<unsigned int>(unsigned int) random(2148,0) (-15025<=225)
+               -> INLINE: struct std::_Unsigned128 __cdecl std::operator>>(struct std::_Unsigned128 const &, struct std::_Base128 const &) random(2148,0) (-14985<=225)
+                  -> DELETE: llvm.memcpy.p0.p0.i64 __msvc_int128.hpp(770,0)
+                  -> INLINE: public: void __cdecl std::_Base128::_Unsigned_right_shift(unsigned char) __msvc_int128.hpp(771,0) (-14950<=225)
+                     -> DELETE: llvm.fshr.i64 __msvc_int128.hpp(110,0)
+               -> INLINE: public: unsigned int __cdecl std::_Base128::operator<unsigned int> unsigned int(void) const random(2148,0) (-15035<=337)
+               -> DELETE: llvm.experimental.noalias.scope.decl random(2127,0)
+               -> DELETE: llvm.experimental.noalias.scope.decl random(2135,0)
+               -> DELETE: llvm.experimental.noalias.scope.decl random(2148,0)
+            -> INLINE: private: static unsigned int __cdecl std::uniform_int<int>::_Adjust(unsigned int) random(2340,0) (-15030<=337)
+   -> INLINE: public: int & __cdecl std::array<int, 512>::operator[](unsigned __int64) SimplexNoise.cpp(21,0) (-35<=337)
+      -> DELETE: llvm.intel.fakeload.p0 array(534,0)
+   -> INLINE: public: int & __cdecl std::array<int, 512>::operator[](unsigned __int64) SimplexNoise.cpp(22,0) (-35<=337)
+      -> DELETE: llvm.intel.fakeload.p0 array(534,0)
+   -> INLINE: public: int & __cdecl std::array<int, 512>::operator[](unsigned __int64) SimplexNoise.cpp(22,0) (-35<=337)
+      -> DELETE: llvm.intel.fakeload.p0 array(534,0)
+   -> INLINE: public: int & __cdecl std::array<int, 512>::operator[](unsigned __int64) SimplexNoise.cpp(23,0) (-15035<=337)
+      -> DELETE: llvm.intel.fakeload.p0 array(534,0)
+
+COMPILE FUNC: private: int __cdecl minecraft::SimplexNoise::perm(int) const
+   -> INLINE: public: int const & __cdecl std::array<int, 512>::operator[](unsigned __int64) const SimplexNoise.cpp(168,0) (-15035<=337)
+      -> DELETE: llvm.intel.fakeload.p0 array(543,0)
+
+COMPILE FUNC: public: static double __cdecl minecraft::SimplexNoise::dot(int const *, double, double, double)
+   -> llvm.fmuladd.f64 SimplexNoise.cpp(151,0)
+   -> llvm.fmuladd.f64 SimplexNoise.cpp(151,0)
+
+COMPILE FUNC: private: static double __cdecl minecraft::SimplexNoise::get_corner_noise_3d(int, double, double, double, double)
+   -> llvm.fmuladd.f64 SimplexNoise.cpp(155,0)
+   -> llvm.fmuladd.f64 SimplexNoise.cpp(155,0)
+   -> llvm.fmuladd.f64 SimplexNoise.cpp(155,0)
+   -> INLINE: public: static double __cdecl minecraft::SimplexNoise::dot(int const *, double, double, double) SimplexNoise.cpp(161,0) (-5<=337)
+      -> llvm.fmuladd.f64 SimplexNoise.cpp(151,0)
+      -> llvm.fmuladd.f64 SimplexNoise.cpp(151,0)
+
+COMPILE FUNC: public: double __cdecl minecraft::SimplexNoise::get_value(double, double) const
+   -> llvm.floor.f64 SimplexNoise.cpp(29,0)
+   -> llvm.floor.f64 SimplexNoise.cpp(30,0)
+   -> INLINE: private: int __cdecl minecraft::SimplexNoise::perm(int) const SimplexNoise.cpp(52,0) (-30<=337)
+      -> INLINE: public: int const & __cdecl std::array<int, 512>::operator[](unsigned __int64) const SimplexNoise.cpp(168,0) (-15035<=337)
+   -> INLINE: private: int __cdecl minecraft::SimplexNoise::perm(int) const SimplexNoise.cpp(52,0) (-30<=337)
+      -> INLINE: public: int const & __cdecl std::array<int, 512>::operator[](unsigned __int64) const SimplexNoise.cpp(168,0) (-15035<=337)
+   -> INLINE: private: int __cdecl minecraft::SimplexNoise::perm(int) const SimplexNoise.cpp(53,0) (-30<=337)
+      -> INLINE: public: int const & __cdecl std::array<int, 512>::operator[](unsigned __int64) const SimplexNoise.cpp(168,0) (-15035<=337)
+   -> INLINE: private: int __cdecl minecraft::SimplexNoise::perm(int) const SimplexNoise.cpp(53,0) (-30<=337)
+      -> INLINE: public: int const & __cdecl std::array<int, 512>::operator[](unsigned __int64) const SimplexNoise.cpp(168,0) (-15035<=337)
+   -> INLINE: private: int __cdecl minecraft::SimplexNoise::perm(int) const SimplexNoise.cpp(54,0) (-30<=337)
+      -> INLINE: public: int const & __cdecl std::array<int, 512>::operator[](unsigned __int64) const SimplexNoise.cpp(168,0) (-15035<=337)
+   -> INLINE: private: int __cdecl minecraft::SimplexNoise::perm(int) const SimplexNoise.cpp(54,0) (-30<=337)
+      -> INLINE: public: int const & __cdecl std::array<int, 512>::operator[](unsigned __int64) const SimplexNoise.cpp(168,0) (-15035<=337)
+   -> INLINE: private: static double __cdecl minecraft::SimplexNoise::get_corner_noise_3d(int, double, double, double, double) SimplexNoise.cpp(55,0) (50<=225)
+      -> llvm.fmuladd.f64 SimplexNoise.cpp(155,0)
+      -> llvm.fmuladd.f64 SimplexNoise.cpp(155,0)
+      -> DELETE: llvm.fmuladd.f64 SimplexNoise.cpp(155,0)
+      -> INLINE: public: static double __cdecl minecraft::SimplexNoise::dot(int const *, double, double, double) SimplexNoise.cpp(161,0) (-5<=337)
+         -> llvm.fmuladd.f64 SimplexNoise.cpp(151,0)
+         -> llvm.fmuladd.f64 SimplexNoise.cpp(151,0)
+   -> INLINE: private: static double __cdecl minecraft::SimplexNoise::get_corner_noise_3d(int, double, double, double, double) SimplexNoise.cpp(56,0) (50<=225)
+      -> llvm.fmuladd.f64 SimplexNoise.cpp(155,0)
+      -> llvm.fmuladd.f64 SimplexNoise.cpp(155,0)
+      -> DELETE: llvm.fmuladd.f64 SimplexNoise.cpp(155,0)
+      -> INLINE: public: static double __cdecl minecraft::SimplexNoise::dot(int const *, double, double, double) SimplexNoise.cpp(161,0) (-5<=337)
+         -> llvm.fmuladd.f64 SimplexNoise.cpp(151,0)
+         -> llvm.fmuladd.f64 SimplexNoise.cpp(151,0)
+   -> INLINE: private: static double __cdecl minecraft::SimplexNoise::get_corner_noise_3d(int, double, double, double, double) SimplexNoise.cpp(57,0) (50<=225)
+      -> llvm.fmuladd.f64 SimplexNoise.cpp(155,0)
+      -> llvm.fmuladd.f64 SimplexNoise.cpp(155,0)
+      -> DELETE: llvm.fmuladd.f64 SimplexNoise.cpp(155,0)
+      -> INLINE: public: static double __cdecl minecraft::SimplexNoise::dot(int const *, double, double, double) SimplexNoise.cpp(161,0) (-5<=337)
+         -> llvm.fmuladd.f64 SimplexNoise.cpp(151,0)
+         -> llvm.fmuladd.f64 SimplexNoise.cpp(151,0)
+
+COMPILE FUNC: public: double __cdecl minecraft::SimplexNoise::get_value(double, double, double) const
+   -> llvm.floor.f64 SimplexNoise.cpp(65,0)
+   -> llvm.floor.f64 SimplexNoise.cpp(66,0)
+   -> llvm.floor.f64 SimplexNoise.cpp(67,0)
+   -> INLINE: private: int __cdecl minecraft::SimplexNoise::perm(int) const SimplexNoise.cpp(139,0) (-30<=337)
+      -> INLINE: public: int const & __cdecl std::array<int, 512>::operator[](unsigned __int64) const SimplexNoise.cpp(168,0) (-15035<=337)
+   -> INLINE: private: int __cdecl minecraft::SimplexNoise::perm(int) const SimplexNoise.cpp(139,0) (-30<=337)
+      -> INLINE: public: int const & __cdecl std::array<int, 512>::operator[](unsigned __int64) const SimplexNoise.cpp(168,0) (-15035<=337)
+   -> INLINE: private: int __cdecl minecraft::SimplexNoise::perm(int) const SimplexNoise.cpp(139,0) (-30<=337)
+      -> INLINE: public: int const & __cdecl std::array<int, 512>::operator[](unsigned __int64) const SimplexNoise.cpp(168,0) (-15035<=337)
+   -> INLINE: private: int __cdecl minecraft::SimplexNoise::perm(int) const SimplexNoise.cpp(140,0) (-30<=337)
+      -> INLINE: public: int const & __cdecl std::array<int, 512>::operator[](unsigned __int64) const SimplexNoise.cpp(168,0) (-15035<=337)
+   -> INLINE: private: int __cdecl minecraft::SimplexNoise::perm(int) const SimplexNoise.cpp(140,0) (-30<=337)
+      -> INLINE: public: int const & __cdecl std::array<int, 512>::operator[](unsigned __int64) const SimplexNoise.cpp(168,0) (-15035<=337)
+   -> INLINE: private: int __cdecl minecraft::SimplexNoise::perm(int) const SimplexNoise.cpp(140,0) (-30<=337)
+      -> INLINE: public: int const & __cdecl std::array<int, 512>::operator[](unsigned __int64) const SimplexNoise.cpp(168,0) (-15035<=337)
+   -> INLINE: private: int __cdecl minecraft::SimplexNoise::perm(int) const SimplexNoise.cpp(141,0) (-30<=337)
+      -> INLINE: public: int const & __cdecl std::array<int, 512>::operator[](unsigned __int64) const SimplexNoise.cpp(168,0) (-15035<=337)
+   -> INLINE: private: int __cdecl minecraft::SimplexNoise::perm(int) const SimplexNoise.cpp(141,0) (-30<=337)
+      -> INLINE: public: int const & __cdecl std::array<int, 512>::operator[](unsigned __int64) const SimplexNoise.cpp(168,0) (-15035<=337)
+   -> INLINE: private: int __cdecl minecraft::SimplexNoise::perm(int) const SimplexNoise.cpp(141,0) (-30<=337)
+      -> INLINE: public: int const & __cdecl std::array<int, 512>::operator[](unsigned __int64) const SimplexNoise.cpp(168,0) (-15035<=337)
+   -> INLINE: private: int __cdecl minecraft::SimplexNoise::perm(int) const SimplexNoise.cpp(142,0) (-30<=337)
+      -> INLINE: public: int const & __cdecl std::array<int, 512>::operator[](unsigned __int64) const SimplexNoise.cpp(168,0) (-15035<=337)
+   -> INLINE: private: int __cdecl minecraft::SimplexNoise::perm(int) const SimplexNoise.cpp(142,0) (-30<=337)
+      -> INLINE: public: int const & __cdecl std::array<int, 512>::operator[](unsigned __int64) const SimplexNoise.cpp(168,0) (-15035<=337)
+   -> INLINE: private: int __cdecl minecraft::SimplexNoise::perm(int) const SimplexNoise.cpp(142,0) (-30<=337)
+      -> INLINE: public: int const & __cdecl std::array<int, 512>::operator[](unsigned __int64) const SimplexNoise.cpp(168,0) (-15035<=337)
+   -> INLINE: private: static double __cdecl minecraft::SimplexNoise::get_corner_noise_3d(int, double, double, double, double) SimplexNoise.cpp(143,0) (55<=225)
+      -> llvm.fmuladd.f64 SimplexNoise.cpp(155,0)
+      -> llvm.fmuladd.f64 SimplexNoise.cpp(155,0)
+      -> llvm.fmuladd.f64 SimplexNoise.cpp(155,0)
+      -> INLINE: public: static double __cdecl minecraft::SimplexNoise::dot(int const *, double, double, double) SimplexNoise.cpp(161,0) (-5<=337)
+         -> llvm.fmuladd.f64 SimplexNoise.cpp(151,0)
+         -> llvm.fmuladd.f64 SimplexNoise.cpp(151,0)
+   -> INLINE: private: static double __cdecl minecraft::SimplexNoise::get_corner_noise_3d(int, double, double, double, double) SimplexNoise.cpp(144,0) (55<=225)
+      -> llvm.fmuladd.f64 SimplexNoise.cpp(155,0)
+      -> llvm.fmuladd.f64 SimplexNoise.cpp(155,0)
+      -> llvm.fmuladd.f64 SimplexNoise.cpp(155,0)
+      -> INLINE: public: static double __cdecl minecraft::SimplexNoise::dot(int const *, double, double, double) SimplexNoise.cpp(161,0) (-5<=337)
+         -> llvm.fmuladd.f64 SimplexNoise.cpp(151,0)
+         -> llvm.fmuladd.f64 SimplexNoise.cpp(151,0)
+   -> INLINE: private: static double __cdecl minecraft::SimplexNoise::get_corner_noise_3d(int, double, double, double, double) SimplexNoise.cpp(145,0) (55<=225)
+      -> llvm.fmuladd.f64 SimplexNoise.cpp(155,0)
+      -> llvm.fmuladd.f64 SimplexNoise.cpp(155,0)
+      -> llvm.fmuladd.f64 SimplexNoise.cpp(155,0)
+      -> INLINE: public: static double __cdecl minecraft::SimplexNoise::dot(int const *, double, double, double) SimplexNoise.cpp(161,0) (-5<=337)
+         -> llvm.fmuladd.f64 SimplexNoise.cpp(151,0)
+         -> llvm.fmuladd.f64 SimplexNoise.cpp(151,0)
+   -> INLINE: private: static double __cdecl minecraft::SimplexNoise::get_corner_noise_3d(int, double, double, double, double) SimplexNoise.cpp(146,0) (55<=225)
+      -> llvm.fmuladd.f64 SimplexNoise.cpp(155,0)
+      -> llvm.fmuladd.f64 SimplexNoise.cpp(155,0)
+      -> llvm.fmuladd.f64 SimplexNoise.cpp(155,0)
+      -> INLINE: public: static double __cdecl minecraft::SimplexNoise::dot(int const *, double, double, double) SimplexNoise.cpp(161,0) (-5<=337)
+         -> llvm.fmuladd.f64 SimplexNoise.cpp(151,0)
+         -> llvm.fmuladd.f64 SimplexNoise.cpp(151,0)
+
+---- End Inlining Report ------

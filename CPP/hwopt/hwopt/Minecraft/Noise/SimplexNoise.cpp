@@ -147,7 +147,7 @@ auto SimplexNoise::get_value(const double xin, const double yin, const double zi
     return 32.0 * (n0 + n1 + n2 + n3);
 }
 
-auto SimplexNoise::dot(const int* g, const double x, const double y, const double z) -> double {
+auto SimplexNoise::dot(const int* g, double x, double y, double z) -> double {
     return g[0] * x + g[1] * y + g[2] * z;
 }
 

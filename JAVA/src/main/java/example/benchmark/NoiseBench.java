@@ -1,4 +1,4 @@
-package Test.benchmark;
+package example.benchmark;
 
 import it.unimi.dsi.fastutil.doubles.DoubleArrayList;
 import library.dll.PerlinNoiseNative;
@@ -41,7 +41,6 @@ public enum NoiseBench {
         double checksumJava   = 0.0;
         
         for (int r = 0; r < RUNS; r++) {
-            
             // Java -> C++ (FFM / Panama)
             long t0 = System.nanoTime();
             double sumNative = 0.0;
@@ -58,7 +57,6 @@ public enum NoiseBench {
             double nativeSec = (t1 - t0) / 1.0e9;
             nativeTotal += nativeSec;
             checksumNative = sumNative;
-            
             
             // Java
             t0 = System.nanoTime();

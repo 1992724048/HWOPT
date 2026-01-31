@@ -1,4 +1,4 @@
-﻿package com.worldgen.util;
+package com.worldgen.util;
 
 import library.dll.BlockIdRegistryNative;
 import net.minecraft.core.registries.BuiltInRegistries;

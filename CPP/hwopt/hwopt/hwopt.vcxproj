@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\magic_enum.0.9.7\build\native\magic_enum.props" Condition="Exists('..\packages\magic_enum.0.9.7\build\native\magic_enum.props')" />
+  <Import Project="..\packages\FastNoiseLite.1.1.1\build\native\FastNoiseLite.props" Condition="Exists('..\packages\FastNoiseLite.1.1.1\build\native\FastNoiseLite.props')" />
   <Import Project="..\packages\fmt.12.1.0\build\native\fmt.props" Condition="Exists('..\packages\fmt.12.1.0\build\native\fmt.props')" />
   <Import Project="..\packages\xsimd.14.0.0\build\native\xsimd.props" Condition="Exists('..\packages\xsimd.14.0.0\build\native\xsimd.props')" />
   <Import Project="..\packages\parallel_hashmap.2.0.0\build\native\parallel_hashmap.props" Condition="Exists('..\packages\parallel_hashmap.2.0.0\build\native\parallel_hashmap.props')" />
@@ -39,6 +41,7 @@
     <EnableMKLOpenMPOffloadToGPU>true</EnableMKLOpenMPOffloadToGPU>
     <UseInteloneDAL>Parallel_Static</UseInteloneDAL>
     <UseIntelMPI>true</UseIntelMPI>
+    <InstrumentInteloneTBB>true</InstrumentInteloneTBB>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
@@ -100,13 +103,22 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <FloatingPointModel>Precise</FloatingPointModel>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <AdditionalIncludeDirectories>..\hwopt-sycl\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <FloatingPointExceptions>true</FloatingPointExceptions>
+      <GuardEHContMetadata>true</GuardEHContMetadata>
+      <ControlFlowGuard>Guard</ControlFlowGuard>
+      <EnableAddressSanitizer>true</EnableAddressSanitizer>
+      <EnableUndefinedBehaviorSanitizer>true</EnableUndefinedBehaviorSanitizer>
+      <OpenMPOffloading>None</OpenMPOffloading>
+      <CCppSupport>
+      </CCppSupport>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
       <AdditionalLibraryDirectories>$(SolutionDir)..\..\JAVA\src\main\resources\native\win64\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>Fortran.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Fortran.lib;hwopt-sycl.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -134,14 +146,25 @@
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <StringPooling>true</StringPooling>
       <EnableEnhancedInstructionSet>AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
-      <ControlFlowGuard>false</ControlFlowGuard>
+      <ControlFlowGuard>Guard</ControlFlowGuard>
+      <AdditionalIncludeDirectories>..\hwopt-sycl\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <FloatingPointExceptions>false</FloatingPointExceptions>
+      <GuardEHContMetadata>true</GuardEHContMetadata>
+      <EnableAddressSanitizer>false</EnableAddressSanitizer>
+      <EnableUndefinedBehaviorSanitizer>false</EnableUndefinedBehaviorSanitizer>
+      <OpenMPOffloading>None</OpenMPOffloading>
+      <CCppSupport>
+      </CCppSupport>
+      <OptimizeForWindowsApplication>false</OptimizeForWindowsApplication>
+      <BufferSecurityCheck>true</BufferSecurityCheck>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>Fortran.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Fortran.lib;hwopt-sycl.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)..\..\JAVA\src\main\resources\native\win64\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <SetChecksum>true</SetChecksum>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -181,5 +204,7 @@
     <Error Condition="!Exists('..\packages\parallel_hashmap.2.0.0\build\native\parallel_hashmap.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\parallel_hashmap.2.0.0\build\native\parallel_hashmap.props'))" />
     <Error Condition="!Exists('..\packages\xsimd.14.0.0\build\native\xsimd.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\xsimd.14.0.0\build\native\xsimd.props'))" />
     <Error Condition="!Exists('..\packages\fmt.12.1.0\build\native\fmt.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\fmt.12.1.0\build\native\fmt.props'))" />
+    <Error Condition="!Exists('..\packages\FastNoiseLite.1.1.1\build\native\FastNoiseLite.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\FastNoiseLite.1.1.1\build\native\FastNoiseLite.props'))" />
+    <Error Condition="!Exists('..\packages\magic_enum.0.9.7\build\native\magic_enum.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\magic_enum.0.9.7\build\native\magic_enum.props'))" />
   </Target>
 </Project>

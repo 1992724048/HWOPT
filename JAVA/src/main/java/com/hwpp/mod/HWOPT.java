@@ -1,8 +1,5 @@
 package com.hwpp.mod;
 
-import benchmark.NoiseBench;
-import com.worldgen.util.BlockIdRegistry;
-import library.dll.BlockIdRegistryNative;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
@@ -38,9 +35,6 @@ import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
-
-import java.lang.foreign.Arena;
-import java.lang.foreign.SymbolLookup;
 
 @Mod(HWOPT.MODID)
 public class HWOPT {

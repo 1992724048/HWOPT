@@ -6,7 +6,7 @@
 #include "../../JavaNative.h"
 
 namespace minecraft {
-    class ImprovedNoise : JavaNative<ImprovedNoise> {
+    class __declspec(dllexport) ImprovedNoise : JavaNative<ImprovedNoise> {
     public:
         double xo;
         double yo;
@@ -26,7 +26,7 @@ namespace minecraft {
     private:
         std::array<uint8_t, 256> p;
 
-        static auto grad_dot(int hash, double x, double y, double z) -> double;
+        inline static auto grad_dot(int hash, double x, double y, double z) -> double;
 
         [[nodiscard]] auto perm(int x) const -> int;
 
@@ -34,17 +34,17 @@ namespace minecraft {
 
         auto sample_with_derivative(int x, int y, int z, double xr, double yr, double zr, double* derivativeOut) const -> double;
 
-        static auto smoothstep(double x) -> double;
+        inline static auto smoothstep(double x) -> double;
 
-        static auto smoothstep_derivative(double x) -> double;
+        inline static auto smoothstep_derivative(double x) -> double;
 
-        static auto lerp(double alpha1, double p0, double p1) -> double;
+        inline static auto lerp(double alpha1, double p0, double p1) -> double;
 
-        static auto lerp2(double alpha1, double alpha2, double x00, double x10, double x01, double x11) -> double;
+        inline static auto lerp2(double alpha1, double alpha2, double x00, double x10, double x01, double x11) -> double;
 
-        static auto lerp3(double alpha1, double alpha2, double alpha3, double x000, double x100, double x010, double x110, double x001, double x101, double x011, double x111) -> double;
+        inline static auto lerp3(double alpha1, double alpha2, double alpha3, double x000, double x100, double x010, double x110, double x001, double x101, double x011, double x111) -> double;
 
-        static auto _create(double _x, double _y, double _z, const uint8_t* bytes) -> ImprovedNoise*;
+        inline static auto _create(double _x, double _y, double _z, const uint8_t* bytes) -> ImprovedNoise*;
 
         auto _destroy() const -> void;
     };

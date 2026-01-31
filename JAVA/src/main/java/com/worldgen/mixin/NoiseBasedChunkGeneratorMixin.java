@@ -153,12 +153,12 @@ public abstract class NoiseBasedChunkGeneratorMixin {
         long stateTime = 0;
         long writeTime = 0;
         
-        long s0 = System.nanoTime();
+/*        long s0 = System.nanoTime();
         NoiseChunkGeneratorNative.NATIVE.getInterpolatedState(noiseCache, noiseArraySize, sizeX, sizeY, sizeZ);
         long s1 = System.nanoTime();
-        stateTime += (s1 - s0);
+        stateTime += (s1 - s0);*/
         
-        /*for (int cellX = 0; cellX < cellCountX; cellX++) {
+        for (int cellX = 0; cellX < cellCountX; cellX++) {
             noiseChunk.advanceCellX(cellX);
             
             for (int cellZ = 0; cellZ < cellCountZ; cellZ++) {
@@ -183,12 +183,7 @@ public abstract class NoiseBasedChunkGeneratorMixin {
                                 int arrayZ = cellZ * cellWidth + zInCell;
                                 double fz = (double) zInCell / cellWidth;
                                 noiseChunk.updateForZ(worldZ, fz);
-                                
-                                long t0 = System.nanoTime();
-                                
-                                long t1 = System.nanoTime();
-                                loopOnlyTime += (t1 - t0);
-                                
+								
                                 long s0 = System.nanoTime();
                                 BlockState state = ((NoiseChunkAccessor) noiseChunk).invokeGetInterpolatedState();
                                 long s1 = System.nanoTime();
@@ -200,7 +195,7 @@ public abstract class NoiseBasedChunkGeneratorMixin {
                                 }
                                 
                                 int idx = arrayX + strideXZ * (arrayZ + sizeZ * arrayY);
-                                noiseCache[idx] = state;
+                                noiseCache[idx] = BlockIdRegistry.getId(state.getBlock());
                             }
                         }
                     }
@@ -209,7 +204,7 @@ public abstract class NoiseBasedChunkGeneratorMixin {
             noiseChunk.swapSlices();
         }
         
-        noiseChunk.stopInterpolation();*/
+        noiseChunk.stopInterpolation();
         
         long w0 = System.nanoTime();
         
