@@ -1,5 +1,6 @@
 package nativecode.dll;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.foreign.*;
@@ -33,8 +34,9 @@ public enum FFMFactory {
         }
         
         if (!isWrite) {
-            System.load("F:\\CODE\\hwopt\\JAVA\\src\\main\\resources\\native\\win64\\libmmd.dll");
             try {
+				// 防止缺少依赖
+                ensureNativeDir();
                 ensureNativeDir();
                 isWrite = true;
             } catch (IOException e) {
@@ -42,9 +44,10 @@ public enum FFMFactory {
             }
         }
         
-        Path dllPath = Paths.get(System.getProperty("user.dir"), lib.dll()).toAbsolutePath();
-        System.load(dllPath.toString());
-        SymbolLookup lookup = SymbolLookup.libraryLookup(lib.dll(), ARENA);
+        Path dllPath = Paths.get(System.getProperty("user.dir"), String.valueOf(Path.of("\\NativeDll\\" + lib.dll()))).toAbsolutePath();
+        System.out.println(dllPath);
+		System.load(dllPath.toString());
+        SymbolLookup lookup = SymbolLookup.libraryLookup(dllPath, ARENA);
         
         try {
             MethodHandle resolverMH = getResolverHandle(dllPath.toString(), lookup);
@@ -286,7 +289,7 @@ public enum FFMFactory {
                     
                     String fileName = name.substring(prefix.length() + 1);
                     try (InputStream in = jar.getInputStream(e)) {
-                        copyIfDifferent(fileName, in.readAllBytes(), outDir);
+                        copyIfDifferent(fileName, in.readAllBytes(), Path.of(outDir + "\\NativeDll\\"));
                     }
                 }
                 
@@ -302,19 +305,16 @@ public enum FFMFactory {
         try (var stream = Files.walk(dir)) {
             stream.filter(Files::isRegularFile).forEach(p -> {
                 try {
-                    copyIfDifferent(p.getFileName().toString(), Files.readAllBytes(p), outDir);
-                    if (p.getFileName().toString().endsWith(".dll")) {
-                        try {
-                            System.load(outDir + "\\" + p.getFileName());
-                        } catch (UnsatisfiedLinkError ex) {
-                            System.out.println("Failed to load " + p.getFileName());
-                        } catch (NullPointerException ex) {
-                            System.out.println("Failed to load " + p.getFileName());
-                        } catch (IllegalCallerException ex) {
-                            System.out.println("Failed to load " + p.getFileName());
-                        }
-                    }
-                } catch (IOException e) {
+					String fileName = p.getFileName().toString();
+                    copyIfDifferent(fileName, Files.readAllBytes(p), Path.of(outDir + "\\NativeDll\\"));
+	                if (fileName.endsWith(".dll")) {
+		                try {
+			                System.load(outDir + "\\NativeDll\\" + fileName);
+		                } catch (UnsatisfiedLinkError | NullPointerException | IllegalCallerException ex) {
+			                System.out.println("Failed to load " + fileName);
+		                }
+	                }
+				} catch (IOException e) {
                     throw new RuntimeException(e);
                 }
             });
@@ -323,7 +323,6 @@ public enum FFMFactory {
     
     private static void copyIfDifferent(String fileName, byte[] newBytes, Path outDir) throws IOException {
         Path out = outDir.resolve(fileName);
-        
         if (Files.exists(out)) {
             byte[] oldBytes = Files.readAllBytes(out);
             try {
@@ -335,7 +334,9 @@ public enum FFMFactory {
             }
             Files.delete(out);
         }
-        
+	    
+	    File dir = new File(out.getParent().toString());
+	    dir.mkdirs();
         Files.write(out, newBytes);
     }
     
