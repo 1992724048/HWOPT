@@ -1,4 +1,4 @@
-package benchmark;
+package Test.benchmark;
 
 import it.unimi.dsi.fastutil.doubles.DoubleArrayList;
 import library.dll.PerlinNoiseNative;
