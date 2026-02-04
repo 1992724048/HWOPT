@@ -8,6 +8,24 @@ An optimized Minecraft mod using C++ for core logic and DPC++ (SYCL) for paralle
 正在开发中，距离正式发布还需要一段时间。  
 Currently under active development. It will take some time before a public release is available.
 
+**开发进度 / Progress:**  
+[█░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░] 2% \
+**当前阶段 / Current Stage:**  
+- 🛠 基础框架
+  - 🛠 接口层
+    - ✅ JAVA ⇄ C++ 接口
+    - 🛠 Dart ⇄ C++ 接口（进行中）
+  - ⏳ UI 层
+    - ⏳ Flutter UI 嵌入
+    - ⏳ 交互逻辑
+  - 算法层
+    - 🛠 柏林噪声（BUG修复）
+- ⏳功能实现
+  - ⏳地形生成
+    - ⏳洞穴
+
+Currently under active development.  
+---
 ## 设备支持 / Device Support
 
 | Hardware   | 硬件      | Requirements                                                     | 要求                                            |
