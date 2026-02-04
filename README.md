@@ -18,11 +18,11 @@ Currently under active development. It will take some time before a public relea
   - ⏳ UI 层
     - ⏳ Flutter UI 嵌入
     - ⏳ 交互逻辑
-  - 算法层
+  - ⏳ 算法层
     - 🛠 柏林噪声（BUG修复）
-- ⏳功能实现
-  - ⏳地形生成
-    - ⏳洞穴
+- ⏳ 功能实现
+  - ⏳ 地形生成
+    - ⏳ 洞穴
 
 Currently under active development.  
 ---
