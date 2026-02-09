@@ -17,7 +17,7 @@ Currently under active development. It will take some time before a public relea
     - ✅ Dart ⇄ C++ 接口
   - ⏳ UI 层
     - 🛠 Flutter UI
-    - ⏳ 交互逻辑
+    - 🛠 交互逻辑
   - ⏳ 算法层
     - 🛠 柏林噪声（BUG修复、GPU适配）
 - ⏳ 功能实现
@@ -53,10 +53,5 @@ Currently under active development. It will take some time before a public relea
 
 | 测试项目 / Benchmark | 执行模式 / Execution Mode | 优化前 / Baseline (Java) | 优化后 / Optimized (FFM) | 性能提升 / Speedup |
 |------------------|-----------------------|-----------------------|-----------------------|----------------|
-<<<<<<< Updated upstream
-| NoiseBench       | 串行 / Serial           | 469.578 ms            | 250.387 ms            | **+46.68%**    |
-| NoiseBench       | 并行 / Parallel         | N/A                   | N/A                   | **N/A**        |
-=======
 | NoiseBench       | 串行 / Serial           | 469.567 ms            | 246.054 ms            | **+47.60%**    |
 | NoiseBench       | 并行 / Parallel         | N/A                   | N/A                   | **N/A**        |
->>>>>>> Stashed changes
