@@ -16,7 +16,9 @@
     <ClCompile Include="dllmain.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="sycl-math.h" />
     <ClInclude Include="sycl-plugin.h" />
+    <ClInclude Include="sycl-queue.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -89,7 +91,7 @@
         <SubSystem>Windows</SubSystem>
         <GenerateDebugInformation>true</GenerateDebugInformation>
       </Link>
-      <SpecifyCPUTargetForAOT>AVX2</SpecifyCPUTargetForAOT>
+      <SpecifyCPUTargetForAOT>Default</SpecifyCPUTargetForAOT>
       <ExposeExportedSymbols>false</ExposeExportedSymbols>
       <AdditionalDependencies>User32.lib;dbghelp.lib;ntdll.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
@@ -116,7 +118,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <SpecifyCPUTargetForAOT>AVX2</SpecifyCPUTargetForAOT>
+      <SpecifyCPUTargetForAOT>Default</SpecifyCPUTargetForAOT>
       <SpecifySyclLink>false</SpecifySyclLink>
       <ExposeExportedSymbols>false</ExposeExportedSymbols>
       <AdditionalDependencies>User32.lib;dbghelp.lib;ntdll.lib;%(AdditionalDependencies)</AdditionalDependencies>

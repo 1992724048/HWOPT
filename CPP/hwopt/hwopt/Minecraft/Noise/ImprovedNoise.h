@@ -1,18 +1,20 @@
-﻿#pragma once
-#include <random>
-#include <array>
+﻿// 遂沫 ImprovedNoise.h
+// 2026-02-09 00:27:42
 
-#include "SimplexNoise.h"
+#pragma once
+#include <array>
+#include <random>
+
 #include "../../JavaNative.h"
 
 namespace minecraft {
-    class __declspec(dllexport) ImprovedNoise : JavaNative<ImprovedNoise> {
+    class __declspec(dllexport) ImprovedNoise final : JavaNative<ImprovedNoise> {
     public:
         double xo;
         double yo;
         double zo;
 
-        ImprovedNoise(std::mt19937_64& mt);
+        explicit ImprovedNoise(std::mt19937_64& mt);
         ImprovedNoise();
 
         [[nodiscard]] auto noise(double _x, double _y, double _z) const -> double;
@@ -53,6 +55,7 @@ namespace minecraft {
 namespace fortran {
     using namespace minecraft;
 #define DLL_API __declspec(dllimport)
+
     extern "C" {
         DLL_API auto ImprovedNoise_noise_3(const ImprovedNoise* state, double x, double y, double z) -> double;
         DLL_API auto ImprovedNoise_noise_5(const ImprovedNoise* state, double x, double y, double z, double yScale, double yFudge) -> double;

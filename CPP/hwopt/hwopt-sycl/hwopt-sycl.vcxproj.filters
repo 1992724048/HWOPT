@@ -23,6 +23,12 @@
     <ClInclude Include="sycl-plugin.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="sycl-queue.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="sycl-math.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

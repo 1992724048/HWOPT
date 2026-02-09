@@ -1,4 +1,7 @@
-﻿#include "NoiseChunkGenerator.h"
+﻿// 遂沫 NoiseChunkGenerator.cpp
+// 2026-02-08 22:45:49
+
+#include "NoiseChunkGenerator.h"
 
 #include <stdexcept>
 #include <FastNoiseLite/FastNoiseLite.h>
@@ -10,13 +13,7 @@ minecraft::NoiseChunkGenerator::NoiseChunkGenerator() {
 static FastNoiseLite noise;
 
 auto minecraft::NoiseChunkGenerator::add_methods() -> void {
-    register_method<get_interpolated_state>("NoiseChunkGenerator::get_interpolated_state");
-    noise.SetNoiseType(FastNoiseLite::NoiseType_OpenSimplex2);
-    noise.SetFrequency(0.01f);
-    noise.SetFractalType(FastNoiseLite::FractalType_FBm);
-    noise.SetFractalOctaves(4);
-    noise.SetFractalLacunarity(2.0f);
-    noise.SetFractalGain(0.5f);
+    "NoiseChunkGenerator::get_interpolated_state"_jf.reg<get_interpolated_state>();
 }
 
 auto minecraft::NoiseChunkGenerator::get_interpolated_state(short* array, const int array_size, const int x_size, const int y_size, const int z_size) -> void try {
@@ -35,13 +32,11 @@ auto minecraft::NoiseChunkGenerator::get_interpolated_state(short* array, const 
                 constexpr float amplitude = 20.0f;
                 const int idx = x + stride_xz * (z + z_size * y);
 
-                const float wx = static_cast<float>(x);
-                const float wz = static_cast<float>(z);
+                const auto wx = static_cast<float>(x);
+                const auto wz = static_cast<float>(z);
 
                 const float n = noise.GetNoise(wx, wz);
-                const int height = static_cast<int>(base_height + n * amplitude);
-
-                if (y <= height) {
+                if (y <= static_cast<int>(base_height + n * amplitude)) {
                     array[idx] = 411;
                 } else {
                     array[idx] = 20;

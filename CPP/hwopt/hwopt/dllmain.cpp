@@ -1,16 +1,23 @@
-﻿#include <windows.h>
+﻿// 遂沫 dllmain.cpp
+// 2026-02-09 01:45:05
 
-#include "JavaNative.h"
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
 
-#include "stdpp/logger.h"
-#include "stdpp/exception.h"
-#include "Minecraft/Noise/PerlinNoise.h"
-#include "Minecraft/Block/BlockIdRegistry.h"
-#include "Minecraft/Chunk/NoiseChunkGenerator.h"
+#include <chrono>
+#include <future>
+#include <vector>
 
+#include <windows.h>
 #include <magic_enum/magic_enum.hpp>
+#include <tbb/tbb.h>
+
+#include <stdpp/logger.h>
 
 #include <sycl-plugin.h>
+
+#include "JavaNative.h"
 
 using namespace std::chrono_literals;
 
@@ -37,10 +44,8 @@ extern "C" API auto JAVA_ResolveFunction(const char* name) -> void* {
     std::call_once(flag,
                    [] {
                        if (auto exp = stdpp::sycl::Device::get_device()) {
-                           for (auto& [type, names] : exp.value()) {
-                               for (auto& [device, platform] : names) {
-                                   ILOG << magic_enum::enum_name<decltype(type)>(type) << ": " << device << " (" << platform << ")";
-                               }
+                           for (const auto& [type, name, platform] : exp.value()) {
+                               ILOG << magic_enum::enum_name<stdpp::sycl::DeviceType>(type) << ": " << name << " (" << platform << ")";
                            }
                        }
                    });

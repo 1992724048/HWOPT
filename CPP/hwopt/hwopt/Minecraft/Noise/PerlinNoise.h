@@ -1,15 +1,17 @@
-﻿#pragma once
+﻿// 遂沫 PerlinNoise.h
+// 2026-02-08 23:00:52
+
+#pragma once
+#include <random>
 #include <utility>
 #include <vector>
-#include <cmath>
-#include <random>
-#include <memory>
 
+#include <cstdint>
 #include "ImprovedNoise.h"
 #include "../../JavaNative.h"
 
 namespace minecraft {
-    class __declspec(dllexport) PerlinNoise : JavaNative<PerlinNoise> {
+    class __declspec(dllexport) PerlinNoise final : JavaNative<PerlinNoise> {
     public:
         PerlinNoise(uint64_t seed, const std::pair<int, std::vector<double>>& pair, bool use_new_initialization);
 
@@ -28,7 +30,7 @@ namespace minecraft {
 
         [[nodiscard]] auto get_first_octave() const -> int;
 
-        auto get_amplitudes() -> std::vector<double>;
+        auto get_amplitudes() const -> std::vector<double>;
 
         [[nodiscard]] auto edge_value(double noise_value) const -> double;
 

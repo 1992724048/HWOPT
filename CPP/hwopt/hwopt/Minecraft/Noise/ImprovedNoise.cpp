@@ -1,4 +1,21 @@
-﻿#include "ImprovedNoise.h"
+﻿// 遂沫 ImprovedNoise.cpp
+// 2026-02-09 00:22:33
+
+#include "ImprovedNoise.h"
+#include <Windows.h>
+#include <array>
+#include <cmath>
+#include <cstdint>
+#include <eh.h>
+#include <exception>
+#include <ios>
+#include <random>
+#include <stdpp/encode.h>
+#include <stdpp/exception.h>
+#include <stdpp/logger.h>
+#include "SimplexNoise.h"
+
+#include "../../util.h"
 using namespace minecraft;
 
 ImprovedNoise::ImprovedNoise(std::mt19937_64& mt) {
@@ -17,8 +34,8 @@ ImprovedNoise::ImprovedNoise(std::mt19937_64& mt) {
         std::uniform_int_distribution d(0, 255 - i);
         const int offset = d(mt);
         const uint8_t tmp = this->p[i];
-        this->p[i] = this->p[i + offset];
-        this->p[i + offset] = tmp;
+        this->p[i] = this->p[static_cast<std::array<uint8_t, 256Ui64>::size_type>(i) + offset];
+        this->p[static_cast<std::array<uint8_t, 256Ui64>::size_type>(i) + offset] = tmp;
     }
 }
 
@@ -71,15 +88,15 @@ auto ImprovedNoise::noise_with_derivative(const double _x, const double _y, cons
 }
 
 auto ImprovedNoise::add_methods() -> void {
-    register_method<static_cast<double(ImprovedNoise::*)(double, double, double) const>(&ImprovedNoise::noise)>("ImprovedNoise::noise3");
-    register_method<static_cast<double(ImprovedNoise::*)(double, double, double, double, double) const>(&ImprovedNoise::noise)>("ImprovedNoise::noise5");
-    register_method<&ImprovedNoise::noise_with_derivative>("ImprovedNoise::noise_with_derivative");
-    register_method<_create>("ImprovedNoise::_create");
-    register_method<&ImprovedNoise::_destroy>("ImprovedNoise::_destroy");
+    "ImprovedNoise::noise3"_jf.reg<static_cast<double(ImprovedNoise::*)(double, double, double) const>(&ImprovedNoise::noise)>();
+    "ImprovedNoise::noise5"_jf.reg<static_cast<double(ImprovedNoise::*)(double, double, double, double, double) const>(&ImprovedNoise::noise)>();
+    "ImprovedNoise::noise_with_derivative"_jf.reg<&ImprovedNoise::noise_with_derivative>();
+    "ImprovedNoise::_create"_jf.reg<_create>();
+    "ImprovedNoise::_destroy"_jf.reg<&ImprovedNoise::_destroy>();
 }
 
 inline auto ImprovedNoise::grad_dot(const int hash, const double x, const double y, const double z) -> double {
-    const int* g = SimplexNoise::GRADIENT[hash & 15];
+    const int* g = &SimplexNoise::GRADIENT[static_cast<std::array<int, 48Ui64>::size_type>(hash & 15) * 3];
     return g[0] * x + g[1] * y + g[2] * z;
 }
 
@@ -103,7 +120,7 @@ auto ImprovedNoise::sample_and_lerperm(const int x, const int y, const int z, co
     const double d011 = grad_dot(this->perm(xy01 + z + 1), xr, yr - 1.0, zr - 1.0);
     const double d111 = grad_dot(this->perm(xy11 + z + 1), xr - 1.0, yr - 1.0, zr - 1.0);
     const double xAlpha = smoothstep(xr);
-    const double yAlpha = smoothstep(yrOriginal);
+    const double yAlpha = smoothstep(yr);
     const double zAlpha = smoothstep(zr);
     return lerp3(xAlpha, yAlpha, zAlpha, d000, d100, d010, d110, d001, d101, d011, d111);
 }
@@ -123,14 +140,14 @@ auto ImprovedNoise::sample_with_derivative(const int x, const int y, const int z
     const int p101 = this->perm(xy10 + z + 1);
     const int p011 = this->perm(xy01 + z + 1);
     const int p111 = this->perm(xy11 + z + 1);
-    const int* g000 = SimplexNoise::GRADIENT[p000 & 15];
-    const int* g100 = SimplexNoise::GRADIENT[p100 & 15];
-    const int* g010 = SimplexNoise::GRADIENT[p010 & 15];
-    const int* g110 = SimplexNoise::GRADIENT[p110 & 15];
-    const int* g001 = SimplexNoise::GRADIENT[p001 & 15];
-    const int* g101 = SimplexNoise::GRADIENT[p101 & 15];
-    const int* g011 = SimplexNoise::GRADIENT[p011 & 15];
-    const int* g111 = SimplexNoise::GRADIENT[p111 & 15];
+    const int* g000 = &SimplexNoise::GRADIENT[static_cast<std::array<int, 48Ui64>::size_type>(p000 & 15) * 3];
+    const int* g100 = &SimplexNoise::GRADIENT[static_cast<std::array<int, 48Ui64>::size_type>(p100 & 15) * 3];
+    const int* g010 = &SimplexNoise::GRADIENT[static_cast<std::array<int, 48Ui64>::size_type>(p010 & 15) * 3];
+    const int* g110 = &SimplexNoise::GRADIENT[static_cast<std::array<int, 48Ui64>::size_type>(p110 & 15) * 3];
+    const int* g001 = &SimplexNoise::GRADIENT[static_cast<std::array<int, 48Ui64>::size_type>(p001 & 15) * 3];
+    const int* g101 = &SimplexNoise::GRADIENT[static_cast<std::array<int, 48Ui64>::size_type>(p101 & 15) * 3];
+    const int* g011 = &SimplexNoise::GRADIENT[static_cast<std::array<int, 48Ui64>::size_type>(p011 & 15) * 3];
+    const int* g111 = &SimplexNoise::GRADIENT[static_cast<std::array<int, 48Ui64>::size_type>(p111 & 15) * 3];
     const double d000 = SimplexNoise::dot(g000, xr, yr, zr);
     const double d100 = SimplexNoise::dot(g100, xr - 1.0, yr, zr);
     const double d010 = SimplexNoise::dot(g010, xr, yr - 1.0, zr);
@@ -177,22 +194,22 @@ inline auto ImprovedNoise::lerp2(const double alpha1, const double alpha2, const
 }
 
 inline auto ImprovedNoise::lerp3(const double alpha1,
-                          const double alpha2,
-                          const double alpha3,
-                          const double x000,
-                          const double x100,
-                          const double x010,
-                          const double x110,
-                          const double x001,
-                          const double x101,
-                          const double x011,
-                          const double x111) -> double {
+                                 const double alpha2,
+                                 const double alpha3,
+                                 const double x000,
+                                 const double x100,
+                                 const double x010,
+                                 const double x110,
+                                 const double x001,
+                                 const double x101,
+                                 const double x011,
+                                 const double x111) -> double {
     return lerp(alpha3, lerp2(alpha1, alpha2, x000, x100, x010, x110), lerp2(alpha1, alpha2, x001, x101, x011, x111));
 }
 
-auto ImprovedNoise::_create(double _x, double _y, double _z, const uint8_t* bytes) -> ImprovedNoise* try {
+auto ImprovedNoise::_create(const double _x, const double _y, const double _z, const uint8_t* bytes) -> ImprovedNoise* try {
     thread_local auto _ = _set_se_translator(stdpp::exception::NativeException::seh_to_ce);
-    const auto ptr = new ImprovedNoise();
+    const auto ptr = stdpp::util::mi_new<ImprovedNoise>();
     std::memcpy(ptr->p.data(), bytes, 256);
     ptr->xo = _x;
     ptr->yo = _y;
@@ -207,5 +224,5 @@ auto ImprovedNoise::_create(double _x, double _y, double _z, const uint8_t* byte
 }
 
 auto ImprovedNoise::_destroy() const -> void {
-    delete this;
+    stdpp::util::mi_delete(this);
 }

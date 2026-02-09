@@ -1,11 +1,14 @@
-﻿#pragma once
-#include <unordered_map>
+﻿// 遂沫 JavaNative.h
+// 2026-02-08 22:09:08
+
+#pragma once
+#include <exception>
 #include <functional>
 #include <optional>
 #include <string>
-#include <vector>
 #include <type_traits>
-#include <exception>
+#include <unordered_map>
+#include <vector>
 
 #include <stdpp/encode.h>
 #include <stdpp/exception.h>
@@ -66,6 +69,22 @@ public:
         creators().push_back(std::move(f));
     }
 
+    class MethodBinder {
+    public:
+        explicit MethodBinder(const std::string_view name) {
+            this->name = name;
+        }
+
+        template<auto MemFn>
+        auto reg() const -> void {
+            using Thunk = MethodThunk<MemFn>;
+            methods()[name] = reinterpret_cast<Method>(&Thunk::call);
+        }
+
+    private:
+        std::string name;
+    };
+
 private:
     static auto methods() -> std::unordered_map<std::string, Method>& {
         static std::unordered_map<std::string, Method> map;
@@ -78,14 +97,19 @@ private:
     }
 };
 
-template<typename T>
+template<typename T, bool AutoCreation = true>
 class JavaNative : public JavaNativeBase {
+    JavaNative() {
+        JavaNative::touch();
+    }
+
+protected:
+    ~JavaNative() = default;
+
 public:
-    virtual ~JavaNative() = default;
+    static constexpr bool isAutoCreation = AutoCreation;
 
 private:
-    JavaNative() = default;
-
     struct AutoReg {
         AutoReg() {
             JavaNativeBase::add_creator([] {
@@ -95,12 +119,19 @@ private:
     };
 
     virtual auto touch() -> void* {
-        return &autoreg_;
+        return &auto_reg_;
     }
 
-    inline static AutoReg autoreg_;
+    static AutoReg auto_reg_;
     friend T;
 };
+
+template<typename T, bool AutoCreation>
+inline JavaNative<T, AutoCreation>::AutoReg JavaNative<T, AutoCreation>::auto_reg_;
+
+inline auto operator"" _jf(const char* name, size_t) -> JavaNativeBase::MethodBinder {
+    return JavaNativeBase::MethodBinder{name};
+}
 
 class JavaUtil {
 public:

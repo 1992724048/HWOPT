@@ -107,8 +107,8 @@
       <FloatingPointExceptions>true</FloatingPointExceptions>
       <GuardEHContMetadata>true</GuardEHContMetadata>
       <ControlFlowGuard>Guard</ControlFlowGuard>
-      <EnableAddressSanitizer>true</EnableAddressSanitizer>
-      <EnableUndefinedBehaviorSanitizer>true</EnableUndefinedBehaviorSanitizer>
+      <EnableAddressSanitizer>false</EnableAddressSanitizer>
+      <EnableUndefinedBehaviorSanitizer>false</EnableUndefinedBehaviorSanitizer>
       <OpenMPOffloading>None</OpenMPOffloading>
       <CCppSupport>
       </CCppSupport>
@@ -174,6 +174,7 @@
     <ClCompile Include="Minecraft\Noise\ImprovedNoise.cpp" />
     <ClCompile Include="Minecraft\Noise\PerlinNoise.cpp" />
     <ClCompile Include="Minecraft\Noise\SimplexNoise.cpp" />
+    <ClCompile Include="TEST\CPU\CPU.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -185,6 +186,13 @@
     <ClInclude Include="JavaNative.h" />
     <ClInclude Include="Minecraft\Noise\PerlinNoise.h" />
     <ClInclude Include="Minecraft\Noise\SimplexNoise.h" />
+    <ClInclude Include="TEST\CPU\CPU.h" />
+    <ClInclude Include="util.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\hwopt-sycl\hwopt-sycl.vcxproj">
+      <Project>{1573e81b-39c2-400a-8587-1462df388ac9}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

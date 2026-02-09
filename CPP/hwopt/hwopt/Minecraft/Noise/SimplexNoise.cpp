@@ -1,9 +1,13 @@
-﻿#include "SimplexNoise.h"
+﻿// 遂沫 SimplexNoise.cpp
+// 2026-02-08 22:43:43
+
+#include "SimplexNoise.h"
+#include <array>
+#include <cmath>
+#include <random>
 using namespace minecraft;
 
-SimplexNoise::SimplexNoise() {
-    std::random_device rd;
-    std::mt19937_64 mt(rd());
+SimplexNoise::SimplexNoise(std::mt19937_64 mt) {
     std::uniform_real_distribution dist_double(0.0, 1.0);
 
     this->xo = dist_double(mt) * 256.0;
@@ -19,8 +23,8 @@ SimplexNoise::SimplexNoise() {
         std::uniform_int_distribution d(0, 256 - i);
         const int offset = d(mt);
         const int tmp = this->p[ix];
-        this->p[ix] = this->p[offset + ix];
-        this->p[offset + ix] = tmp;
+        this->p[ix] = this->p[static_cast<std::array<int, 512Ui64>::size_type>(offset) + ix];
+        this->p[static_cast<std::array<int, 512Ui64>::size_type>(offset) + ix] = tmp;
     }
 }
 
@@ -147,7 +151,7 @@ auto SimplexNoise::get_value(const double xin, const double yin, const double zi
     return 32.0 * (n0 + n1 + n2 + n3);
 }
 
-auto SimplexNoise::dot(const int* g, double x, double y, double z) -> double {
+auto SimplexNoise::dot(const int* g, const double x, const double y, const double z) -> double {
     return g[0] * x + g[1] * y + g[2] * z;
 }
 
@@ -158,7 +162,7 @@ auto SimplexNoise::get_corner_noise_3d(const int index, const double x, const do
         n0 = 0.0;
     } else {
         t0 *= t0;
-        n0 = t0 * t0 * dot(GRADIENT[index], x, y, z);
+        n0 = t0 * t0 * dot(&GRADIENT[static_cast<std::array<int, 48Ui64>::size_type>(index) * 3], x, y, z);
     }
 
     return n0;

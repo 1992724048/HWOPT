@@ -1,4 +1,7 @@
-﻿#pragma once
+﻿// 遂沫 SimplexNoise.h
+// 2026-02-08 23:22:13
+
+#pragma once
 #include <array>
 #include <numbers>
 #include <random>
@@ -10,29 +13,61 @@ namespace minecraft {
         double yo;
         double zo;
 
-        SimplexNoise();
+        explicit SimplexNoise(std::mt19937_64 mt);
 
         [[nodiscard]] auto get_value(double xin, double yin) const -> double;
 
         [[nodiscard]] auto get_value(double xin, double yin, double zin) const -> double;
 
-        static constexpr int GRADIENT[16][3]{
-            {1, 1, 0},
-            {-1, 1, 0},
-            {1, -1, 0},
-            {-1, -1, 0},
-            {1, 0, 1},
-            {-1, 0, 1},
-            {1, 0, -1},
-            {-1, 0, -1},
-            {0, 1, 1},
-            {0, -1, 1},
-            {0, 1, -1},
-            {0, -1, -1},
-            {1, 1, 0},
-            {0, -1, 1},
-            {-1, 1, 0},
-            {0, -1, -1}
+        static constexpr int GRADIENT[48] = {
+            1,
+            1,
+            0,
+            -1,
+            1,
+            0,
+            1,
+            -1,
+            0,
+            -1,
+            -1,
+            0,
+            1,
+            0,
+            1,
+            -1,
+            0,
+            1,
+            1,
+            0,
+            -1,
+            -1,
+            0,
+            -1,
+            0,
+            1,
+            1,
+            0,
+            -1,
+            1,
+            0,
+            1,
+            -1,
+            0,
+            -1,
+            -1,
+            1,
+            1,
+            0,
+            0,
+            -1,
+            1,
+            -1,
+            1,
+            0,
+            0,
+            -1,
+            -1
         };
 
         static auto dot(const int* g, double x, double y, double z) -> double;

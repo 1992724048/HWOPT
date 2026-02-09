@@ -1,11 +1,13 @@
 ﻿#include "BlockIdRegistry.h"
+#include <eh.h>
+#include <exception>
 
 minecraft::BlockIdRegistry::BlockIdRegistry() {
     JavaNative::touch();
 }
 
 auto minecraft::BlockIdRegistry::add_methods() -> void {
-    register_method<_register>("BlockIdRegistry::registry");
+    "BlockIdRegistry::registry"_jf.reg<_register>();
 }
 
 auto minecraft::BlockIdRegistry::_register(const char* name, const short id) -> void try {
