@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\proxy.4.0.1\build\native\proxy.props" Condition="Exists('..\packages\proxy.4.0.1\build\native\proxy.props')" />
   <Import Project="..\packages\magic_enum.0.9.7\build\native\magic_enum.props" Condition="Exists('..\packages\magic_enum.0.9.7\build\native\magic_enum.props')" />
   <Import Project="..\packages\FastNoiseLite.1.1.1\build\native\FastNoiseLite.props" Condition="Exists('..\packages\FastNoiseLite.1.1.1\build\native\FastNoiseLite.props')" />
   <Import Project="..\packages\fmt.12.1.0\build\native\fmt.props" Condition="Exists('..\packages\fmt.12.1.0\build\native\fmt.props')" />
@@ -173,7 +174,6 @@
     <ClCompile Include="Minecraft\Chunk\NoiseChunkGenerator.cpp" />
     <ClCompile Include="Minecraft\Noise\ImprovedNoise.cpp" />
     <ClCompile Include="Minecraft\Noise\PerlinNoise.cpp" />
-    <ClCompile Include="Minecraft\Noise\SimplexNoise.cpp" />
     <ClCompile Include="TEST\CPU\CPU.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -184,8 +184,9 @@
     <ClInclude Include="Minecraft\Chunk\NoiseChunkGenerator.h" />
     <ClInclude Include="Minecraft\Noise\ImprovedNoise.h" />
     <ClInclude Include="JavaNative.h" />
+    <ClInclude Include="Minecraft\Noise\NoiseStrategy.h" />
+    <ClInclude Include="Minecraft\Noise\NoiseStrategyTBB.h" />
     <ClInclude Include="Minecraft\Noise\PerlinNoise.h" />
-    <ClInclude Include="Minecraft\Noise\SimplexNoise.h" />
     <ClInclude Include="TEST\CPU\CPU.h" />
     <ClInclude Include="util.h" />
   </ItemGroup>
@@ -214,5 +215,6 @@
     <Error Condition="!Exists('..\packages\fmt.12.1.0\build\native\fmt.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\fmt.12.1.0\build\native\fmt.props'))" />
     <Error Condition="!Exists('..\packages\FastNoiseLite.1.1.1\build\native\FastNoiseLite.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\FastNoiseLite.1.1.1\build\native\FastNoiseLite.props'))" />
     <Error Condition="!Exists('..\packages\magic_enum.0.9.7\build\native\magic_enum.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\magic_enum.0.9.7\build\native\magic_enum.props'))" />
+    <Error Condition="!Exists('..\packages\proxy.4.0.1\build\native\proxy.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\proxy.4.0.1\build\native\proxy.props'))" />
   </Target>
 </Project>

@@ -1,5 +1,5 @@
 ﻿// 遂沫 ImprovedNoise.h
-// 2026-02-09 00:27:42
+// 2026-02-11 00:48:21
 
 #pragma once
 #include <array>
@@ -8,22 +8,20 @@
 #include "../../JavaNative.h"
 
 namespace minecraft {
-    class __declspec(dllexport) ImprovedNoise final : JavaNative<ImprovedNoise> {
+    class __declspec(dllexport) ImprovedNoise final {
     public:
         double xo;
         double yo;
         double zo;
 
         explicit ImprovedNoise(std::mt19937_64& mt);
-        ImprovedNoise();
+        ImprovedNoise() = default;
 
         [[nodiscard]] auto noise(double _x, double _y, double _z) const -> double;
 
         [[nodiscard]] auto noise(double _x, double _y, double _z, double yScale, double yFudge) const -> double;
 
         auto noise_with_derivative(double _x, double _y, double _z, double* derivativeOut) const -> double;
-
-        static auto add_methods() -> void;
 
     private:
         std::array<uint8_t, 256> p;
@@ -46,9 +44,58 @@ namespace minecraft {
 
         inline static auto lerp3(double alpha1, double alpha2, double alpha3, double x000, double x100, double x010, double x110, double x001, double x101, double x011, double x111) -> double;
 
-        inline static auto _create(double _x, double _y, double _z, const uint8_t* bytes) -> ImprovedNoise*;
+        static auto dot(const int* g, double x, double y, double z) -> double;
 
-        auto _destroy() const -> void;
+        static constexpr int GRADIENT[48] = {
+            1,
+            1,
+            0,
+            -1,
+            1,
+            0,
+            1,
+            -1,
+            0,
+            -1,
+            -1,
+            0,
+            1,
+            0,
+            1,
+            -1,
+            0,
+            1,
+            1,
+            0,
+            -1,
+            -1,
+            0,
+            -1,
+            0,
+            1,
+            1,
+            0,
+            -1,
+            1,
+            0,
+            1,
+            -1,
+            0,
+            -1,
+            -1,
+            1,
+            1,
+            0,
+            0,
+            -1,
+            1,
+            -1,
+            1,
+            0,
+            0,
+            -1,
+            -1
+        };
     };
 }
 

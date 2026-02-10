@@ -14,11 +14,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="TEST\SYCL-TEST.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="sycl-math.h" />
     <ClInclude Include="sycl-plugin.h" />
     <ClInclude Include="sycl-queue.h" />
+    <ClInclude Include="TEST\SYCL-TEST.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

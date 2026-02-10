@@ -24,9 +24,6 @@
     <ClCompile Include="Minecraft\Noise\PerlinNoise.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Minecraft\Noise\SimplexNoise.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="Minecraft\Block\BlockIdRegistry.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -47,9 +44,6 @@
     <ClInclude Include="Minecraft\Noise\PerlinNoise.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Minecraft\Noise\SimplexNoise.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="JavaNative.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -63,6 +57,12 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="TEST\CPU\CPU.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Minecraft\Noise\NoiseStrategy.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Minecraft\Noise\NoiseStrategyTBB.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

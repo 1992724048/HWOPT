@@ -3,5 +3,8 @@
 
 #pragma once
 #include <sycl.hpp>
+#include <parallel_hashmap/phmap.h>
+#include <atomic>
+#include <memory>
 
 extern phmap::parallel_node_hash_map<int, std::atomic<std::shared_ptr<sycl::queue>>> queue_map;

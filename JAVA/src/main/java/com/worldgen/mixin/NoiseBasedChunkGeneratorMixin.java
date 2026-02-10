@@ -45,7 +45,7 @@ public abstract class NoiseBasedChunkGeneratorMixin {
 	@Final
 	private Holder<NoiseGeneratorSettings> settings;
 	
-	private static final Executor WORLDGEN_EXECUTOR = Executors.newFixedThreadPool(Math.max(2, Runtime.getRuntime().availableProcessors() - 1));
+	private static final Executor WORLDGEN_EXECUTOR = Executors.newFixedThreadPool(Math.max(2, Runtime.getRuntime().availableProcessors() * 2));
 	
 	private static final BlockState AIR = Blocks.AIR.defaultBlockState();
 	
@@ -53,116 +53,114 @@ public abstract class NoiseBasedChunkGeneratorMixin {
 	protected abstract ChunkAccess doFill(Blender blender, StructureManager structureManager, RandomState randomState, ChunkAccess centerChunk, int cellMinY, int cellCountY);
 	
 	@Inject(method = "fillFromNoise", at = @At("HEAD"), cancellable = true)
-	private void fillFromNoise(Blender blender, RandomState randomState, StructureManager structureManager, ChunkAccess centerChunk, CallbackInfoReturnable<CompletableFuture<ChunkAccess>> cir) {
-		NoiseSettings noiseSettings = this.settings.value().noiseSettings().clampToHeightAccessor(centerChunk.getHeightAccessorForGeneration());
-		int minY = noiseSettings.minY();
-		int cellYMin = Mth.floorDiv(minY, noiseSettings.getCellHeight());
-		int cellCountY = Mth.floorDiv(noiseSettings.height(), noiseSettings.getCellHeight());
+	private void fillFromNoise(final Blender blender, final RandomState randomState, final StructureManager structureManager, final ChunkAccess centerChunk, final CallbackInfoReturnable<CompletableFuture<ChunkAccess>> cir) {
+		final NoiseSettings noiseSettings = settings.value().noiseSettings().clampToHeightAccessor(centerChunk.getHeightAccessorForGeneration());
+		final int minY = noiseSettings.minY();
+		final int cellYMin = Mth.floorDiv(minY, noiseSettings.getCellHeight());
+		final int cellCountY = Mth.floorDiv(noiseSettings.height(), noiseSettings.getCellHeight());
 		cir.setReturnValue(0 >= cellCountY ? CompletableFuture.completedFuture(centerChunk) : CompletableFuture.supplyAsync(() -> {
-			int topSectionIndex = centerChunk.getSectionIndex(cellCountY * noiseSettings.getCellHeight() - 1 + minY);
-			int bottomSectionIndex = centerChunk.getSectionIndex(minY);
-			Set<LevelChunkSection> sections = Sets.newHashSet();
+			final int topSectionIndex = centerChunk.getSectionIndex(cellCountY * noiseSettings.getCellHeight() - 1 + minY);
+			final int bottomSectionIndex = centerChunk.getSectionIndex(minY);
+			final Set<LevelChunkSection> sections = Sets.newHashSet();
 			
 			for (int sectionIndex = topSectionIndex; sectionIndex >= bottomSectionIndex; sectionIndex--) {
-				LevelChunkSection section = centerChunk.getSection(sectionIndex);
+				final LevelChunkSection section = centerChunk.getSection(sectionIndex);
 				section.acquire();
 				sections.add(section);
 			}
 			
 			ChunkAccess var20;
 			try {
-				var20 = this.doFill(blender, structureManager, randomState, centerChunk, cellYMin, cellCountY);
+				var20 = doFill(blender, structureManager, randomState, centerChunk, cellYMin, cellCountY);
 			} finally {
-				for (LevelChunkSection section : sections) {
+				for (final LevelChunkSection section : sections) {
 					section.release();
 				}
 			}
-			
 			return var20;
-		}, WORLDGEN_EXECUTOR));
+		}, NoiseBasedChunkGeneratorMixin.WORLDGEN_EXECUTOR));
 	}
 	
+	@Unique
 	private static final AtomicLong TOTAL_STATE_TIME = new AtomicLong();
+	@Unique
 	private static final AtomicLong TOTAL_WRITE_TIME = new AtomicLong();
+	@Unique
 	private static final AtomicLong TOTAL_CHUNK_COUNT = new AtomicLong();
 	
 	@Inject(method = "doFill", at = @At("HEAD"), cancellable = true)
-	private void doFill(Blender blender, StructureManager structureManager, RandomState randomState, ChunkAccess centerChunk, int cellMinY, int cellCountY, CallbackInfoReturnable<ChunkAccess> cir) {
+	private void doFill(final Blender blender, final StructureManager structureManager, final RandomState randomState, final ChunkAccess centerChunk, final int cellMinY, final int cellCountY, final CallbackInfoReturnable<ChunkAccess> cir) {
 		
-		NoiseChunk noiseChunk = centerChunk.getOrCreateNoiseChunk(chunk -> this.createNoiseChunk(chunk, structureManager, blender, randomState));
+		final NoiseChunk noiseChunk = centerChunk.getOrCreateNoiseChunk(chunk -> this.createNoiseChunk(chunk, structureManager, blender, randomState));
 		
-		Heightmap oceanFloor = centerChunk.getOrCreateHeightmapUnprimed(Heightmap.Types.OCEAN_FLOOR_WG);
-		Heightmap worldSurface = centerChunk.getOrCreateHeightmapUnprimed(Heightmap.Types.WORLD_SURFACE_WG);
+		final Heightmap oceanFloor = centerChunk.getOrCreateHeightmapUnprimed(Heightmap.Types.OCEAN_FLOOR_WG);
+		final Heightmap worldSurface = centerChunk.getOrCreateHeightmapUnprimed(Heightmap.Types.WORLD_SURFACE_WG);
 		
-		ChunkPos chunkPos = centerChunk.getPos();
-		int chunkStartBlockX = chunkPos.getMinBlockX();
-		int chunkStartBlockZ = chunkPos.getMinBlockZ();
+		final ChunkPos chunkPos = centerChunk.getPos();
+		final int chunkStartBlockX = chunkPos.getMinBlockX();
+		final int chunkStartBlockZ = chunkPos.getMinBlockZ();
 		
-		Aquifer aquifer = noiseChunk.aquifer();
+		final Aquifer aquifer = noiseChunk.aquifer();
 		noiseChunk.initializeForFirstCellX();
 		
-		int cellWidth = ((NoiseChunkAccessor) noiseChunk).invokeCellWidth();
-		int cellHeight = ((NoiseChunkAccessor) noiseChunk).invokeCellHeight();
-		int cellCountX = 16 / cellWidth;
-		int cellCountZ = 16 / cellWidth;
+		final int cellWidth = ((NoiseChunkAccessor) noiseChunk).invokeCellWidth();
+		final int cellHeight = ((NoiseChunkAccessor) noiseChunk).invokeCellHeight();
+		final int cellCountX = 16 / cellWidth;
+		final int cellCountZ = 16 / cellWidth;
 		
-		BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
+		final BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
 		
-		int sizeX = cellCountX * cellWidth;
-		int sizeY = cellCountY * cellHeight;
-		int sizeZ = cellCountZ * cellWidth;
+		final int sizeX = cellCountX * cellWidth;
+		final int sizeY = cellCountY * cellHeight;
+		final int sizeZ = cellCountZ * cellWidth;
 		
-		int noiseArraySize = sizeX * sizeY * sizeZ;
-		short[] noiseCache = new short[noiseArraySize];
-		int strideXZ = sizeX;
-		int strideY = sizeX * sizeZ;
-		int baseY = cellMinY * cellHeight;
+		final int noiseArraySize = sizeX * sizeY * sizeZ;
+		final short[] noiseCache = new short[noiseArraySize];
+		final int strideY = sizeX * sizeZ;
+		final int baseY = cellMinY * cellHeight;
 		
 		long stateTime = 0;
 		long writeTime = 0;
         
-/*        long s0 = System.nanoTime();
+        long s0 = System.nanoTime();
         NoiseChunkGeneratorNative.NATIVE.getInterpolatedState(noiseCache, noiseArraySize, sizeX, sizeY, sizeZ);
         long s1 = System.nanoTime();
-        stateTime += (s1 - s0);*/
+        stateTime += (s1 - s0);
 		
+/*		final long s0 = System.nanoTime();
 		for (int cellX = 0; cellX < cellCountX; cellX++) {
 			noiseChunk.advanceCellX(cellX);
 			
 			for (int cellZ = 0; cellZ < cellCountZ; cellZ++) {
-				for (int cellY = cellCountY - 1; cellY >= 0; cellY--) {
+				for (int cellY = cellCountY - 1; 0 <= cellY; cellY--) {
 					noiseChunk.selectCellYZ(cellY, cellZ);
 					
-					for (int yInCell = cellHeight - 1; yInCell >= 0; yInCell--) {
-						int posY = (cellMinY + cellY) * cellHeight + yInCell;
-						double fy = (double) yInCell / cellHeight;
+					for (int yInCell = cellHeight - 1; 0 <= yInCell; yInCell--) {
+						final int posY = (cellMinY + cellY) * cellHeight + yInCell;
+						final double fy = (double) yInCell / cellHeight;
 						noiseChunk.updateForY(posY, fy);
 						
-						int arrayY = posY - baseY;
+						final int arrayY = posY - baseY;
 						
 						for (int xInCell = 0; xInCell < cellWidth; xInCell++) {
-							int worldX = chunkStartBlockX + cellX * cellWidth + xInCell;
-							int arrayX = cellX * cellWidth + xInCell;
-							double fx = (double) xInCell / cellWidth;
+							final int worldX = chunkStartBlockX + cellX * cellWidth + xInCell;
+							final int arrayX = cellX * cellWidth + xInCell;
+							final double fx = (double) xInCell / cellWidth;
 							noiseChunk.updateForX(worldX, fx);
 							
 							for (int zInCell = 0; zInCell < cellWidth; zInCell++) {
-								int worldZ = chunkStartBlockZ + cellZ * cellWidth + zInCell;
-								int arrayZ = cellZ * cellWidth + zInCell;
-								double fz = (double) zInCell / cellWidth;
+								final int worldZ = chunkStartBlockZ + cellZ * cellWidth + zInCell;
+								final int arrayZ = cellZ * cellWidth + zInCell;
+								final double fz = (double) zInCell / cellWidth;
 								noiseChunk.updateForZ(worldZ, fz);
 								
-								long s0 = System.nanoTime();
 								BlockState state = ((NoiseChunkAccessor) noiseChunk).invokeGetInterpolatedState();
-								long s1 = System.nanoTime();
 								
-								stateTime += (s1 - s0);
-								
-								if (state == null) {
+								if (null == state) {
 									state = this.settings.value().defaultBlock();
 								}
 								
-								int idx = arrayX + strideXZ * (arrayZ + sizeZ * arrayY);
+								final int idx = arrayX + sizeX * (arrayZ + sizeZ * arrayY);
 								noiseCache[idx] = BlockIdRegistry.getId(state.getBlock());
 							}
 						}
@@ -171,26 +169,25 @@ public abstract class NoiseBasedChunkGeneratorMixin {
 			}
 			noiseChunk.swapSlices();
 		}
+		noiseChunk.stopInterpolation();*//*
 		
-		noiseChunk.stopInterpolation();
+		final long s1 = System.nanoTime();
+		stateTime += (s1 - s0);*/
 		
-		long w0 = System.nanoTime();
+		final long w0 = System.nanoTime();
+		final boolean scheduleFluid = aquifer.shouldScheduleFluidUpdate();
 		
-		boolean scheduleFluid = aquifer.shouldScheduleFluidUpdate();
-		
-		int baseLocalX = chunkStartBlockX & 15;
-		int baseLocalZ = chunkStartBlockZ & 15;
-		int baseWorldX = chunkStartBlockX;
-		int baseWorldZ = chunkStartBlockZ;
+		final int baseLocalX = chunkStartBlockX & 15;
+		final int baseLocalZ = chunkStartBlockZ & 15;
 		
 		int lastSectionIndex = -1;
 		LevelChunkSection section = null;
 		
 		for (int y = sizeY - 1; 0 <= y; y--) {
-			int yOff = y * strideY;
+			final int yOff = y * strideY;
 			
-			int posY = baseY + y;
-			int sectionIndex = centerChunk.getSectionIndex(posY);
+			final int posY = baseY + y;
+			final int sectionIndex = centerChunk.getSectionIndex(posY);
 			if (sectionIndex != lastSectionIndex) {
 				section = centerChunk.getSection(sectionIndex);
 				lastSectionIndex = sectionIndex;
@@ -200,23 +197,23 @@ public abstract class NoiseBasedChunkGeneratorMixin {
 				continue;
 			}
 			
-			int localY = posY & 15;
+			final int localY = posY & 15;
 			for (int z = 0; z < sizeZ; z++) {
-				int localZ = (baseLocalZ + z) & 15;
-				int worldZ = baseWorldZ + z;
-				int zOff = z * strideXZ;
-				int idx = yOff + zOff;
+				final int localZ = (baseLocalZ + z) & 15;
+				final int worldZ = chunkStartBlockZ + z;
+				final int zOff = z * sizeX;
+				final int idx = yOff + zOff;
 				
 				for (int x = 0; x < sizeX; x++) {
-					short blockId = noiseCache[idx + x];
+					final short blockId = noiseCache[idx + x];
 					if (blockId == AIR_ID) {
 						continue;
 					}
 					
-					BlockState state = BlockIdRegistry.blockStates[blockId];
+					final BlockState state = BlockIdRegistry.blockStates[blockId];
 					
-					int localX = (baseLocalX + x) & 15;
-					int worldX = baseWorldX + x;
+					final int localX = (baseLocalX + x) & 15;
+					final int worldX = chunkStartBlockX + x;
 					
 					section.setBlockState(localX, localY, localZ, state, false);
 					
@@ -231,17 +228,17 @@ public abstract class NoiseBasedChunkGeneratorMixin {
 			}
 		}
 		
-		long w1 = System.nanoTime();
+		final long w1 = System.nanoTime();
 		writeTime = w1 - w0;
 		
-		TOTAL_STATE_TIME.addAndGet(stateTime);
-		TOTAL_WRITE_TIME.addAndGet(writeTime);
+		NoiseBasedChunkGeneratorMixin.TOTAL_STATE_TIME.addAndGet(stateTime);
+		NoiseBasedChunkGeneratorMixin.TOTAL_WRITE_TIME.addAndGet(writeTime);
 		
-		long chunks = TOTAL_CHUNK_COUNT.incrementAndGet();
+		final long chunks = NoiseBasedChunkGeneratorMixin.TOTAL_CHUNK_COUNT.incrementAndGet();
 		
-		if ((chunks & 64) == 0) {
-			long stTime = TOTAL_STATE_TIME.get();
-			long write = TOTAL_WRITE_TIME.get();
+		if (0 == (chunks & 64)) {
+			final long stTime = NoiseBasedChunkGeneratorMixin.TOTAL_STATE_TIME.get();
+			final long write = NoiseBasedChunkGeneratorMixin.TOTAL_WRITE_TIME.get();
 			
 			System.out.println("Terrain Gen Summary (" + chunks + " chunks)");
 			System.out.println("state total: " + TimeCost.formatNanos(stTime));

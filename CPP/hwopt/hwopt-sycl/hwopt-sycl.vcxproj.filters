@@ -18,6 +18,9 @@
     <ClCompile Include="dllmain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="TEST\SYCL-TEST.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="sycl-plugin.h">
@@ -26,7 +29,7 @@
     <ClInclude Include="sycl-queue.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="sycl-math.h">
+    <ClInclude Include="TEST\SYCL-TEST.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

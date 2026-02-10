@@ -1,5 +1,5 @@
 ﻿// 遂沫 dllmain.cpp
-// 2026-02-10 01:01:08
+// 2026-02-11 00:30:04
 
 #include <windows.h>
 
@@ -33,31 +33,28 @@ namespace stdpp::sycl {
         return false;
     }
 
-    inline auto Device::switch_device(const int queue_id, const DeviceInfo& device_info) -> bool {
+    inline auto Device::switch_device(const int queue_id, const DeviceInfo& device_info) -> std::optional<std::string> try {
         if (!queue_map.contains(queue_id)) {
-            std::println("[SYCL] [ERROR] invalid queue id: {}", queue_id);
-            return false;
+            return std::format("[SYCL] [ERROR] invalid queue id: {}\n", queue_id);
         }
 
-        try {
-            for (auto& dev : ::sycl::device::get_devices()) {
-                if (!match_type(dev, std::get<0>(device_info))) {
-                    continue;
-                }
-
-                if (dev.get_info<::sycl::info::device::name>().contains(std::get<1>(device_info)) && dev.get_platform().get_info<::sycl::info::platform::name>().contains(std::get<2>(device_info))) {
-                    queue_map[queue_id] = std::make_shared<::sycl::queue>(dev);
-                    return true;
-                }
+        for (auto& dev : ::sycl::device::get_devices()) {
+            if (!match_type(dev, std::get<0>(device_info))) {
+                continue;
             }
-        } catch (const ::sycl::exception& e) {
-            std::println("[SYCL] [ERROR] {}", e.what());
+
+            if (dev.get_info<::sycl::info::device::name>().contains(std::get<1>(device_info)) && dev.get_platform().get_info<::sycl::info::platform::name>().contains(std::get<2>(device_info))) {
+                queue_map[queue_id] = std::make_shared<::sycl::queue>(dev);
+                return std::nullopt;
+            }
         }
 
-        return false;
+        return "[SYCL] [ERROR] 切换失败!";
+    } catch (const ::sycl::exception& e) {
+        return std::format("[SYCL] [ERROR] {}\n", e.what());
     }
 
-    auto Device::create_device(const DeviceInfo& device_info) -> int try {
+    auto Device::create_device(const DeviceInfo& device_info) -> std::expected<int, std::string> try {
         for (auto& dev : ::sycl::device::get_devices()) {
             if (!match_type(dev, std::get<0>(device_info))) {
                 continue;
@@ -65,39 +62,35 @@ namespace stdpp::sycl {
 
             if (dev.get_info<::sycl::info::device::name>().contains(std::get<1>(device_info)) && dev.get_platform().get_info<::sycl::info::platform::name>().contains(std::get<2>(device_info))) {
                 const auto id = ++id_gen;
-                queue_map[id_gen++] = std::make_shared<::sycl::queue>(dev);
+                queue_map[id] = std::make_shared<::sycl::queue>(dev);
                 return id;
             }
         }
         return -1;
     } catch (const ::sycl::exception& e) {
-        std::println("[SYCL] [ERROR] {}", e.what());
-        return -1;
+        return std::unexpected(std::format("[SYCL] [ERROR] {}", e.what()));
     }
 
-    auto Device::create_device() -> int try {
+    auto Device::create_device() -> std::expected<int, std::string> try {
         const auto id = ++id_gen;
-        queue_map[id_gen++] = std::make_shared<::sycl::queue>();
+        queue_map[id] = std::make_shared<::sycl::queue>();
         return id;
     } catch (const ::sycl::exception& e) {
-        std::println("[SYCL] [ERROR] {}", e.what());
-        return -1;
+        return std::unexpected(std::format("[SYCL] [ERROR] {}", e.what()));
     }
 
-    auto Device::free(int queue_id) -> bool {
+    auto Device::free(int queue_id) -> std::optional<std::string> {
         if (!queue_map.contains(queue_id)) {
-            std::println("[SYCL] [ERROR] invalid queue id: {}", queue_id);
-            return false;
+            return std::format("[SYCL] [ERROR] invalid queue id: {}", queue_id);
         }
 
         queue_map.erase(queue_id);
-        return true;
+        return std::nullopt;
     }
 
-    auto Device::enable_profiling(int queue_id) -> bool try {
+    auto Device::enable_profiling(int queue_id) -> std::optional<std::string> try {
         if (!queue_map.contains(queue_id)) {
-            std::println("[SYCL] [ERROR] invalid queue id: {}", queue_id);
-            return false;
+            return std::format("[SYCL] [ERROR] invalid queue id: {}", queue_id);
         }
 
         const auto old_queue = queue_map[queue_id].load();
@@ -117,129 +110,49 @@ namespace stdpp::sycl {
                                                          ::sycl::property::queue::enable_profiling{});
 
         queue_map[queue_id] = std::move(new_queue);
-        return true;
+        return std::nullopt;
     } catch (const ::sycl::exception& e) {
-        std::println("[SYCL] [ERROR] enable_profiling failed: {}", e.what());
-        return false;
+        return std::format("[SYCL] [ERROR] enable_profiling failed: {}", e.what());
     }
 
 
-    inline auto Device::get_device() -> std::expected<std::vector<DeviceInfo>, std::string> {
-        try {
-            std::vector<std::tuple<DeviceType, std::string, std::string>> result;
-            for (auto& dev : ::sycl::device::get_devices()) {
-                DeviceType type;
-                auto p = dev.get_platform();
+    inline auto Device::get_device() -> std::expected<std::vector<DeviceInfo>, std::string> try {
+        std::vector<std::tuple<DeviceType, std::string, std::string>> result;
+        for (auto& dev : ::sycl::device::get_devices()) {
+            DeviceType type;
+            auto p = dev.get_platform();
 
-                if (dev.is_cpu()) {
-                    type = CPU;
-                } else if (dev.is_gpu()) {
-                    type = GPU;
-                } else if (dev.is_accelerator()) {
-                    type = FPGA;
-                } else {
-                    type = OTHER;
-                }
-
-                result.emplace_back(type, dev.get_info<::sycl::info::device::name>(), p.get_info<::sycl::info::platform::name>());
+            if (dev.is_cpu()) {
+                type = CPU;
+            } else if (dev.is_gpu()) {
+                type = GPU;
+            } else if (dev.is_accelerator()) {
+                type = FPGA;
+            } else {
+                type = OTHER;
             }
-            return result;
-        } catch (const ::sycl::exception& e) {
-            std::println("[SYCL] [ERROR] {}", e.what());
-            return std::unexpected(std::string(e.what()));
-        } catch (...) {
-            std::println("[SYCL] [ERROR] Unkonw error");
-            return std::unexpected("Unkonw error");
+
+            try {
+                ::sycl::buffer<float> buf{::sycl::range(1)};
+
+                ::sycl::queue q(dev);
+                q.submit([&](::sycl::handler& h) {
+                    const auto acc = buf.get_access<::sycl::access::mode::write>(h);
+                    h.single_task([=] {
+                        acc[0] = ::sycl::fma(1.f, 2.f, 3.f);
+                    });
+                });
+                q.wait();
+            } catch (...) {
+                continue;
+            }
+
+            result.emplace_back(type, dev.get_info<::sycl::info::device::name>(), p.get_info<::sycl::info::platform::name>());
         }
-    }
-
-    static auto elapsed_ms(const ::sycl::event& e) -> double try {
-        const auto start = e.get_profiling_info<::sycl::info::event_profiling::command_start>();
-        const auto end = e.get_profiling_info<::sycl::info::event_profiling::command_end>();
-        return (end - start) * 1e-6;
-    } catch (const ::sycl::exception& e2) {
-        std::println("[SYCL] [ERROR] {}", e2.what());
-        return 0.f;
-    }
-
-    auto Device::test_device(const int queue_id) -> bool try {
-        constexpr int n = 10;
-        ::sycl::buffer<float> buf{::sycl::range(n)};
-
-        const auto& p = queue_map[queue_id].load();
-        p->submit([&](::sycl::handler& h) {
-            const auto acc = buf.get_access<::sycl::access::mode::write>(h);
-            h.parallel_for(::sycl::range(n),
-                           [=](const ::sycl::id<> i) {
-                               float x = 1.0f;
-                               float y = 2.0f;
-                               float z = 3.0f;
-
-                               for (size_t k = 0; k < 10; ++k) {
-                                   x = ::sycl::fma(x, y, z);
-                                   y = ::sycl::fma(x, y, z);
-                                   z = ::sycl::fma(x, y, z);
-                               }
-
-                               acc[i] = x + y + z;
-                           });
-        });
-
-        p->wait();
-        return true;
-    } catch (const ::sycl::exception& e2) {
-        std::println("[SYCL] [ERROR] {}", e2.what());
-        return false;
-    }
-
-    auto Device::test_compute(const int queue_id, const size_t n, const size_t iters) -> double {
-        ::sycl::buffer<float> buf{::sycl::range(n)};
-
-        ::sycl::event e = queue_map[queue_id].load()->submit([&](::sycl::handler& h) {
-            const auto acc = buf.get_access<::sycl::access::mode::write>(h);
-            h.parallel_for(::sycl::range(n),
-                           [=](const ::sycl::id<> i) {
-                               float x = 1.0f;
-                               float y = 2.0f;
-                               float z = 3.0f;
-
-                               for (size_t k = 0; k < iters; ++k) {
-                                   x = ::sycl::fma(x, y, z);
-                                   y = ::sycl::fma(x, y, z);
-                                   z = ::sycl::fma(x, y, z);
-                               }
-
-                               acc[i] = x + y + z;
-                           });
-        });
-
-        e.wait();
-        const double ms = elapsed_ms(e);
-
-        const double flops = static_cast<double>(n) * iters * 6.0;
-        return flops / (ms * 1e-3) / 1e9;
-    }
-
-    auto Device::test_bandwidth(const int queue_id, const size_t n) -> double {
-        ::sycl::buffer<float> a{::sycl::range(n)};
-        ::sycl::buffer<float> b{::sycl::range(n)};
-        ::sycl::buffer<float> c{::sycl::range(n)};
-
-        ::sycl::event e = queue_map[queue_id].load()->submit([&](::sycl::handler& h) {
-            const auto A = a.get_access<::sycl::access::mode::read>(h);
-            const auto B = b.get_access<::sycl::access::mode::read>(h);
-            const auto C = c.get_access<::sycl::access::mode::write>(h);
-
-            h.parallel_for(::sycl::range(n),
-                           [=](const ::sycl::id<> i) {
-                               C[i] = A[i] + 2.0f * B[i];
-                           });
-        });
-
-        e.wait();
-        const double ms = elapsed_ms(e);
-
-        const double bytes = static_cast<double>(n) * 12.0;
-        return bytes / (ms * 1e-3) / 1e9;
+        return result;
+    } catch (const ::sycl::exception& e) {
+        return std::unexpected(std::format("[SYCL] [ERROR] {}", e.what()));
+    } catch (...) {
+        return std::unexpected(std::string("[SYCL] [ERROR] 未知错误!"));
     }
 }
