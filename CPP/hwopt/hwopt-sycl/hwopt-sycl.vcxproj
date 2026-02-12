@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\proxy.4.0.1\build\native\proxy.props" Condition="Exists('..\packages\proxy.4.0.1\build\native\proxy.props')" />
+  <Import Project="..\packages\mimalloc.3.2.6\build\native\mimalloc.props" Condition="Exists('..\packages\mimalloc.3.2.6\build\native\mimalloc.props')" />
   <Import Project="..\packages\parallel_hashmap.2.0.0\build\native\parallel_hashmap.props" Condition="Exists('..\packages\parallel_hashmap.2.0.0\build\native\parallel_hashmap.props')" />
   <Import Project="..\packages\glm.1.0.3\build\native\glm.props" Condition="Exists('..\packages\glm.1.0.3\build\native\glm.props')" />
   <ItemGroup Label="ProjectConfigurations">
@@ -14,9 +16,13 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="Minecraft\Noise\ImprovedNoise.cpp" />
+    <ClCompile Include="Minecraft\Noise\PerlinNoise.cpp" />
     <ClCompile Include="TEST\SYCL-TEST.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Minecraft\Noise\ImprovedNoise.h" />
+    <ClInclude Include="Minecraft\Noise\PerlinNoise.h" />
     <ClInclude Include="sycl-plugin.h" />
     <ClInclude Include="sycl-queue.h" />
     <ClInclude Include="TEST\SYCL-TEST.h" />
@@ -86,6 +92,7 @@
       <FSYCLEarlyOptimizations>Default</FSYCLEarlyOptimizations>
       <OpenMPOffloading>GenerateSPIR64Fat</OpenMPOffloading>
       <SpecifySyclForceTarget>No</SpecifySyclForceTarget>
+      <AdditionalIncludeDirectories>.\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <Link>
@@ -94,7 +101,7 @@
       </Link>
       <SpecifyCPUTargetForAOT>Default</SpecifyCPUTargetForAOT>
       <ExposeExportedSymbols>false</ExposeExportedSymbols>
-      <AdditionalDependencies>User32.lib;dbghelp.lib;ntdll.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>User32.lib;dbghelp.lib;ntdll.lib;mimalloc.dll.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -113,6 +120,7 @@
       <OpenMPOffloading>GenerateSPIR64Fat</OpenMPOffloading>
       <SpecifySyclTargets>Default</SpecifySyclTargets>
       <SpecifySyclForceTarget>No</SpecifySyclForceTarget>
+      <AdditionalIncludeDirectories>.\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -122,16 +130,21 @@
       <SpecifyCPUTargetForAOT>Default</SpecifyCPUTargetForAOT>
       <SpecifySyclLink>false</SpecifySyclLink>
       <ExposeExportedSymbols>false</ExposeExportedSymbols>
-      <AdditionalDependencies>User32.lib;dbghelp.lib;ntdll.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>User32.lib;dbghelp.lib;ntdll.lib;mimalloc.dll.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
-  <ImportGroup Label="ExtensionTargets" />
+  <ImportGroup Label="ExtensionTargets">
+    <Import Project="..\packages\mimalloc.3.2.6\build\native\mimalloc.targets" Condition="Exists('..\packages\mimalloc.3.2.6\build\native\mimalloc.targets')" />
+  </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>这台计算机上缺少此项目引用的 NuGet 程序包。使用“NuGet 程序包还原”可下载这些程序包。有关更多信息，请参见 http://go.microsoft.com/fwlink/?LinkID=322105。缺少的文件是 {0}。</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\glm.1.0.3\build\native\glm.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\glm.1.0.3\build\native\glm.props'))" />
     <Error Condition="!Exists('..\packages\parallel_hashmap.2.0.0\build\native\parallel_hashmap.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\parallel_hashmap.2.0.0\build\native\parallel_hashmap.props'))" />
+    <Error Condition="!Exists('..\packages\mimalloc.3.2.6\build\native\mimalloc.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\mimalloc.3.2.6\build\native\mimalloc.props'))" />
+    <Error Condition="!Exists('..\packages\mimalloc.3.2.6\build\native\mimalloc.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\mimalloc.3.2.6\build\native\mimalloc.targets'))" />
+    <Error Condition="!Exists('..\packages\proxy.4.0.1\build\native\proxy.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\proxy.4.0.1\build\native\proxy.props'))" />
   </Target>
 </Project>

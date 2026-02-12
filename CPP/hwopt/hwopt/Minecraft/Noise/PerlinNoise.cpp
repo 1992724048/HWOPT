@@ -16,7 +16,7 @@ PerlinNoise::PerlinNoise(const uint64_t seed, const std::pair<int, std::vector<d
     this->first_octave = pair.first;
     this->amplitudes = pair.second;
     const size_t octaves = this->amplitudes.size();
-    const int zero_octave_index = -this->first_octave;
+    const int zero_octave_index = this->first_octave < 0 ? -this->first_octave : this->first_octave;
     this->noise_levels.resize(octaves);
 
     if (use_new_initialization) {

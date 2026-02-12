@@ -1,5 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\glm.1.0.3\build\native\glm.props" Condition="Exists('..\packages\glm.1.0.3\build\native\glm.props')" />
+  <Import Project="..\packages\proxy.4.0.1\build\native\proxy.props" Condition="Exists('..\packages\proxy.4.0.1\build\native\proxy.props')" />
   <Import Project="..\packages\logger.1.0.0\build\native\logger.props" Condition="Exists('..\packages\logger.1.0.0\build\native\logger.props')" />
   <Import Project="..\packages\encode.1.0.0\build\native\encode.props" Condition="Exists('..\packages\encode.1.0.0\build\native\encode.props')" />
   <Import Project="..\packages\exception.1.0.0\build\native\exception.props" Condition="Exists('..\packages\exception.1.0.0\build\native\exception.props')" />
@@ -165,5 +167,7 @@
     <Error Condition="!Exists('..\packages\exception.1.0.0\build\native\exception.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\exception.1.0.0\build\native\exception.props'))" />
     <Error Condition="!Exists('..\packages\encode.1.0.0\build\native\encode.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\encode.1.0.0\build\native\encode.props'))" />
     <Error Condition="!Exists('..\packages\logger.1.0.0\build\native\logger.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\logger.1.0.0\build\native\logger.props'))" />
+    <Error Condition="!Exists('..\packages\proxy.4.0.1\build\native\proxy.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\proxy.4.0.1\build\native\proxy.props'))" />
+    <Error Condition="!Exists('..\packages\glm.1.0.3\build\native\glm.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\glm.1.0.3\build\native\glm.props'))" />
   </Target>
 </Project>

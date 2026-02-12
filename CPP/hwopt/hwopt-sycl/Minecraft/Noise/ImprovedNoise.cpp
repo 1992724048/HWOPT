@@ -4,7 +4,7 @@
 #include "ImprovedNoise.h"
 #include <array>
 #include <random>
-using namespace minecraft;
+using namespace minecraft_sycl;
 
 ImprovedNoise::ImprovedNoise(std::mt19937_64& mt) {
     std::uniform_real_distribution dist_double(0.0, 1.0);
@@ -26,17 +26,17 @@ ImprovedNoise::ImprovedNoise(std::mt19937_64& mt) {
     }
 }
 
-auto ImprovedNoise::noise(const double _x, const double _y, const double _z) const -> double {
-    return this->noise(_x, _y, _z, 0.0, 0.0);
+SYCL_EXTERNAL auto ImprovedNoise::noise(const double x, const double y, const double z) const -> double {
+    return this->noise(x, y, z, 0.0, 0.0);
 }
 
-auto ImprovedNoise::noise(const double _x, const double _y, const double _z, const double yScale, const double yFudge) const -> double {
+SYCL_EXTERNAL auto ImprovedNoise::noise(const double _x, const double _y, const double _z, const double yScale, const double yFudge) const -> double {
     const double x = _x + this->xo;
     const double y = _y + this->yo;
     const double z = _z + this->zo;
-    const double xf = std::floor(x);
-    const double yf = std::floor(y);
-    const double zf = std::floor(z);
+    const double xf = sycl::floor(x);
+    const double yf = sycl::floor(y);
+    const double zf = sycl::floor(z);
     const double xr = x - xf;
     const double yr = y - yf;
     const double zr = z - zf;
@@ -49,7 +49,7 @@ auto ImprovedNoise::noise(const double _x, const double _y, const double _z, con
             fudge_limit = yr;
         }
 
-        yr_fudge = std::floor(fudge_limit / yScale + 1.0E-7F) * yScale;
+        yr_fudge = sycl::floor(fudge_limit / yScale + 1.0E-7F) * yScale;
     } else {
         yr_fudge = 0.0;
     }
@@ -61,9 +61,9 @@ auto ImprovedNoise::noise_with_derivative(const double _x, const double _y, cons
     const double x = _x + this->xo;
     const double y = _y + this->yo;
     const double z = _z + this->zo;
-    const int xf = std::floor(x);
-    const int yf = std::floor(y);
-    const int zf = std::floor(z);
+    const int xf = sycl::floor(x);
+    const int yf = sycl::floor(y);
+    const int zf = sycl::floor(z);
     const double xr = x - xf;
     const double yr = y - yf;
     const double zr = z - zf;
@@ -75,11 +75,15 @@ inline auto ImprovedNoise::grad_dot(const int hash, const double x, const double
     return g[0] * x + g[1] * y + g[2] * z;
 }
 
+auto ImprovedNoise::dot(const int* g, const double x, const double y, const double z) -> double {
+    return g[0] * x + g[1] * y + g[2] * z;
+}
+
 auto ImprovedNoise::perm(const int x) const -> int {
     return this->p[x & 0xFF] & 0xFF;
 }
 
-auto ImprovedNoise::sample_and_lerperm(const int x, const int y, const int z, const double xr, const double yr, const double zr, const double yrOriginal) const -> double {
+auto ImprovedNoise::sample_and_lerperm(const int x, const int y, const int z, const double xr, const double yr, const double zr, const double yr_original) const -> double {
     const int x0 = this->perm(x);
     const int x1 = this->perm(x + 1);
     const int xy00 = this->perm(x0 + y);
@@ -95,12 +99,12 @@ auto ImprovedNoise::sample_and_lerperm(const int x, const int y, const int z, co
     const double d011 = grad_dot(this->perm(xy01 + z + 1), xr, yr - 1.0, zr - 1.0);
     const double d111 = grad_dot(this->perm(xy11 + z + 1), xr - 1.0, yr - 1.0, zr - 1.0);
     const double xAlpha = smoothstep(xr);
-    const double yAlpha = smoothstep(yr);
+    const double yAlpha = smoothstep(yr_original);
     const double zAlpha = smoothstep(zr);
     return lerp3(xAlpha, yAlpha, zAlpha, d000, d100, d010, d110, d001, d101, d011, d111);
 }
 
-auto ImprovedNoise::sample_with_derivative(const int x, const int y, const int z, const double xr, const double yr, const double zr, double* derivativeOut) const -> double {
+auto ImprovedNoise::sample_with_derivative(const int x, const int y, const int z, const double xr, const double yr, const double zr, double* derivative_out) const -> double {
     const int x0 = this->perm(x);
     const int x1 = this->perm(x + 1);
     const int xy00 = this->perm(x0 + y);
@@ -146,9 +150,9 @@ auto ImprovedNoise::sample_with_derivative(const int x, const int y, const int z
     const double dX = d1x + xSD * d2x;
     const double dY = d1y + ySD * d2y;
     const double dZ = d1z + zSD * d2z;
-    derivativeOut[0] += dX;
-    derivativeOut[1] += dY;
-    derivativeOut[2] += dZ;
+    derivative_out[0] += dX;
+    derivative_out[1] += dY;
+    derivative_out[2] += dZ;
     return lerp3(xAlpha, yAlpha, zAlpha, d000, d100, d010, d110, d001, d101, d011, d111);
 }
 
@@ -180,8 +184,4 @@ inline auto ImprovedNoise::lerp3(const double alpha1,
                                  const double x011,
                                  const double x111) -> double {
     return lerp(alpha3, lerp2(alpha1, alpha2, x000, x100, x010, x110), lerp2(alpha1, alpha2, x001, x101, x011, x111));
-}
-
-auto ImprovedNoise::dot(const int* g, const double x, const double y, const double z) -> double {
-    return g[0] * x + g[1] * y + g[2] * z;
 }

@@ -21,6 +21,12 @@
     <ClCompile Include="TEST\SYCL-TEST.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Minecraft\Noise\PerlinNoise.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Minecraft\Noise\ImprovedNoise.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="sycl-plugin.h">
@@ -30,6 +36,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="TEST\SYCL-TEST.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Minecraft\Noise\PerlinNoise.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Minecraft\Noise\ImprovedNoise.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

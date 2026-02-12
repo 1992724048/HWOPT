@@ -173,6 +173,7 @@
     <ClCompile Include="Minecraft\Block\BlockIdRegistry.cpp" />
     <ClCompile Include="Minecraft\Chunk\NoiseChunkGenerator.cpp" />
     <ClCompile Include="Minecraft\Noise\ImprovedNoise.cpp" />
+    <ClCompile Include="Minecraft\Noise\NoiseStrategy.cpp" />
     <ClCompile Include="Minecraft\Noise\PerlinNoise.cpp" />
     <ClCompile Include="TEST\CPU\CPU.cpp" />
   </ItemGroup>
@@ -185,7 +186,6 @@
     <ClInclude Include="Minecraft\Noise\ImprovedNoise.h" />
     <ClInclude Include="JavaNative.h" />
     <ClInclude Include="Minecraft\Noise\NoiseStrategy.h" />
-    <ClInclude Include="Minecraft\Noise\NoiseStrategyTBB.h" />
     <ClInclude Include="Minecraft\Noise\PerlinNoise.h" />
     <ClInclude Include="TEST\CPU\CPU.h" />
     <ClInclude Include="util.h" />

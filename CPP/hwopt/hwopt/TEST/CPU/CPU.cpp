@@ -1,13 +1,16 @@
 ﻿// 遂沫 CPU.cpp
-// 2026-02-10 20:32:17
+// 2026-02-12 23:48:52
 
 #include <chrono>
 #include <future>
+#include <utility>
 #include <vector>
 
 #include <windows.h>
-#include <magic_enum/magic_enum.hpp>
 #include <tbb/tbb.h>
+
+#include "../../Minecraft/Block/BlockIdRegistry.h"
+#include "../../Minecraft/Noise/PerlinNoise.h"
 
 using ClockT = std::chrono::high_resolution_clock;
 
@@ -76,4 +79,18 @@ auto __declspec(dllexport) test_bandwidth_tbb(const std::size_t n) -> double {
 
     const double bytes = static_cast<double>(n) * 12.0;
     return bytes / (ms * 1e-3) / 1e9;
+}
+
+auto __declspec(dllexport) test_perlin_noise(const size_t n) -> double {
+    const minecraft::PerlinNoise noise(114514, std::pair{1, std::vector<double>{1.0f, 1.0f, 1.0f}}, true);
+
+    parallel_for(tbb::blocked_range<std::size_t>(0, n),
+                 [&](const tbb::blocked_range<std::size_t>& r) {
+                     for (auto i = r.begin(); i != r.end(); ++i) {
+                         auto p = i;
+                         [[maybe_unused]] auto _ = noise.get_value(--p, ++p, --p);
+                     }
+                 });
+
+    return 0.f;
 }

@@ -22,7 +22,6 @@ namespace minecraft {
         [[nodiscard]] auto get_value(double x, double y, double z, double y_scale, double y_fudge, bool y_flat_hack) const -> double;
         [[nodiscard]] auto max_broken_value(double y_scale) const -> double;
 
-
         auto get_octave_noise(int i) -> ImprovedNoise&;
 
         inline static auto wrap(double x) -> double;

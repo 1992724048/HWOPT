@@ -16,3 +16,4 @@
 #include "../hwopt/TEST/CPU/CPU.h"
 #include "../hwopt-sycl/sycl-plugin.h"
 #include "../hwopt-sycl/TEST/SYCL-TEST.h"
+#include "../hwopt-sycl/Minecraft/Noise/PerlinNoise.h"

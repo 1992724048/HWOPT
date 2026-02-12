@@ -1,5 +1,5 @@
 ﻿// 遂沫 test.cpp
-// 2026-02-10 21:46:00
+// 2026-02-13 02:08:50
 
 #include "pch.h"
 
@@ -13,24 +13,23 @@ auto format_duration(auto duration) -> std::string {
 }
 
 TEST(NoiseBench, Perlin) {
-    const minecraft::PerlinNoise noise(123456, {0, std::vector{1.0, 1.0, 1.0, 1.0}}, true);
+    /*const minecraft::PerlinNoise noise(114514, {2, std::vector{1.0, 1.0, 1.0}}, true);
 
-    constexpr int n = 512;
+    constexpr int n = 50'000'000;
     double sum = 0.0;
 
+    const auto total_start = std::chrono::high_resolution_clock::now();
     for (int z = 0; z < n; ++z) {
-        for (int y = 0; y < n; ++y) {
-            for (int x = 0; x < n; ++x) {
-                sum += noise.get_value(x * 0.01, y * 0.01, z * 0.01);
-            }
-        }
+        sum += noise.get_value(100.3, 64, 200);
     }
+    const auto total_end = std::chrono::high_resolution_clock::now();
+    std::cout << "总用时: " << format_duration(total_end - total_start) << "\n";
 
-    EXPECT_NE(sum, 0.0);
+    EXPECT_NE(sum, 0.0);*/
 }
 
 TEST(TBB, CPU) {
-    const auto total_start = std::chrono::high_resolution_clock::now();
+    /*const auto total_start = std::chrono::high_resolution_clock::now();
 
     const auto compute_start = std::chrono::high_resolution_clock::now();
     const double gflops = test_compute_tbb(181920, 50'000);
@@ -40,11 +39,16 @@ TEST(TBB, CPU) {
     const double bandwidth = test_bandwidth_tbb(181920);
     const auto bandwidth_end = std::chrono::high_resolution_clock::now();
 
+    const auto noise_start = std::chrono::high_resolution_clock::now();
+    test_perlin_noise(50'000'000);
+    const auto noise_end = std::chrono::high_resolution_clock::now();
+
     const auto total_end = std::chrono::high_resolution_clock::now();
 
     std::cout << "Compute:  " << gflops << " GFLOPS" << " [用时: " << format_duration(compute_end - compute_start) << "]\n";
     std::cout << "Memory:   " << bandwidth << " GB/s" << " [用时: " << format_duration(bandwidth_end - bandwidth_start) << "]\n";
-    std::cout << "总用时: " << format_duration(total_end - total_start) << "\n";
+    std::cout << "PerlinNoise 用时: " << format_duration(noise_end - noise_start) << '\n';
+    std::cout << "总用时: " << format_duration(total_end - total_start) << "\n";*/
 }
 
 TEST(SYCL, GPU) {
@@ -57,17 +61,20 @@ TEST(SYCL, GPU) {
         for (auto& info : exp.value()) {
             auto& [type, name, platform] = info;
             std::cout << "\n设备: " << name << " (" << platform << ")\n";
+            if (type == stdpp::sycl::CPU) {
+                continue;
+            }
 
             if (const auto gpu_queue = stdpp::sycl::Device::create_device(info)) {
                 auto opt = stdpp::sycl::Device::enable_profiling(*gpu_queue);
                 ASSERT_TRUE(!opt.has_value()) << "设置性能分析模式失败! 错误: " << *opt << '\n';
 
-                const auto compute_start = std::chrono::high_resolution_clock::now();
+                /*const auto compute_start = std::chrono::high_resolution_clock::now();
                 if (auto a = TEST::test_compute(*gpu_queue, 181920, 50'000)) {
                     const auto compute_end = std::chrono::high_resolution_clock::now();
                     std::cout << "Compute:  " << *a << " GFLOPS" << " [用时: " << format_duration(compute_end - compute_start) << "]\n";
                 } else {
-                    std::cout << "Compute 测试失败\n";
+                    std::cout << "Compute 测试失败:" << a.error() << '\n';
                 }
 
                 const auto bandwidth_start = std::chrono::high_resolution_clock::now();
@@ -75,7 +82,22 @@ TEST(SYCL, GPU) {
                     const auto bandwidth_end = std::chrono::high_resolution_clock::now();
                     std::cout << "Memory:   " << *b << " GB/s" << " [用时: " << format_duration(bandwidth_end - bandwidth_start) << "]\n";
                 } else {
-                    std::cout << "Memory 测试失败\n";
+                    std::cout << "Memory 测试失败: " << b.error() << '\n';
+                }*/
+
+                int n = 50'000'000;
+                std::vector<minecraft_sycl::Tuple> tuples(n);
+                for (auto& value : tuples) {
+                    value.pos = {--n, ++n, --n};
+                }
+                for (int i = 0; i < 3; ++i) {
+                    const auto noise_start = std::chrono::high_resolution_clock::now();
+                    if (auto c = TEST::test_perlin_noise(*gpu_queue, tuples)) {
+                        const auto noise_end = std::chrono::high_resolution_clock::now();
+                        std::cout << "PerlinNoise 用时: " << format_duration(noise_end - noise_start) << '\n';
+                    } else {
+                        std::cout << "Memory 测试失败: " << c.error() << '\n';
+                    }
                 }
             } else {
                 std::cout << "创建设备队列失败\n";
