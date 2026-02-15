@@ -1,5 +1,5 @@
 ﻿// 遂沫 PerlinNoise.cpp
-// 2026-02-13 03:47:34
+// 2026-02-15 22:26:42
 
 #include "PerlinNoise.h"
 #include <Windows.h>
@@ -111,9 +111,9 @@ auto PerlinNoise::get_value(const double x, const double y, const double z, cons
         for (size_t i = 0; i < n; ++i) {
             const ImprovedNoise& noise = noises[i];
 
-            const double xf = wrap(x * params_->factor);
-            const double yf = y_flat_hack ? -noise.yo : wrap(y * params_->factor);
-            const double zf = wrap(z * params_->factor);
+            const double xf = sycl::fma(-sycl::floor(x * params_->factor * 1.0 / 3.3554432E7 + 0.5), 3.3554432E7, x * params_->factor);
+            const double zf = sycl::fma(-sycl::floor(z * params_->factor * 1.0 / 3.3554432E7 + 0.5), 3.3554432E7, z * params_->factor);
+            const double yf = y_flat_hack ? -noise.yo : sycl::fma(-sycl::floor(y * params_->factor * 1.0 / 3.3554432E7 + 0.5), 3.3554432E7, y * params_->factor);
 
             const double noise_val = noise.noise(xf, yf, zf, y_scale * params_->factor, y_fudge * params_->factor);
 
@@ -146,24 +146,21 @@ auto PerlinNoise::get_values(const std::vector<Tuple>& pos_vec) const -> std::ex
     auto values = sycl::DeviceMemory<double>::alloc(pos_vec.size(), queue);
 
     const size_t n = this->noise_levels_size;
-    const auto* noises = this->noise_levels;
-    const auto* amps = this->amplitudes;
-
-    double factor_ = this->lowest_freq_input_factor;
-    double value_factor_ = this->lowest_freq_value_factor;
-
     constexpr size_t WG_SIZE = 256;
     const size_t global_size = (N + WG_SIZE - 1) / WG_SIZE * WG_SIZE;
 
     std::vector<double> ret(values.count);
+
+    tuple.copy_from(pos_vec.data(), pos_vec.size());
+    values.clear();
+
     queue->submit([&](sycl::handler& h) {
         sycl::local_accessor<ImprovedNoise> local_noises(sycl::range(n), h);
         sycl::local_accessor<double> local_amps(sycl::range(n), h);
 
-        h.memcpy(tuple.ptr, pos_vec.data(), pos_vec.size() * sizeof(Tuple));
-
         h.parallel_for(sycl::nd_range<>(global_size, WG_SIZE),
-                       [N, local_noises, local_amps, factor_, value_factor_, n, noises, amps, params = tuple.ptr, vals = values.ptr](const sycl::nd_item<> item) {
+                       [N, local_noises, local_amps, amps = this->amplitudes, noises = this->noise_levels, factor_ = this->lowest_freq_input_factor, value_factor_ = this->lowest_freq_value_factor, n,
+                           params = tuple.ptr, vals = values.ptr](const sycl::nd_item<> item) {
                            if (item.get_local_id(0) < n) {
                                local_noises[item.get_local_id(0)] = noises[item.get_local_id(0)];
                                local_amps[item.get_local_id(0)] = amps[item.get_local_id(0)];
@@ -182,14 +179,14 @@ auto PerlinNoise::get_values(const std::vector<Tuple>& pos_vec) const -> std::ex
                            const auto& [pos, xy, y_flat_hack] = params[i];
 
                            for (size_t noise_idx = 0; noise_idx < n; ++noise_idx) {
-                               const ImprovedNoise& noise = noises[noise_idx];
+                               const ImprovedNoise& noise = local_noises[noise_idx];
 
-                               const double zf = wrap(pos.z * factor);
-                               const double xf = wrap(pos.x * factor);
-                               const double yf = y_flat_hack ? -noise.yo : wrap(pos.y * factor);
+                               const double zf = sycl::fma(-sycl::floor(pos.z * factor * 1.0 / 3.3554432E7 + 0.5), 3.3554432E7, pos.z * factor);
+                               const double xf = sycl::fma(-sycl::floor(pos.x * factor * 1.0 / 3.3554432E7 + 0.5), 3.3554432E7, pos.x * factor);
+                               const double yf = y_flat_hack ? -noise.yo : sycl::fma(-sycl::floor(pos.y * factor * 1.0 / 3.3554432E7 + 0.5), 3.3554432E7, pos.y * factor);
 
                                const double noise_val = noise.noise(xf, yf, zf, xy.x * factor, xy.y * factor);
-                               local_sum += amps[noise_idx] * noise_val * value_factor;
+                               local_sum += local_amps[noise_idx] * noise_val * value_factor;
 
                                factor *= 2.0;
                                value_factor *= 0.5;
@@ -197,9 +194,9 @@ auto PerlinNoise::get_values(const std::vector<Tuple>& pos_vec) const -> std::ex
 
                            vals[i] = local_sum;
                        });
-        h.memcpy(ret.data(), values.ptr, values.count * sizeof(double));
     }).wait();
 
+    values.copy_to(ret.data(), ret.size());
     return ret;
 } catch (const sycl::exception& exception) {
     return std::unexpected(std::format("[SYCL] [ERROR] {}", exception.what()));
@@ -229,11 +226,4 @@ auto PerlinNoise::edge_value(const double noise_value) const -> double {
     }
 
     return value;
-}
-
-auto PerlinNoise::wrap(const double x) -> double {
-    constexpr double c = 3.3554432E7;
-    constexpr double inv_c = 1.0 / c;
-    const double k = sycl::floor(x * inv_c + 0.5);
-    return sycl::fma(-k, c, x);
 }

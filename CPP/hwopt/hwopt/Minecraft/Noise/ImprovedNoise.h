@@ -22,7 +22,7 @@ namespace minecraft {
         auto noise_with_derivative(double _x, double _y, double _z, double* derivativeOut) const -> double;
 
     private:
-        std::array<uint8_t, 256> p;
+        std::array<int8_t, 256> p;
 
         inline static auto grad_dot(int hash, double x, double y, double z) -> double;
 

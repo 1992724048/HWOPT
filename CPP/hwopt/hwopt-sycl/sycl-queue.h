@@ -52,6 +52,13 @@ namespace sycl {
             queue_ptr->memset(ptr, 0, count * sizeof(T)).wait();
         }
 
+        auto set(int value) const -> void {
+            if (!ptr) {
+                return;
+            }
+            queue_ptr->memset(ptr, 0, count * sizeof(T)).wait();
+        }
+
         auto dealloc() -> void {
             if (!ptr) {
                 return;

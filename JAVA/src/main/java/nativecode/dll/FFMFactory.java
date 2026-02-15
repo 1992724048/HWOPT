@@ -307,13 +307,13 @@ public enum FFMFactory {
                 try {
 					String fileName = p.getFileName().toString();
                     copyIfDifferent(fileName, Files.readAllBytes(p), Path.of(outDir + "\\NativeDll\\"));
-	                if (fileName.endsWith(".dll")) {
-		                try {
-			                System.load(outDir + "\\NativeDll\\" + fileName);
-		                } catch (UnsatisfiedLinkError | NullPointerException | IllegalCallerException ex) {
-			                System.out.println("Failed to load " + fileName);
-		                }
-	                }
+                    if (fileName.endsWith(".dll")) {
+                        try {
+                            System.load(outDir + "\\NativeDll\\" + fileName);
+                        } catch (UnsatisfiedLinkError | NullPointerException | IllegalCallerException ex) {
+                            System.out.println("Failed to load " + fileName);
+                        }
+                    }
 				} catch (IOException e) {
                     throw new RuntimeException(e);
                 }

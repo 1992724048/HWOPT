@@ -36,6 +36,9 @@
     <ClCompile Include="Minecraft\Noise\NoiseStrategy.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="Minecraft\Noise\NormalNoise.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -63,6 +66,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Minecraft\Noise\NoiseStrategy.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Minecraft\Noise\NormalNoise.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

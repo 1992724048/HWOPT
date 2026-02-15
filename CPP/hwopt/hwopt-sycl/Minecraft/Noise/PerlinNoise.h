@@ -1,5 +1,5 @@
 ﻿// 遂沫 PerlinNoise.h
-// 2026-02-13 02:16:21
+// 2026-02-13 13:41:46
 
 #pragma once
 #include <cstdint>
@@ -36,8 +36,6 @@ namespace minecraft_sycl {
         [[nodiscard]] auto edge_value(double noise_value) const -> double;
 
     private:
-        inline static auto wrap(double x) -> double;
-
         int queue_id;
         int first_octave;
         double max_value;

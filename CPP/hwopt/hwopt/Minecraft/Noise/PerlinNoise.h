@@ -1,13 +1,11 @@
 ﻿// 遂沫 PerlinNoise.h
-// 2026-02-08 23:00:52
+// 2026-02-16 00:09:28
 
 #pragma once
-#include <random>
+#include <cstdint>
+#include <optional>
 #include <utility>
 #include <vector>
-#include <cstdint>
-
-#include <proxy/proxy.h>
 
 #include "ImprovedNoise.h"
 #include "../../JavaNative.h"
@@ -22,8 +20,6 @@ namespace minecraft {
         [[nodiscard]] auto get_value(double x, double y, double z, double y_scale, double y_fudge, bool y_flat_hack) const -> double;
         [[nodiscard]] auto max_broken_value(double y_scale) const -> double;
 
-        auto get_octave_noise(int i) -> ImprovedNoise&;
-
         inline static auto wrap(double x) -> double;
         [[nodiscard]] auto get_first_octave() const -> int;
         [[nodiscard]] auto get_amplitudes() const -> std::vector<double>;
@@ -37,7 +33,7 @@ namespace minecraft {
         double lowest_freq_value_factor;
         double lowest_freq_input_factor;
         std::vector<double> amplitudes;
-        std::vector<ImprovedNoise> noise_levels;
+        std::vector<std::optional<ImprovedNoise>> noise_levels;
 
         static auto _create(uint64_t seed, int first_octave, double* amplitudes, int size, bool use_new_initialization) -> PerlinNoise*;
         auto _destroy() const -> void;

@@ -1,5 +1,5 @@
 ﻿// 遂沫 ImprovedNoise.cpp
-// 2026-02-11 00:50:02
+// 2026-02-15 23:44:32
 
 #include "ImprovedNoise.h"
 #include <array>
@@ -40,19 +40,11 @@ auto ImprovedNoise::noise(const double _x, const double _y, const double _z, con
     const double xr = x - xf;
     const double yr = y - yf;
     const double zr = z - zf;
-    double yr_fudge;
-    if (yScale != 0.0) {
-        double fudge_limit;
-        if (yFudge >= 0.0 && yFudge < yr) {
-            fudge_limit = yFudge;
-        } else {
-            fudge_limit = yr;
-        }
-
-        yr_fudge = std::floor(fudge_limit / yScale + 1.0E-7F) * yScale;
-    } else {
-        yr_fudge = 0.0;
+    double fudge_limit = yr;
+    if (yFudge >= 0.0 && yFudge < yr) {
+        fudge_limit = yFudge;
     }
+    const double yr_fudge = yScale != 0.0 ? std::floor(fudge_limit / yScale + 1e-7f) * yScale : 0.0;
 
     return this->sample_and_lerperm(xf, yf, zf, xr, yr - yr_fudge, zr, yr);
 }
@@ -71,8 +63,8 @@ auto ImprovedNoise::noise_with_derivative(const double _x, const double _y, cons
 }
 
 inline auto ImprovedNoise::grad_dot(const int hash, const double x, const double y, const double z) -> double {
-    const int* g = &GRADIENT[static_cast<std::array<int, 48Ui64>::size_type>(hash & 15) * 3];
-    return g[0] * x + g[1] * y + g[2] * z;
+    const int idx = (hash & 15) * 3;
+    return GRADIENT[idx] * x + GRADIENT[idx + 1] * y + GRADIENT[idx + 2] * z;
 }
 
 auto ImprovedNoise::perm(const int x) const -> int {
@@ -95,7 +87,7 @@ auto ImprovedNoise::sample_and_lerperm(const int x, const int y, const int z, co
     const double d011 = grad_dot(this->perm(xy01 + z + 1), xr, yr - 1.0, zr - 1.0);
     const double d111 = grad_dot(this->perm(xy11 + z + 1), xr - 1.0, yr - 1.0, zr - 1.0);
     const double xAlpha = smoothstep(xr);
-    const double yAlpha = smoothstep(yr);
+    const double yAlpha = smoothstep(yrOriginal);
     const double zAlpha = smoothstep(zr);
     return lerp3(xAlpha, yAlpha, zAlpha, d000, d100, d010, d110, d001, d101, d011, d111);
 }
@@ -153,7 +145,7 @@ auto ImprovedNoise::sample_with_derivative(const int x, const int y, const int z
 }
 
 inline auto ImprovedNoise::smoothstep(const double x) -> double {
-    return x * x * x * (x * (x * 6.0 - 15.0) + 10.0);
+    return ((x * 6.0 - 15.0) * x + 10.0) * x * x * x;
 }
 
 inline auto ImprovedNoise::smoothstep_derivative(const double x) -> double {
@@ -161,7 +153,7 @@ inline auto ImprovedNoise::smoothstep_derivative(const double x) -> double {
 }
 
 inline auto ImprovedNoise::lerp(const double alpha1, const double p0, const double p1) -> double {
-    return p0 + alpha1 * (p1 - p0);
+    return std::fma(alpha1, p1 - p0, p0);
 }
 
 inline auto ImprovedNoise::lerp2(const double alpha1, const double alpha2, const double x00, const double x10, const double x01, const double x11) -> double {

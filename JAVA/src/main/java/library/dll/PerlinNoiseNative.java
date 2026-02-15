@@ -18,24 +18,24 @@ public interface PerlinNoiseNative {
     void max_value(double v);
     
     @Static
-    @Name("NoiseContext::_create")
+    @Name("PerlinNoise::_create")
     PerlinNoiseNative create(long seed, int firstOctave, double[] amplitudes, int size, boolean useNewInitialization);
 
-    @Name("NoiseContext::_destroy")
+    @Name("PerlinNoise::_destroy")
     void destroy();
 
-    @Name("NoiseContext::get_value3")
+    @Name("PerlinNoise::get_value3")
     double getValue(double x, double y, double z);
 
-    @Name("NoiseContext::get_value6")
+    @Name("PerlinNoise::get_value6")
     double getValue(double x, double y, double z, double yScale, double yFudge, boolean yFlatHack);
 
-    @Name("NoiseContext::edge_value")
+    @Name("PerlinNoise::edge_value")
     double edgeValue(double noiseValue);
 
-    @Name("NoiseContext::_amplitudes")
+    @Name("PerlinNoise::_amplitudes")
     int amplitudes(MemorySegment amplitudes, int size);
 
-    @Name("NoiseContext::_amplitudes_size")
+    @Name("PerlinNoise::_amplitudes_size")
     int amplitudesSize();
 }

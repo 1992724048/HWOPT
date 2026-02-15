@@ -30,6 +30,7 @@ Currently under active development. It will take some time before a public relea
 ## 设备支持 / Device Support
 
 - TBB / TBB线程池：Intel Threading Building Blocks (CPU-only execution) / 英特尔线程构建模块 (纯CPU执行)
+- **Recommended to use FP64-capable GPUs for optimal double-precision performance / 推荐使用支持FP64的GPU以获得最佳双精度性能**
 
 | Hardware / 硬件                                             | Backend / 后端                                                                 | Requirements / 要求                                                                                                             | Fallback / 回退机制                                                                 | Recommendation / 推荐级别                                        |
 |:----------------------------------------------------------|:-----------------------------------------------------------------------------|:------------------------------------------------------------------------------------------------------------------------------|:--------------------------------------------------------------------------------|:-------------------------------------------------------------|
@@ -56,5 +57,5 @@ Currently under active development. It will take some time before a public relea
 
 | 测试项目 / Benchmark | 执行模式 / Execution Mode | 优化前 / Baseline (Java) | 优化后 / Optimized (FFM) | 性能提升 / Speedup |
 |------------------|-----------------------|-----------------------|-----------------------|----------------|
-| NoiseBench       | 串行 / Serial           | 469.567 ms            | 246.054 ms            | **+47.60%**    |
+| NoiseBench       | 串行 / Serial           | 544.286 ms            | 273.093 ms            | **+49.83%**    |
 | NoiseBench       | 并行 / Parallel         | N/A                   | N/A                   | **N/A**        |

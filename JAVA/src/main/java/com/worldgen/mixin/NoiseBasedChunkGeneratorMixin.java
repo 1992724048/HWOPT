@@ -13,6 +13,7 @@ import net.minecraft.util.Util;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.StructureManager;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.server.level.ChunkMap;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkAccess;
@@ -122,12 +123,12 @@ public abstract class NoiseBasedChunkGeneratorMixin {
 		long stateTime = 0;
 		long writeTime = 0;
         
-        long s0 = System.nanoTime();
+/*        long s0 = System.nanoTime();
         NoiseChunkGeneratorNative.NATIVE.getInterpolatedState(noiseCache, noiseArraySize, sizeX, sizeY, sizeZ);
         long s1 = System.nanoTime();
-        stateTime += (s1 - s0);
+        stateTime += (s1 - s0);*/
 		
-/*		final long s0 = System.nanoTime();
+		final long s0 = System.nanoTime();
 		for (int cellX = 0; cellX < cellCountX; cellX++) {
 			noiseChunk.advanceCellX(cellX);
 			
@@ -169,10 +170,10 @@ public abstract class NoiseBasedChunkGeneratorMixin {
 			}
 			noiseChunk.swapSlices();
 		}
-		noiseChunk.stopInterpolation();*//*
+		noiseChunk.stopInterpolation();
 		
 		final long s1 = System.nanoTime();
-		stateTime += (s1 - s0);*/
+		stateTime += (s1 - s0);
 		
 		final long w0 = System.nanoTime();
 		final boolean scheduleFluid = aquifer.shouldScheduleFluidUpdate();
