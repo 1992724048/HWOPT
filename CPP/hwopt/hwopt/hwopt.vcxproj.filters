@@ -41,9 +41,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="Minecraft\Noise\ImprovedNoise.h">
       <Filter>头文件</Filter>
     </ClInclude>

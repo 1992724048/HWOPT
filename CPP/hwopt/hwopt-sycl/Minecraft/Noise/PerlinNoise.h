@@ -26,7 +26,7 @@ namespace minecraft_sycl {
 
         [[nodiscard]] auto get_max_value() const -> double;
         [[nodiscard]] auto get_value(double x, double y, double z) const -> double;
-        [[nodiscard]] auto get_value(double x, double y, double z, double y_scale, double y_fudge, bool y_flat_hack) const -> double;
+        [[nodiscard]] auto get_value(double x, double y, double z, double y_scale, double y_fudge) const -> double;
         [[nodiscard]] auto max_broken_value(double y_scale) const -> double;
 
         [[nodiscard]] auto get_values(const std::vector<Tuple>& pos_vec) const -> std::expected<std::vector<double>, std::string>;
@@ -34,7 +34,6 @@ namespace minecraft_sycl {
         [[nodiscard]] auto get_first_octave() const -> int;
         [[nodiscard]] auto get_amplitudes() const -> std::vector<double>;
         [[nodiscard]] auto edge_value(double noise_value) const -> double;
-
     private:
         int queue_id;
         int first_octave;

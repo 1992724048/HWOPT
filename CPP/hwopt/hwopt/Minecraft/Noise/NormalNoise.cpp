@@ -1,19 +1,17 @@
-﻿// 遂沫 NormalNoise.cpp
-// 2026-02-16 00:57:23
-
-#include "NormalNoise.h"
+﻿#include "NormalNoise.h"
 #include <algorithm>
 
 #include "../../util.h"
 
 namespace minecraft {
-    NormalNoise::NormalNoise(const uint64_t& random, const std::pair<int, std::vector<double>>& pair, const bool use_new_initialization) : first_{
-            PerlinNoise(random, std::pair(pair.first, pair.second), use_new_initialization)
-        },
-        second_{PerlinNoise(random, std::pair(pair.first, pair.second), use_new_initialization)},
+    NormalNoise::NormalNoise(const uint64_t& random, const std::pair<int, std::vector<double>>& pair, const bool use_new_initialization) : first_{},
+        second_{},
         first_octave(pair.first),
         amplitudes{pair.second} {
         JavaNative::touch();
+        std::mt19937_64 rng(random);
+        first_ = PerlinNoise(rng, std::pair(pair.first, pair.second), use_new_initialization);
+        second_ = PerlinNoise(rng, std::pair(pair.first, pair.second), use_new_initialization);
         int min_octave = std::numeric_limits<int>::max();
         int max_octave = std::numeric_limits<int>::min();
         for (size_t i = 0; i < pair.second.size(); ++i) {
@@ -46,11 +44,11 @@ namespace minecraft {
     }
 
     auto NormalNoise::_create(uint64_t seed, int first_octave, double* amplitudes, const int size, bool use_new_initialization) -> NormalNoise* {
-        return stdpp::util::mi_new<NormalNoise>(seed, std::pair{first_octave, JavaUtil::to_vector<double>(amplitudes, size)}, use_new_initialization);
+        return new NormalNoise(seed, std::pair{first_octave, JavaUtil::to_vector<double>(amplitudes, size)}, use_new_initialization);
     }
 
     auto NormalNoise::_destroy() const -> void {
-        stdpp::util::mi_delete(this);
+        delete this;
     }
 
     auto NormalNoise::expected_deviation(const int octave_span) noexcept -> double {

@@ -49,11 +49,19 @@ public abstract class NormalNoiseMixin implements AutoCloseable {
 	
 	@Inject(method = "getValue", at = @At("HEAD"), cancellable = true)
 	public void getValue(double x, double y, double z, CallbackInfoReturnable<Double> cir) {
+		if (null == this.hwopt$nativePtr) {
+			return;
+		}
 		cir.setReturnValue(hwopt$nativePtr.getValue(x, y, z));
+		cir.cancel();
 	}
 	
 	@Inject(method = "maxValue", at = @At("HEAD"), cancellable = true)
 	public void maxValue(CallbackInfoReturnable<Double> cir) {
+		if (null == this.hwopt$nativePtr) {
+			return;
+		}
 		cir.setReturnValue(hwopt$nativePtr.maxValue());
+		cir.cancel();
 	}
 }

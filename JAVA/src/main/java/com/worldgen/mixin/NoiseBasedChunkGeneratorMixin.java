@@ -1,6 +1,5 @@
 package com.worldgen.mixin;
 
-import com.google.common.collect.Sets;
 import com.worldgen.accessor.NoiseChunkAccessor;
 import com.worldgen.util.BlockIdRegistry;
 import library.dll.BlockIdRegistryNative;
@@ -27,6 +26,7 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import org.spongepowered.include.com.google.common.collect.Sets;
 import util.TimeCost;
 
 import java.lang.reflect.Field;
@@ -37,7 +37,6 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicLong;
 
-import static com.google.common.util.concurrent.Futures.submit;
 import static com.worldgen.util.BlockIdRegistry.AIR_ID;
 
 @Mixin(NoiseBasedChunkGenerator.class)

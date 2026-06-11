@@ -27,8 +27,8 @@ public interface PerlinNoiseNative {
     @Name("PerlinNoise::get_value3")
     double getValue(double x, double y, double z);
 
-    @Name("PerlinNoise::get_value6")
-    double getValue(double x, double y, double z, double yScale, double yFudge, boolean yFlatHack);
+    @Name("PerlinNoise::get_value5")
+    double getValue(double x, double y, double z, double yScale, double yFudge);
 
     @Name("PerlinNoise::edge_value")
     double edgeValue(double noiseValue);

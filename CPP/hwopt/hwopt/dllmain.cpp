@@ -1,14 +1,5 @@
-﻿// 遂沫 dllmain.cpp
-// 2026-02-09 01:45:05
-
-#include <stdint.h>
-#include <stdio.h>
-#include <stdlib.h>
-
-#include <chrono>
+﻿#include <chrono>
 #include <future>
-#include <vector>
-
 #include <windows.h>
 #include <magic_enum/magic_enum.hpp>
 #include <tbb/tbb.h>
@@ -35,6 +26,7 @@ auto APIENTRY DllMain(HMODULE hModule, const DWORD ul_reason_for_call, LPVOID lp
             break;
         case DLL_PROCESS_DETACH:
             break;
+        default: ;
     }
     return TRUE;
 }
@@ -42,7 +34,7 @@ auto APIENTRY DllMain(HMODULE hModule, const DWORD ul_reason_for_call, LPVOID lp
 extern "C" API auto JAVA_ResolveFunction(const char* name) -> void* {
     static std::once_flag flag;
     std::call_once(flag,
-                   [] {
+                   [] -> void {
                        if (auto exp = stdpp::sycl::Device::get_device()) {
                            for (const auto& [type, name, platform] : exp.value()) {
                                ILOG << magic_enum::enum_name<stdpp::sycl::DeviceType>(type) << ": " << name << " (" << platform << ")";

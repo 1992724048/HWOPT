@@ -1,7 +1,4 @@
-﻿// 遂沫 PerlinNoise.cpp
-// 2026-02-16 00:10:59
-
-#include "PerlinNoise.h"
+﻿#include "PerlinNoise.h"
 
 #include "../../util.h"
 using namespace minecraft;
@@ -10,6 +7,83 @@ using namespace minecraft;
 
 PerlinNoise::PerlinNoise(const uint64_t seed, const std::pair<int, std::vector<double>>& pair, const bool use_new_initialization) {
     JavaNative::touch();
+    std::mt19937_64 rng(seed);
+    init(rng, pair, use_new_initialization);
+}
+
+PerlinNoise::PerlinNoise(std::mt19937_64& rng, const std::pair<int, std::vector<double>>& pair, const bool use_new_initialization) {
+    JavaNative::touch();
+    init(rng, pair, use_new_initialization);
+}
+
+auto PerlinNoise::get_max_value() const -> double {
+    return this->max_value;
+}
+
+auto PerlinNoise::get_value(const double x, const double y, const double z) const -> double {
+    return this->get_value(x, y, z, 0.0, 0.0);
+}
+
+auto PerlinNoise::get_value(const double x, const double y, const double z, const double y_scale, const double y_fudge) const -> double {
+    double value = 0.0F;
+    double factor = this->lowest_freq_input_factor;
+    double value_factor = this->lowest_freq_value_factor;
+
+    for (int i = 0; i < this->noise_levels.size(); ++i) {
+        const auto& noise = this->noise_levels[i];
+        if (noise.has_value()) {
+            double noise_val = noise->noise(wrap(x * factor), wrap(y * factor), wrap(z * factor), y_scale * factor, y_fudge * factor);
+            value += this->amplitudes[i] * noise_val * value_factor;
+        }
+
+        factor *= static_cast<double>(2.0F);
+        value_factor /= static_cast<double>(2.0F);
+    }
+
+    return value;
+}
+
+auto PerlinNoise::max_broken_value(const double y_scale) const -> double {
+    return this->edge_value(y_scale + 2.0);
+}
+
+auto PerlinNoise::wrap(const double x) -> double {
+    constexpr double c = 3.3554432E7;
+    const double k = std::floor(x / c + 0.5);
+    return x - k * c;
+}
+
+auto PerlinNoise::get_first_octave() const -> int {
+    return this->first_octave;
+}
+
+auto PerlinNoise::get_amplitudes() const -> std::vector<double> {
+    return this->amplitudes;
+}
+
+auto PerlinNoise::edge_value(const double noise_value) const -> double {
+    double value = 0.0;
+    double value_factor = this->lowest_freq_value_factor;
+
+    for (size_t i = 0; i < this->noise_levels.size(); i++) {
+        value += this->amplitudes[i] * noise_value * value_factor;
+        value_factor /= 2.0;
+    }
+
+    return value;
+}
+
+auto PerlinNoise::add_methods() -> void {
+    "PerlinNoise::_create"_jf.reg<_create>();
+    "PerlinNoise::_destroy"_jf.reg<&PerlinNoise::_destroy>();
+    "PerlinNoise::get_value3"_jf.reg<static_cast<double(PerlinNoise::*)(double, double, double) const>(&PerlinNoise::get_value)>();
+    "PerlinNoise::get_value5"_jf.reg<static_cast<double(PerlinNoise::*)(double, double, double, double, double) const>(&PerlinNoise::get_value)>();
+    "PerlinNoise::edge_value"_jf.reg<&PerlinNoise::edge_value>();
+    "PerlinNoise::_amplitudes"_jf.reg<&PerlinNoise::_amplitudes>();
+    "PerlinNoise::_amplitudes_size"_jf.reg<&PerlinNoise::_amplitudes_size>();
+}
+
+auto PerlinNoise::init(std::mt19937_64& mt, const std::pair<int, std::vector<double>>& pair, const bool use_new_initialization) -> void {
     this->first_octave = pair.first;
     this->amplitudes = pair.second;
     const size_t octaves = this->amplitudes.size();
@@ -17,21 +91,27 @@ PerlinNoise::PerlinNoise(const uint64_t seed, const std::pair<int, std::vector<d
     this->noise_levels.resize(octaves);
 
     if (use_new_initialization) {
+        const uint64_t fork_seed = mt();
         for (size_t i = 0; i < octaves; ++i) {
             if (this->amplitudes[i] != 0.0) {
                 const int octave = this->first_octave + static_cast<int>(i);
-                std::mt19937_64 mt_(octave);
-                noise_levels[i] = std::make_optional<ImprovedNoise>(mt_);
+                std::string octave_name = "octave_" + std::to_string(octave);
+                constexpr std::hash<std::string> hasher;
+                uint64_t octave_seed = fork_seed ^ hasher(octave_name);
+                std::mt19937_64 octave_rng(octave_seed);
+                noise_levels[i] = std::make_optional<ImprovedNoise>(octave_rng);
             } else {
                 noise_levels[i] = std::nullopt;
             }
         }
     } else {
-        std::mt19937_64 mt(seed);
-        if (zero_octave_index >= 0 && std::cmp_less(zero_octave_index, octaves) && this->amplitudes[zero_octave_index] != 0.0) {
-            noise_levels[zero_octave_index] = std::make_optional<ImprovedNoise>(mt);
-        } else if (zero_octave_index >= 0 && std::cmp_less(zero_octave_index, octaves)) {
-            noise_levels[zero_octave_index] = std::nullopt;
+        ImprovedNoise zero_octave(mt);
+        if (zero_octave_index >= 0 && std::cmp_less(zero_octave_index, octaves)) {
+            if (this->amplitudes[zero_octave_index] != 0.0) {
+                noise_levels[zero_octave_index] = zero_octave;
+            } else {
+                noise_levels[zero_octave_index] = std::nullopt;
+            }
         }
 
         for (int ix = zero_octave_index - 1; ix >= 0; --ix) {
@@ -61,86 +141,12 @@ PerlinNoise::PerlinNoise(const uint64_t seed, const std::pair<int, std::vector<d
     this->max_value = this->edge_value(2.0);
 }
 
-auto PerlinNoise::get_max_value() const -> double {
-    return this->max_value;
-}
-
-auto PerlinNoise::get_value(const double x, const double y, const double z) const -> double {
-    return this->get_value(x, y, z, 0.0, 0.0, false);
-}
-
-auto PerlinNoise::get_value(const double x, const double y, const double z, const double y_scale, const double y_fudge, const bool y_flat_hack) const -> double {
-    double value = 0.0;
-    double factor = this->lowest_freq_input_factor;
-    double value_factor = this->lowest_freq_value_factor;
-
-    const size_t n = this->noise_levels.size();
-
-    for (size_t i = 0; i < n; ++i) {
-        if (this->noise_levels[i]) {
-            const ImprovedNoise& noise = *this->noise_levels[i];
-
-            const double xf = wrap(x * factor);
-            const double yf = y_flat_hack ? -noise.yo : wrap(y * factor);
-            const double zf = wrap(z * factor);
-
-            const double noise_val = noise.noise(xf, yf, zf, y_scale * factor, y_fudge * factor);
-
-            value += this->amplitudes[i] * noise_val * value_factor;
-        }
-        factor *= 2.0;
-        value_factor *= 0.5;
-    }
-
-    return value;
-}
-
-auto PerlinNoise::max_broken_value(const double y_scale) const -> double {
-    return this->edge_value(y_scale + 2.0);
-}
-
-auto PerlinNoise::wrap(const double x) -> double {
-    constexpr float c = 3.3554432E7f;
-    const double k = std::floor(x / c + 0.5);
-    return x - k * c;
-}
-
-auto PerlinNoise::get_first_octave() const -> int {
-    return this->first_octave;
-}
-
-auto PerlinNoise::get_amplitudes() const -> std::vector<double> {
-    return this->amplitudes;
-}
-
-auto PerlinNoise::edge_value(const double noise_value) const -> double {
-    double value = 0.0;
-    double value_factor = this->lowest_freq_value_factor;
-
-    for (size_t i = 0; i < this->noise_levels.size(); i++) {
-        value += this->amplitudes[i] * noise_value * value_factor;
-        value_factor /= 2.0;
-    }
-
-    return value;
-}
-
-auto PerlinNoise::add_methods() -> void {
-    "PerlinNoise::_create"_jf.reg<_create>();
-    "PerlinNoise::_destroy"_jf.reg<&PerlinNoise::_destroy>();
-    "PerlinNoise::get_value3"_jf.reg<static_cast<double(PerlinNoise::*)(double, double, double) const>(&PerlinNoise::get_value)>();
-    "PerlinNoise::get_value6"_jf.reg<static_cast<double(PerlinNoise::*)(double, double, double, double, double, bool) const>(&PerlinNoise::get_value)>();
-    "PerlinNoise::edge_value"_jf.reg<&PerlinNoise::edge_value>();
-    "PerlinNoise::_amplitudes"_jf.reg<&PerlinNoise::_amplitudes>();
-    "PerlinNoise::_amplitudes_size"_jf.reg<&PerlinNoise::_amplitudes_size>();
-}
-
 auto PerlinNoise::_create(const uint64_t seed, const int first_octave, double* amplitudes, const int size, const bool use_new_initialization) -> PerlinNoise* {
-    return stdpp::util::mi_new<PerlinNoise>(seed, std::pair{first_octave, JavaUtil::to_vector<double>(amplitudes, size)}, use_new_initialization);
+    return new PerlinNoise(seed, std::pair{first_octave, JavaUtil::to_vector<double>(amplitudes, size)}, use_new_initialization);
 }
 
 auto PerlinNoise::_destroy() const -> void {
-    stdpp::util::mi_delete(this);
+    delete this;
 }
 
 auto PerlinNoise::_amplitudes(double* amplitudes, const int size) const -> int {

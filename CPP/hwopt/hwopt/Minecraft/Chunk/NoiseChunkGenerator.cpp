@@ -1,16 +1,10 @@
-﻿// 遂沫 NoiseChunkGenerator.cpp
-// 2026-02-08 22:45:49
-
-#include "NoiseChunkGenerator.h"
+﻿#include "NoiseChunkGenerator.h"
 
 #include <stdexcept>
-#include <FastNoiseLite/FastNoiseLite.h>
 
 minecraft::NoiseChunkGenerator::NoiseChunkGenerator() {
     JavaNative::touch();
 }
-
-static FastNoiseLite noise;
 
 auto minecraft::NoiseChunkGenerator::add_methods() -> void {
     "NoiseChunkGenerator::get_interpolated_state"_jf.reg<get_interpolated_state>();
@@ -35,7 +29,7 @@ auto minecraft::NoiseChunkGenerator::get_interpolated_state(short* array, const 
                 const auto wx = static_cast<float>(x);
                 const auto wz = static_cast<float>(z);
 
-                const float n = noise.GetNoise(wx, wz);
+                constexpr float n = 1;
                 if (y <= static_cast<int>(base_height + n * amplitude)) {
                     array[idx] = 411;
                 } else {

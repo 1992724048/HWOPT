@@ -1,7 +1,4 @@
-﻿// 遂沫 NormalNoise.h
-// 2026-02-16 00:56:17
-
-#pragma once
+﻿#pragma once
 #include <cstdint>
 #include <vector>
 #include "PerlinNoise.h"

@@ -40,30 +40,6 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 public class HWOPT {
     public static final String MODID = "hwopt";
     public static final Logger LOGGER = LogUtils.getLogger();
-    // 创建一个延迟注册器来存放所有区块，这些区块都将注册在“hwopt”命名空间下
-    public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(HWOPT.MODID);
-    // 创建一个延迟注册来存放所有将注册在“hwopt”命名空间下的物品
-    public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(HWOPT.MODID);
-    // 创建一个延迟注册器来存放所有 CreativeModeTabs，这些都将注册在“hwopt”命名空间下
-    public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, HWOPT.MODID);
-
-    // 创建一个新块，ID“hwopt：example_block”，结合命名空间和路径
-    public static final DeferredBlock<Block> EXAMPLE_BLOCK = HWOPT.BLOCKS.registerSimpleBlock("example_block", p -> p.mapColor(MapColor.STONE));
-    // 创建一个新的 BlockItem ，ID 为“hwopt：example_block”，结合命名空间和路径
-    public static final DeferredItem<BlockItem> EXAMPLE_BLOCK_ITEM = HWOPT.ITEMS.registerSimpleBlockItem("example_block", HWOPT.EXAMPLE_BLOCK);
-
-    // 创建一个新食物，ID“hwopt：example_id”，营养1，饱和度2
-    public static final DeferredItem<Item> EXAMPLE_ITEM = HWOPT.ITEMS.registerSimpleItem("example_item", p -> p.food(new FoodProperties.Builder().alwaysEdible().nutrition(1).saturationModifier(2.0f).build()));
-
-    // 为示例物品创建一个带有“hwopt：example_tab”的创意标签页，放置在战斗标签页之后
-    public static final DeferredHolder<CreativeModeTab, CreativeModeTab> EXAMPLE_TAB = HWOPT.CREATIVE_MODE_TABS.register("example_tab", () -> CreativeModeTab.builder()
-            .title(Component.translatable("itemGroup.hwopt")) // 你的CreativeModeTab标题的语言键
-            .withTabsBefore(CreativeModeTabs.COMBAT)
-            .icon(() -> HWOPT.EXAMPLE_ITEM.get().getDefaultInstance())
-            .displayItems((parameters, output) -> {
-                output.accept(HWOPT.EXAMPLE_ITEM.get()); // 把示例项目添加到标签页中。对于你自己的账单，这种方式比活动更受欢迎
-            }).build());
-    
     public static long seed;
 
     // mod类的构造子是加载mod时运行的第一个代码。
@@ -72,13 +48,6 @@ public class HWOPT {
 
         // 注册 commonSetup 方法进行 modloading
         modEventBus.addListener(this::commonSetup);
-
-        // 将延迟寄存器注册到mod事件总线，这样块才能被注册
-        BLOCKS.register(modEventBus);
-        // 将延迟寄存器注册到mod事件总线，这样项目才能被注册
-        ITEMS.register(modEventBus);
-        // 将延迟注册器注册到模组事件总线，这样标签页才会被注册
-        CREATIVE_MODE_TABS.register(modEventBus);
 
         // 报名参加我们感兴趣的服务器及其他游戏活动。
         // 注意，当且仅当我们希望*该*类（HWOPT）直接响应事件时，这是必要的。
@@ -101,9 +70,6 @@ public class HWOPT {
     }
 
     private void addCreative(final BuildCreativeModeTabContentsEvent event) {
-        if (event.getTabKey() == CreativeModeTabs.BUILDING_BLOCKS) {
-            event.accept(EXAMPLE_BLOCK_ITEM);
-        }
     }
 
     @SubscribeEvent

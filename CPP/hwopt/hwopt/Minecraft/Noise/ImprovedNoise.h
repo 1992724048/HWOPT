@@ -1,7 +1,4 @@
-﻿// 遂沫 ImprovedNoise.h
-// 2026-02-11 00:48:21
-
-#pragma once
+﻿#pragma once
 #include <array>
 #include <random>
 
@@ -20,9 +17,8 @@ namespace minecraft {
         [[nodiscard]] auto noise(double _x, double _y, double _z, double yScale, double yFudge) const -> double;
 
         auto noise_with_derivative(double _x, double _y, double _z, double* derivativeOut) const -> double;
-
     private:
-        std::array<int8_t, 256> p;
+        std::array<int8_t, 256> p{};
 
         inline static auto grad_dot(int hash, double x, double y, double z) -> double;
 
@@ -99,7 +95,7 @@ namespace minecraft {
 
 namespace fortran {
     using namespace minecraft;
-#define DLL_API __declspec(dllimport)
+    #define DLL_API __declspec(dllimport)
 
     extern "C" {
         DLL_API auto ImprovedNoise_noise_3(const ImprovedNoise* state, double x, double y, double z) -> double;

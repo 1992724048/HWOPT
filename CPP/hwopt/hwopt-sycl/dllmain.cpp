@@ -1,13 +1,12 @@
-﻿// 遂沫 dllmain.cpp
-// 2026-02-11 00:30:04
+﻿// 2026-06-11 12:51:14
 
 #include <windows.h>
 
 #include <print>
 
-#include <parallel_hashmap/phmap.h>
-
 #include <atomic>
+#include <shared_mutex>
+
 #include "sycl-plugin.h"
 #include "sycl-queue.h"
 
@@ -15,11 +14,12 @@ auto DllMain(HMODULE hModule, DWORD ul_reason_for_call, LPVOID lpReserved) -> BO
     return TRUE;
 }
 
-static std::atomic<uint64_t> id_gen{0};
-static phmap::parallel_node_hash_map<int, std::atomic<std::shared_ptr<sycl::queue>>> queue_map;
+std::shared_mutex queue_mutex;
+std::atomic<uint64_t> id_gen{0};
+std::unordered_map<int, std::atomic<std::shared_ptr<sycl::queue>>> queue_map;
 
 namespace stdpp::sycl {
-    static auto match_type(const ::sycl::device& dev, const DeviceType type) -> bool {
+    auto match_type(const ::sycl::device& dev, const DeviceType type) -> bool {
         switch (type) {
             case CPU:
                 return dev.is_cpu();
@@ -34,6 +34,7 @@ namespace stdpp::sycl {
     }
 
     inline auto Device::switch_device(const int queue_id, const DeviceInfo& device_info) -> std::optional<std::string> try {
+        std::unique_lock _(queue_mutex);
         if (!queue_map.contains(queue_id)) {
             return std::format("[SYCL] [ERROR] invalid queue id: {}\n", queue_id);
         }
@@ -62,6 +63,7 @@ namespace stdpp::sycl {
 
             if (dev.get_info<::sycl::info::device::name>().contains(std::get<1>(device_info)) && dev.get_platform().get_info<::sycl::info::platform::name>().contains(std::get<2>(device_info))) {
                 const auto id = ++id_gen;
+                std::unique_lock _(queue_mutex);
                 queue_map[id] = std::make_shared<::sycl::queue>(dev);
                 return id;
             }
@@ -73,6 +75,7 @@ namespace stdpp::sycl {
 
     auto Device::create_device() -> std::expected<int, std::string> try {
         const auto id = ++id_gen;
+        std::unique_lock _(queue_mutex);
         queue_map[id] = std::make_shared<::sycl::queue>();
         return id;
     } catch (const ::sycl::exception& e) {
@@ -80,6 +83,7 @@ namespace stdpp::sycl {
     }
 
     auto Device::free(int queue_id) -> std::optional<std::string> {
+        std::unique_lock _(queue_mutex);
         if (!queue_map.contains(queue_id)) {
             return std::format("[SYCL] [ERROR] invalid queue id: {}", queue_id);
         }
@@ -89,6 +93,7 @@ namespace stdpp::sycl {
     }
 
     auto Device::enable_profiling(int queue_id) -> std::optional<std::string> try {
+        std::unique_lock _(queue_mutex);
         if (!queue_map.contains(queue_id)) {
             return std::format("[SYCL] [ERROR] invalid queue id: {}", queue_id);
         }
@@ -97,7 +102,7 @@ namespace stdpp::sycl {
         const auto dev = old_queue->get_device();
 
         auto new_queue = std::make_shared<::sycl::queue>(dev,
-                                                         [](const ::sycl::exception_list& elist) {
+                                                         [](const ::sycl::exception_list& elist) -> void {
                                                              for (const auto& e : elist) {
                                                                  try {
                                                                      std::rethrow_exception(e);
@@ -114,7 +119,6 @@ namespace stdpp::sycl {
     } catch (const ::sycl::exception& e) {
         return std::format("[SYCL] [ERROR] enable_profiling failed: {}", e.what());
     }
-
 
     inline auto Device::get_device() -> std::expected<std::vector<DeviceInfo>, std::string> try {
         std::vector<std::tuple<DeviceType, std::string, std::string>> result;
@@ -136,10 +140,10 @@ namespace stdpp::sycl {
                 ::sycl::buffer<float> buf{::sycl::range(1)};
 
                 ::sycl::queue q(dev);
-                q.submit([&](::sycl::handler& h) {
-                    const auto acc = buf.get_access<::sycl::access::mode::write>(h);
-                    h.single_task([=] {
-                        acc[0] = ::sycl::fma(1.f, 2.f, 3.f);
+                q.submit([&](::sycl::handler& handle) -> void {
+                    const auto acc = buf.get_access<::sycl::access::mode::write>(handle);
+                    handle.single_task([=] -> void {
+                        acc[0] = ::sycl::fma(1.F, 2.F, 3.F);
                     });
                 });
                 q.wait();
@@ -155,4 +159,4 @@ namespace stdpp::sycl {
     } catch (...) {
         return std::unexpected(std::string("[SYCL] [ERROR] 未知错误!"));
     }
-}
+} // namespace stdpp::sycl

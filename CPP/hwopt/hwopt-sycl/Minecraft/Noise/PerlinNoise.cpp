@@ -86,10 +86,10 @@ auto PerlinNoise::get_max_value() const -> double {
 }
 
 auto PerlinNoise::get_value(const double x, const double y, const double z) const -> double {
-    return this->get_value(x, y, z, 0.0, 0.0, false);
+    return this->get_value(x, y, z, 0.0, 0.0);
 }
 
-auto PerlinNoise::get_value(const double x, const double y, const double z, const double y_scale, const double y_fudge, const bool y_flat_hack) const -> double {
+auto PerlinNoise::get_value(const double x, const double y, const double z, const double y_scale, const double y_fudge) const -> double {
     struct KernelParams {
         double value{0.0};
         double factor{0.0};
@@ -113,7 +113,7 @@ auto PerlinNoise::get_value(const double x, const double y, const double z, cons
 
             const double xf = sycl::fma(-sycl::floor(x * params_->factor * 1.0 / 3.3554432E7 + 0.5), 3.3554432E7, x * params_->factor);
             const double zf = sycl::fma(-sycl::floor(z * params_->factor * 1.0 / 3.3554432E7 + 0.5), 3.3554432E7, z * params_->factor);
-            const double yf = y_flat_hack ? -noise.yo : sycl::fma(-sycl::floor(y * params_->factor * 1.0 / 3.3554432E7 + 0.5), 3.3554432E7, y * params_->factor);
+            const double yf = sycl::fma(-sycl::floor(y * params_->factor * 1.0 / 3.3554432E7 + 0.5), 3.3554432E7, y * params_->factor);
 
             const double noise_val = noise.noise(xf, yf, zf, y_scale * params_->factor, y_fudge * params_->factor);
 
@@ -154,7 +154,7 @@ auto PerlinNoise::get_values(const std::vector<Tuple>& pos_vec) const -> std::ex
     tuple.copy_from(pos_vec.data(), pos_vec.size());
     values.clear();
 
-    queue->submit([&](sycl::handler& h) {
+    queue->submit([&](sycl::handler& h) -> void {
         sycl::local_accessor<ImprovedNoise> local_noises(sycl::range(n), h);
         sycl::local_accessor<double> local_amps(sycl::range(n), h);
 

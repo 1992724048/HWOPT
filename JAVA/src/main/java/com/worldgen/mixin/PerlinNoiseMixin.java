@@ -24,26 +24,26 @@ import static library.dll.PerlinNoiseNative.NATIVE;
 
 @Mixin(PerlinNoise.class)
 public abstract class PerlinNoiseMixin implements AutoCloseable {
-    
+
     @Unique
     private PerlinNoiseNative hwopt$nativePtr;
     @Unique
     private Cleaner.Cleanable hwopt$cleanable;
     @Unique
     private static final Cleaner hwopt$CLEANER = Cleaner.create();
-    
+
     @Override
     public void close() {
         if (null != this.hwopt$nativePtr) {
             this.hwopt$nativePtr.destroy();
             this.hwopt$nativePtr = null;
-            
+
             if (null != this.hwopt$cleanable) {
                 this.hwopt$cleanable.clean();
             }
         }
     }
-    
+
     @Inject(method = "<init>", at = @At("TAIL"))
     private void hwopt$init(final RandomSource random, final Pair<Integer, DoubleList> pair,
                             final boolean useNewInitialization,
@@ -62,61 +62,59 @@ public abstract class PerlinNoiseMixin implements AutoCloseable {
             }
         });
     }
-    
+
     @Inject(method = "getValue(DDD)D", at = @At("HEAD"), cancellable = true)
     private void getValue(final double x, final double y, final double z, final CallbackInfoReturnable<Double> cir) {
         if (null == this.hwopt$nativePtr) {
             return;
         }
-        
+
         cir.setReturnValue(this.hwopt$nativePtr.getValue(x, y, z));
         cir.cancel();
     }
-    
-    @Inject(method = "getValue(DDDDDZ)D", at = @At("HEAD"), cancellable = true)
-    private void getValue(final double x, final double y, final double z, final double yScale, final double yFudge,
-                          final boolean yFlatHack,
-                          final CallbackInfoReturnable<Double> cir) {
+
+    @Inject(method = "getValue(DDDDD)D", at = @At("HEAD"), cancellable = true)
+    private void getValue(double x, double y, double z, double yScale, double yFudge, CallbackInfoReturnable<Double> cir) {
         if (null == this.hwopt$nativePtr) {
             return;
         }
-        
+
         cir.setReturnValue(
-                this.hwopt$nativePtr.getValue(x, y, z, yScale, yFudge, yFlatHack)
+                this.hwopt$nativePtr.getValue(x, y, z, yScale, yFudge)
         );
         cir.cancel();
     }
-    
+
     @Inject(method = "edgeValue", at = @At("HEAD"), cancellable = true)
     private void edgeValue(final double noiseValue, final CallbackInfoReturnable<Double> cir) {
         if (null == this.hwopt$nativePtr) {
             return;
         }
-        
+
         cir.setReturnValue(this.hwopt$nativePtr.edgeValue(noiseValue));
         cir.cancel();
     }
-    
+
     @Inject(method = "firstOctave", at = @At("HEAD"), cancellable = true)
     private void firstOctave(final CallbackInfoReturnable<Integer> cir) {
         if (null == this.hwopt$nativePtr) {
             return;
         }
-        
+
         cir.setReturnValue(this.hwopt$nativePtr.first_octave());
         cir.cancel();
     }
-    
+
     @Inject(method = "maxValue", at = @At("HEAD"), cancellable = true)
     private void maxValue(final CallbackInfoReturnable<Double> cir) {
         if (null == this.hwopt$nativePtr) {
             return;
         }
-        
+
         cir.setReturnValue(this.hwopt$nativePtr.max_value());
         cir.cancel();
     }
-    
+
     @Inject(method = "amplitudes", at = @At("HEAD"), cancellable = true)
     private void amplitudes(final CallbackInfoReturnable<DoubleList> cir) {
         if (null == this.hwopt$nativePtr) {

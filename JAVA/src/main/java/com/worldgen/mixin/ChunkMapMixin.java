@@ -1,4 +1,4 @@
-﻿package com.worldgen.mixin;
+package com.worldgen.mixin;
 
 import net.minecraft.server.level.ChunkMap;
 import org.spongepowered.asm.mixin.Mixin;

@@ -1,9 +1,7 @@
-﻿// 遂沫 PerlinNoise.h
-// 2026-02-16 00:09:28
-
-#pragma once
+﻿#pragma once
 #include <cstdint>
 #include <optional>
+#include <random>
 #include <utility>
 #include <vector>
 
@@ -13,11 +11,13 @@
 namespace minecraft {
     class __declspec(dllexport) PerlinNoise final : JavaNative<PerlinNoise> {
     public:
+        PerlinNoise() = default;
         PerlinNoise(uint64_t seed, const std::pair<int, std::vector<double>>& pair, bool use_new_initialization);
+        PerlinNoise(std::mt19937_64& rng, const std::pair<int, std::vector<double>>& pair, bool use_new_initialization);
 
         [[nodiscard]] auto get_max_value() const -> double;
         [[nodiscard]] auto get_value(double x, double y, double z) const -> double;
-        [[nodiscard]] auto get_value(double x, double y, double z, double y_scale, double y_fudge, bool y_flat_hack) const -> double;
+        [[nodiscard]] auto get_value(double x, double y, double z, double y_scale, double y_fudge) const -> double;
         [[nodiscard]] auto max_broken_value(double y_scale) const -> double;
 
         inline static auto wrap(double x) -> double;
@@ -26,8 +26,9 @@ namespace minecraft {
         [[nodiscard]] auto edge_value(double noise_value) const -> double;
 
         static auto add_methods() -> void;
-
     private:
+        auto init(std::mt19937_64& rng, const std::pair<int, std::vector<double>>& pair, bool use_new_initialization) -> void;
+
         int first_octave;
         double max_value;
         double lowest_freq_value_factor;

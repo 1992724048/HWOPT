@@ -1,15 +1,13 @@
-﻿// 遂沫 sycl-queue.h
-// 2026-02-12 22:07:02
+﻿// 2026-06-11 12:52:13
 
 #pragma once
+#include <Windows.h>
 #include <atomic>
 #include <memory>
 #include <sycl.hpp>
 #include <usm.hpp>
-#include <Windows.h>
-#include <parallel_hashmap/phmap.h>
 
-extern phmap::parallel_node_hash_map<int, std::atomic<std::shared_ptr<sycl::queue>>> queue_map;
+extern std::unordered_map<int, std::atomic<std::shared_ptr<sycl::queue>>> queue_map;
 
 namespace sycl {
     template<typename T>
@@ -74,7 +72,6 @@ namespace sycl {
         auto operator->() const -> const T* {
             return ptr;
         }
-
     private:
         DeviceMemory() = default;
         queue* queue_ptr;
@@ -119,7 +116,6 @@ namespace sycl {
         auto operator->() const -> const T* {
             return ptr;
         }
-
     private:
         SharedMemory() = default;
         queue* queue_ptr;

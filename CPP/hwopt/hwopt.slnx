@@ -3,6 +3,12 @@
     <Platform Name="x64" />
     <Platform Name="x86" />
   </Configurations>
+  <Project Path="../../../Library/glm/glm.vcxitems" Id="bf232a4e-9838-4e2a-a144-bcc9f616d646" />
+  <Project Path="../../../Library/gtest/gtest.vcxitems" Id="2bbbac27-ca38-44f1-9aec-798ec1902222" />
+  <Project Path="../../../Library/magic_enum/magic_enum.vcxitems" Id="89bf4412-c3ae-4725-b946-ec5aba6d8ea3" />
+  <Project Path="../../../Library/mimalloc/mimalloc.vcxitems" Id="85f76382-1274-4617-b01c-b72a8e463c4c" />
+  <Project Path="../../../Library/parallel_hashmap/parallel_hashmap.vcxitems" Id="fb975bce-5eab-4257-92f9-8a19bf995845" />
+  <Project Path="../../../Library/stdpp/stdpp.vcxitems" Id="83123dd2-7a7e-496b-9b5d-e426d0ee48e3" />
   <Project Path="../../Fortran/Fortran.vfproj" Type="6989167d-11e4-40fe-8c1a-2192a86a7e90">
     <Platform Solution="*|x86" Project="Win32" />
   </Project>

@@ -17,7 +17,6 @@ namespace minecraft_sycl {
 
         SYCL_EXTERNAL [[nodiscard]] auto noise(double x, double y, double z) const -> double;
         SYCL_EXTERNAL [[nodiscard]] auto noise(double _x, double _y, double _z, double yScale, double yFudge) const -> double;
-
     private:
         std::array<uint8_t, 256> p;
 

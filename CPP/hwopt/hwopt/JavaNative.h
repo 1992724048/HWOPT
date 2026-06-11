@@ -1,7 +1,4 @@
-﻿// 遂沫 JavaNative.h
-// 2026-02-08 22:09:08
-
-#pragma once
+﻿#pragma once
 #include <exception>
 #include <functional>
 #include <optional>
@@ -41,7 +38,6 @@ struct MethodThunk<Fn> {
 class JavaNativeBase {
 protected:
     ~JavaNativeBase() = default;
-
 public:
     using Method = void*;
 
@@ -80,11 +76,9 @@ public:
             using Thunk = MethodThunk<MemFn>;
             methods()[name] = reinterpret_cast<Method>(&Thunk::call);
         }
-
     private:
         std::string name;
     };
-
 private:
     static auto methods() -> std::unordered_map<std::string, Method>& {
         static std::unordered_map<std::string, Method> map;
@@ -102,13 +96,10 @@ class JavaNative : public JavaNativeBase {
     JavaNative() {
         JavaNative::touch();
     }
-
 protected:
     ~JavaNative() = default;
-
 public:
     static constexpr bool isAutoCreation = AutoCreation;
-
 private:
     struct AutoReg {
         AutoReg() {

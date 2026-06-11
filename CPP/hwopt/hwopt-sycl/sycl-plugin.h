@@ -10,7 +10,7 @@
 #include <vector>
 
 namespace stdpp::sycl {
-#define DLL_API __declspec(dllexport)
+    #define DLL_API __declspec(dllexport)
 
     enum DeviceType {
         CPU,
