@@ -1,9 +1,19 @@
-﻿// 遂沫 test.cpp
-// 2026-02-13 12:10:43
+﻿// 2026-06-11 20:13:11
 
-#include "pch.h"
+#include <chrono>
+#include <exception>
+#include <iostream>
+#include <string>
+#include <vector>
+#include "E:/CODE/HWOPT/CPP/hwopt/hwopt-sycl/Minecraft/Noise/PerlinNoise.h"
+#include "E:/CODE/HWOPT/CPP/hwopt/hwopt-sycl/TEST/SYCL-TEST.h"
+#include "E:/CODE/HWOPT/CPP/hwopt/hwopt-sycl/sycl-plugin.h"
+#include "E:/CODE/HWOPT/CPP/hwopt/hwopt/Minecraft/Noise/PerlinNoise.h"
+#include "E:/CODE/HWOPT/CPP/hwopt/hwopt/TEST/CPU/CPU.h"
 
-auto format_duration(auto duration) -> std::string {
+#include "gtest/gtest.h"
+
+static auto format_duration(auto duration) -> std::string {
     const auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
     const auto s = std::chrono::duration_cast<std::chrono::seconds>(duration).count();
     if (s > 0) {
@@ -53,19 +63,18 @@ TEST(TBB, CPU) {
 
 TEST(SYCL, GPU) {
     try {
-        const auto total_start = std::chrono::high_resolution_clock::now();
-
         static const auto exp = stdpp::sycl::Device::get_device();
         ASSERT_TRUE(exp.has_value()) << "获取设备失败: " << exp.error();
 
-        for (auto& info : exp.value()) {
-            auto& [type, name, platform] = info;
+        for (const auto& info : exp.value()) {
+            const auto& [type, name, platform] = info;
             std::cout << "\n设备: " << name << " (" << platform << ")\n";
 
             if (const auto gpu_queue = stdpp::sycl::Device::create_device(info)) {
                 auto opt = stdpp::sycl::Device::enable_profiling(*gpu_queue);
                 ASSERT_TRUE(!opt.has_value()) << "设置性能分析模式失败! 错误: " << *opt << '\n';
 
+                const auto total_start = std::chrono::high_resolution_clock::now();
                 const auto compute_start = std::chrono::high_resolution_clock::now();
                 if (auto a = TEST::test_compute(*gpu_queue, 181920, 50'000)) {
                     const auto compute_end = std::chrono::high_resolution_clock::now();
@@ -94,13 +103,13 @@ TEST(SYCL, GPU) {
                 } else {
                     std::cout << "PerlinNoise 测试失败: " << c.error() << '\n';
                 }
+
+                const auto total_end = std::chrono::high_resolution_clock::now();
+                std::cout << "\n总用时: " << format_duration(total_end - total_start) << "\n";
             } else {
                 std::cout << "创建设备队列失败\n";
             }
         }
-
-        const auto total_end = std::chrono::high_resolution_clock::now();
-        std::cout << "\n总用时: " << format_duration(total_end - total_start) << "\n";
     } catch (const std::exception& e) {
         std::cout << "执行失败! 异常: " << e.what() << "\n";
     } catch (...) {

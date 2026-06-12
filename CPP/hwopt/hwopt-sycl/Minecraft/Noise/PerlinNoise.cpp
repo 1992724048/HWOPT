@@ -160,7 +160,7 @@ auto PerlinNoise::get_values(const std::vector<Tuple>& pos_vec) const -> std::ex
 
         h.parallel_for(sycl::nd_range<>(global_size, WG_SIZE),
                        [N, local_noises, local_amps, amps = this->amplitudes, noises = this->noise_levels, factor_ = this->lowest_freq_input_factor, value_factor_ = this->lowest_freq_value_factor, n,
-                           params = tuple.ptr, vals = values.ptr](const sycl::nd_item<> item) {
+                           params = tuple.ptr, vals = values.ptr](const sycl::nd_item<> item) -> void {
                            if (item.get_local_id(0) < n) {
                                local_noises[item.get_local_id(0)] = noises[item.get_local_id(0)];
                                local_amps[item.get_local_id(0)] = amps[item.get_local_id(0)];
@@ -181,15 +181,15 @@ auto PerlinNoise::get_values(const std::vector<Tuple>& pos_vec) const -> std::ex
                            for (size_t noise_idx = 0; noise_idx < n; ++noise_idx) {
                                const ImprovedNoise& noise = local_noises[noise_idx];
 
-                               const double zf = sycl::fma(-sycl::floor(pos.z * factor * 1.0 / 3.3554432E7 + 0.5), 3.3554432E7, pos.z * factor);
-                               const double xf = sycl::fma(-sycl::floor(pos.x * factor * 1.0 / 3.3554432E7 + 0.5), 3.3554432E7, pos.x * factor);
-                               const double yf = y_flat_hack ? -noise.yo : sycl::fma(-sycl::floor(pos.y * factor * 1.0 / 3.3554432E7 + 0.5), 3.3554432E7, pos.y * factor);
+                               const double zf = sycl::fma(-sycl::floor((pos.z * factor * 1.0 / 3.3554432E7) + 0.5), 3.3554432E7, pos.z * factor);
+                               const double xf = sycl::fma(-sycl::floor((pos.x * factor * 1.0 / 3.3554432E7) + 0.5), 3.3554432E7, pos.x * factor);
+                               const double yf = y_flat_hack ? -noise.yo : sycl::fma(-sycl::floor((pos.y * factor * 1.0 / 3.3554432E7) + 0.5), 3.3554432E7, pos.y * factor);
 
                                const double noise_val = noise.noise(xf, yf, zf, xy.x * factor, xy.y * factor);
                                local_sum += local_amps[noise_idx] * noise_val * value_factor;
 
-                               factor *= 2.0;
-                               value_factor *= 0.5;
+                               factor *= 2.0F;
+                               value_factor *= 0.5F;
                            }
 
                            vals[i] = local_sum;

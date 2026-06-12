@@ -91,6 +91,5 @@ auto __declspec(dllexport) test_perlin_noise(const size_t n) -> double {
                          [[maybe_unused]] auto _ = noise.get_value(--p, ++p, --p);
                      }
                  });
-
     return 0.f;
 }

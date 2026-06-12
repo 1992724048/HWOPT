@@ -119,7 +119,7 @@ auto TEST::test_perlin_noise(const int queue_id, const std::vector<minecraft_syc
     const minecraft_sycl::PerlinNoise noise(queue_id, done, 114514, std::pair{1, std::vector<double>{1.0f, 1.0f, 1.0f}}, true);
     [[maybe_unused]] auto vector = noise.get_values(tuples);
     if (vector) {
-        return 0.f;
+        return 0.F;
     }
     return std::unexpected(vector.error());
 }
