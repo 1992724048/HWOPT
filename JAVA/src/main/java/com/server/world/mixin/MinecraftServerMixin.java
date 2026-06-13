@@ -28,7 +28,7 @@ public abstract class MinecraftServerMixin {
         if (villagePos.isEmpty()) {
             return;
         }
-
+        
         BlockPos village = villagePos.get();
         BlockPos spawn = level.getHeightmapPos(Heightmap.Types.WORLD_SURFACE, village);
 

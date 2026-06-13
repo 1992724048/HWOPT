@@ -2,36 +2,22 @@ package com.worldgen.mixin;
 
 import com.worldgen.accessor.NoiseChunkAccessor;
 import com.worldgen.util.BlockIdRegistry;
-import library.dll.BlockIdRegistryNative;
-import library.dll.NoiseChunkGeneratorNative;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.util.Mth;
-import net.minecraft.util.Util;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.StructureManager;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.server.level.ChunkMap;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.LevelChunkSection;
 import net.minecraft.world.level.levelgen.*;
 import net.minecraft.world.level.levelgen.blending.Blender;
-import org.spongepowered.asm.mixin.Final;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.Unique;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import org.spongepowered.asm.mixin.*;
 import org.spongepowered.include.com.google.common.collect.Sets;
 import util.TimeCost;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-import java.util.*;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -49,36 +35,37 @@ public abstract class NoiseBasedChunkGeneratorMixin {
 	
 	private static final BlockState AIR = Blocks.AIR.defaultBlockState();
 	
-	@Shadow
-	protected abstract ChunkAccess doFill(Blender blender, StructureManager structureManager, RandomState randomState, ChunkAccess centerChunk, int cellMinY, int cellCountY);
-	
-	@Inject(method = "fillFromNoise", at = @At("HEAD"), cancellable = true)
-	private void fillFromNoise(final Blender blender, final RandomState randomState, final StructureManager structureManager, final ChunkAccess centerChunk, final CallbackInfoReturnable<CompletableFuture<ChunkAccess>> cir) {
+	@Overwrite
+	public CompletableFuture<ChunkAccess> fillFromNoise(final Blender blender, final RandomState randomState, final StructureManager structureManager, final ChunkAccess centerChunk) {
 		final NoiseSettings noiseSettings = settings.value().noiseSettings().clampToHeightAccessor(centerChunk.getHeightAccessorForGeneration());
 		final int minY = noiseSettings.minY();
 		final int cellYMin = Mth.floorDiv(minY, noiseSettings.getCellHeight());
 		final int cellCountY = Mth.floorDiv(noiseSettings.height(), noiseSettings.getCellHeight());
-		cir.setReturnValue(0 >= cellCountY ? CompletableFuture.completedFuture(centerChunk) : CompletableFuture.supplyAsync(() -> {
-			final int topSectionIndex = centerChunk.getSectionIndex(cellCountY * noiseSettings.getCellHeight() - 1 + minY);
-			final int bottomSectionIndex = centerChunk.getSectionIndex(minY);
-			final Set<LevelChunkSection> sections = Sets.newHashSet();
-			
-			for (int sectionIndex = topSectionIndex; sectionIndex >= bottomSectionIndex; sectionIndex--) {
-				final LevelChunkSection section = centerChunk.getSection(sectionIndex);
-				section.acquire();
-				sections.add(section);
-			}
-			
-			ChunkAccess var20;
-			try {
-				var20 = doFill(blender, structureManager, randomState, centerChunk, cellYMin, cellCountY);
-			} finally {
-				for (final LevelChunkSection section : sections) {
-					section.release();
+		if (0 >= cellCountY) {
+			return CompletableFuture.completedFuture(centerChunk);
+		} else {
+			return CompletableFuture.supplyAsync(() -> {
+				final int topSectionIndex = centerChunk.getSectionIndex(cellCountY * noiseSettings.getCellHeight() - 1 + minY);
+				final int bottomSectionIndex = centerChunk.getSectionIndex(minY);
+				final Set<LevelChunkSection> sections = Sets.newHashSet();
+				
+				for (int sectionIndex = topSectionIndex; sectionIndex >= bottomSectionIndex; sectionIndex--) {
+					final LevelChunkSection section = centerChunk.getSection(sectionIndex);
+					section.acquire();
+					sections.add(section);
 				}
-			}
-			return var20;
-		}, NoiseBasedChunkGeneratorMixin.WORLDGEN_EXECUTOR));
+				
+				ChunkAccess var20;
+				try {
+					var20 = doFill(blender, structureManager, randomState, centerChunk, cellYMin, cellCountY);
+				} finally {
+					for (final LevelChunkSection section : sections) {
+						section.release();
+					}
+				}
+				return var20;
+			}, NoiseBasedChunkGeneratorMixin.WORLDGEN_EXECUTOR);
+		}
 	}
 	
 	@Unique
@@ -88,8 +75,8 @@ public abstract class NoiseBasedChunkGeneratorMixin {
 	@Unique
 	private static final AtomicLong TOTAL_CHUNK_COUNT = new AtomicLong();
 	
-	@Inject(method = "doFill", at = @At("HEAD"), cancellable = true)
-	private void doFill(final Blender blender, final StructureManager structureManager, final RandomState randomState, final ChunkAccess centerChunk, final int cellMinY, final int cellCountY, final CallbackInfoReturnable<ChunkAccess> cir) {
+	@Overwrite
+	public ChunkAccess doFill(final Blender blender, final StructureManager structureManager, final RandomState randomState, final ChunkAccess centerChunk, final int cellMinY, final int cellCountY) {
 		
 		final NoiseChunk noiseChunk = centerChunk.getOrCreateNoiseChunk(chunk -> this.createNoiseChunk(chunk, structureManager, blender, randomState));
 		
@@ -121,11 +108,6 @@ public abstract class NoiseBasedChunkGeneratorMixin {
 		
 		long stateTime = 0;
 		long writeTime = 0;
-        
-/*        long s0 = System.nanoTime();
-        NoiseChunkGeneratorNative.NATIVE.getInterpolatedState(noiseCache, noiseArraySize, sizeX, sizeY, sizeZ);
-        long s1 = System.nanoTime();
-        stateTime += (s1 - s0);*/
 		
 		final long s0 = System.nanoTime();
 		for (int cellX = 0; cellX < cellCountX; cellX++) {
@@ -245,7 +227,7 @@ public abstract class NoiseBasedChunkGeneratorMixin {
 			System.out.println("write total: " + TimeCost.formatNanos(write));
 		}
 		
-		cir.setReturnValue(centerChunk);
+		return centerChunk;
 	}
 	
 	@Shadow

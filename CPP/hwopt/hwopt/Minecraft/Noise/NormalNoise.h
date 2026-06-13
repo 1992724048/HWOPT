@@ -17,7 +17,6 @@ namespace minecraft {
         static auto add_methods() -> void;
         static auto _create(uint64_t seed, int first_octave, double* amplitudes, int size, bool use_new_initialization) -> NormalNoise*;
         auto _destroy() const -> void;
-
     private:
         static constexpr double INPUT_FACTOR = 1.0181268882175227;
 

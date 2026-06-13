@@ -1,9 +1,10 @@
 ﻿#pragma once
 #include <array>
 #include <random>
+#include "../../JavaNative.h"
 
 namespace minecraft {
-    class __declspec(dllexport) ImprovedNoise final {
+    class __declspec(dllexport) ImprovedNoise final : JavaNative<ImprovedNoise> {
     public:
         double xo;
         double yo;
@@ -17,6 +18,8 @@ namespace minecraft {
         [[nodiscard]] auto noise(double _x, double _y, double _z, double yScale, double yFudge) const -> double;
 
         auto noise_with_derivative(double _x, double _y, double _z, double* derivativeOut) const -> double;
+
+        static auto add_methods() -> void;
     private:
         std::array<int8_t, 256> p{};
 

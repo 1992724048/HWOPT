@@ -6,6 +6,7 @@
 using namespace minecraft;
 
 ImprovedNoise::ImprovedNoise(std::mt19937_64& mt) {
+    JavaNative::touch();
     std::uniform_real_distribution dist_double(0.0, 1.0);
 
     this->xo = dist_double(mt) * 256.0F;
@@ -67,6 +68,10 @@ auto ImprovedNoise::noise_with_derivative(const double _x, const double _y, cons
     const double yr = y - yf;
     const double zr = z - zf;
     return this->sample_with_derivative(xf, yf, zf, xr, yr, zr, derivativeOut);
+}
+
+auto ImprovedNoise::add_methods() -> void {
+    // "ImprovedNoise::_create"_jf.reg<_create>();
 }
 
 inline auto ImprovedNoise::grad_dot(const int hash, const double x, const double y, const double z) -> double {

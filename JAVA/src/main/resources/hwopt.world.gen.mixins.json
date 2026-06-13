@@ -4,8 +4,9 @@
   "compatibilityLevel": "JAVA_25",
   "mixins": [
     "NoiseBasedChunkGeneratorMixin",
-    "PerlinNoiseMixin",
-    "NormalNoiseMixin"
+    "ImprovedNoiseMixin",
+    "SimplexNoiseMixin",
+    "PerlinNoiseMixin"
   ],
   "injectors": {
     "defaultRequire": 1

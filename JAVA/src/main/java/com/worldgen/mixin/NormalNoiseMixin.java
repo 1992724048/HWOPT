@@ -5,11 +5,11 @@ import library.dll.NormalNoiseNative;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.levelgen.synth.NormalNoise;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.lang.ref.Cleaner;
 
@@ -47,21 +47,19 @@ public abstract class NormalNoiseMixin implements AutoCloseable {
 		});
 	}
 	
-	@Inject(method = "getValue", at = @At("HEAD"), cancellable = true)
-	public void getValue(double x, double y, double z, CallbackInfoReturnable<Double> cir) {
+	@Overwrite
+	public double getValue(double x, double y, double z) {
 		if (null == this.hwopt$nativePtr) {
-			return;
+			return 0.0;
 		}
-		cir.setReturnValue(hwopt$nativePtr.getValue(x, y, z));
-		cir.cancel();
+		return hwopt$nativePtr.getValue(x, y, z);
 	}
 	
-	@Inject(method = "maxValue", at = @At("HEAD"), cancellable = true)
-	public void maxValue(CallbackInfoReturnable<Double> cir) {
+	@Overwrite
+	public double maxValue() {
 		if (null == this.hwopt$nativePtr) {
-			return;
+			return 0.0;
 		}
-		cir.setReturnValue(hwopt$nativePtr.maxValue());
-		cir.cancel();
+		return hwopt$nativePtr.maxValue();
 	}
 }
