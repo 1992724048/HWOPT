@@ -2,6 +2,8 @@
 
 #include "ImprovedNoise.h"
 #include <array>
+#include <cstdio>
+#include <print>
 #include <random>
 using namespace minecraft;
 
@@ -34,9 +36,9 @@ auto ImprovedNoise::noise(const double x, const double y, const double z, const 
     const double x1 = x + this->xo;
     const double y1 = y + this->yo;
     const double z1 = z + this->zo;
-    const int xf = std::floor(x1);
-    const int yf = std::floor(y1);
-    const int zf = std::floor(z1);
+    const double xf = std::floor(x1);
+    const double yf = std::floor(y1);
+    const double zf = std::floor(z1);
     const double xr = x1 - xf;
     const double yr = y1 - yf;
     const double zr = z1 - zf;
@@ -61,9 +63,9 @@ auto ImprovedNoise::noise_with_derivative(const double x, const double y, const 
     const double x1 = x + this->xo;
     const double y1 = y + this->yo;
     const double z1 = z + this->zo;
-    const int xf = std::floor(x1);
-    const int yf = std::floor(y1);
-    const int zf = std::floor(z1);
+    const double xf = std::floor(x1);
+    const double yf = std::floor(y1);
+    const double zf = std::floor(z1);
     const double xr = x1 - xf;
     const double yr = y1 - yf;
     const double zr = z1 - zf;
@@ -139,14 +141,14 @@ auto ImprovedNoise::sample_with_derivative(const int x, const int y, const int z
     const int p101 = this->perm(xy10 + z + 1);
     const int p011 = this->perm(xy01 + z + 1);
     const int p111 = this->perm(xy11 + z + 1);
-    const int* g000 = &GRADIENT[p000 & 15 * 3];
-    const int* g100 = &GRADIENT[p100 & 15 * 3];
-    const int* g010 = &GRADIENT[p010 & 15 * 3];
-    const int* g110 = &GRADIENT[p110 & 15 * 3];
-    const int* g001 = &GRADIENT[p001 & 15 * 3];
-    const int* g101 = &GRADIENT[p101 & 15 * 3];
-    const int* g011 = &GRADIENT[p011 & 15 * 3];
-    const int* g111 = &GRADIENT[p111 & 15 * 3];
+    const int* g000 = &GRADIENT[p000 & (15 * 3)];
+    const int* g100 = &GRADIENT[p100 & (15 * 3)];
+    const int* g010 = &GRADIENT[p010 & (15 * 3)];
+    const int* g110 = &GRADIENT[p110 & (15 * 3)];
+    const int* g001 = &GRADIENT[p001 & (15 * 3)];
+    const int* g101 = &GRADIENT[p101 & (15 * 3)];
+    const int* g011 = &GRADIENT[p011 & (15 * 3)];
+    const int* g111 = &GRADIENT[p111 & (15 * 3)];
     const double d000 = dot(g000, xr, yr, zr);
     const double d100 = dot(g100, xr - 1.0, yr, zr);
     const double d010 = dot(g010, xr, yr - 1.0, zr);

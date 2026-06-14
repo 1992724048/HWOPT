@@ -23,12 +23,38 @@ namespace stdpp::sycl {
     public:
         using DeviceInfo = std::tuple<DeviceType, std::string, std::string>;
 
-        static auto switch_device(int queue_id, const DeviceInfo& device_info) -> std::optional<std::string>;
-        static auto create_device(const DeviceInfo& device_info) -> std::expected<int, std::string>;
-        static auto create_device() -> std::expected<int, std::string>;
-        static auto free(int queue_id) -> std::optional<std::string>;
-        static auto enable_profiling(int queue_id) -> std::optional<std::string>;
+        struct Handle {
+            explicit Handle(const uint64_t id) {
+                this->id = id;
+            }
+
+            Handle(const Handle& other) = delete;
+            Handle(Handle&& other) noexcept = delete;
+            auto operator=(const Handle& other) -> Handle& = delete;
+            auto operator=(Handle&& other) noexcept -> Handle& = delete;
+
+            ~Handle() noexcept {
+                if (id != 0) {
+                    try {
+                        free(id);
+                    } catch (const std::exception&) {
+                        // ignore
+                    }
+                }
+            }
+
+            friend Device;
+        private:
+            uint64_t id{0};
+        };
+
+        static auto switch_device(const std::unique_ptr<Handle>& queue_id, const DeviceInfo& device_info) -> std::optional<std::string>;
+        static auto create_device(const DeviceInfo& device_info) -> std::expected<std::unique_ptr<Handle>, std::string>;
+        static auto create_device() -> std::expected<std::unique_ptr<Handle>, std::string>;
+        static auto enable_profiling(const std::unique_ptr<Handle>& queue_id) -> std::optional<std::string>;
 
         static auto get_device() -> std::expected<std::vector<DeviceInfo>, std::string>;
+    private:
+        static auto free(uint64_t queue_id) -> std::optional<std::string>;
     };
-}
+} // namespace stdpp::sycl

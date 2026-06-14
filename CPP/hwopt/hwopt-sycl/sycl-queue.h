@@ -7,8 +7,6 @@
 #include <sycl.hpp>
 #include <usm.hpp>
 
-extern std::unordered_map<int, std::atomic<std::shared_ptr<sycl::queue>>> queue_map;
-
 namespace sycl {
     template<typename T>
     struct DeviceMemory final {

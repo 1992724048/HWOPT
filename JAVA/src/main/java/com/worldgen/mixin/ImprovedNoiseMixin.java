@@ -2,6 +2,7 @@ package com.worldgen.mixin;
 
 import com.google.common.annotations.VisibleForTesting;
 import library.dll.ImprovedNoiseNative;
+import nativecode.dll.FFMFactory;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.levelgen.synth.ImprovedNoise;
 import net.minecraft.world.level.levelgen.synth.NoiseUtils;
@@ -9,10 +10,6 @@ import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
-import java.lang.ref.Cleaner;
-
-import static library.dll.ImprovedNoiseNative.NATIVE;
 
 @Mixin(ImprovedNoise.class)
 public abstract class ImprovedNoiseMixin {
@@ -32,21 +29,10 @@ public abstract class ImprovedNoiseMixin {
 	
 	@Unique
 	private ImprovedNoiseNative hwopt$nativePtr;
-	@Unique
-	private Cleaner.Cleanable hwopt$cleanable;
-	@Unique
-	private static final Cleaner hwopt$CLEANER = Cleaner.create();
 	
 	@Inject(method = "<init>", at = @At("RETURN"))
 	private void hwopt$init(RandomSource random, CallbackInfo ci) {
-		this.hwopt$nativePtr = NATIVE.create(xo, yo, zo, p, p.length);
-		
-		final ImprovedNoiseNative capturedPtr = this.hwopt$nativePtr;
-		this.hwopt$cleanable = hwopt$CLEANER.register(this, () -> {
-			if (null != capturedPtr) {
-				capturedPtr.destroy();
-			}
-		});
+		this.hwopt$nativePtr = FFMFactory.trackCleaner(this, ImprovedNoiseNative.create(xo, yo, zo, p));
 	}
 	
 	@Overwrite
@@ -67,7 +53,7 @@ public abstract class ImprovedNoiseMixin {
 	
 	@Overwrite
 	private static double gradDot(int hash, double x, double y, double z) {
-		return NATIVE.grad_dot(hash, x, y, z);
+		return ImprovedNoiseNative.instance().grad_dot(hash, x, y, z);
 	}
 	
 	@Overwrite

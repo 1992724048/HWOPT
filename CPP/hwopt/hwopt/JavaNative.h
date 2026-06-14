@@ -2,6 +2,7 @@
 #include <exception>
 #include <functional>
 #include <optional>
+#include <span>
 #include <string>
 #include <type_traits>
 #include <unordered_map>
@@ -120,35 +121,14 @@ private:
 template<typename T, bool AutoCreation>
 inline JavaNative<T, AutoCreation>::AutoReg JavaNative<T, AutoCreation>::auto_reg_;
 
-inline auto operator"" _jf(const char* name, size_t) -> JavaNativeBase::MethodBinder {
+inline auto operator""_jf(const char* name, size_t _) -> JavaNativeBase::MethodBinder {
     return JavaNativeBase::MethodBinder{name};
 }
 
 class JavaUtil {
 public:
     template<typename T>
-    static auto to_vector(T* ptr, int size) -> std::vector<T> try {
-        std::vector<T> vector(size);
-        std::memcpy(vector.data(), ptr, size * sizeof(T));
-        return vector;
-    } catch (const std::exception& exception) {
-        ELOG << "[" << GetCurrentThreadId() << "] " << exception.what();
-        return {};
-    } catch (const stdpp::exception::NativeException& exception) {
-        ELOG << "[" << GetCurrentThreadId() << "] " << std::hex << exception.code() << " " << stdpp::encode::gbk_to_utf8(exception.what());
-        return {};
-    }
-
-    template<typename T>
-    static auto vector_copy(const std::vector<T>& vec, T* ptr, const int size) -> int try {
-        const int min = std::min(vec.size(), static_cast<size_t>(size));
-        std::memcpy(ptr, vec.data(), min * sizeof(T));
-        return min;
-    } catch (const std::exception& exception) {
-        ELOG << "[" << GetCurrentThreadId() << "] " << exception.what();
-        return 0;
-    } catch (const stdpp::exception::NativeException& exception) {
-        ELOG << "[" << GetCurrentThreadId() << "] " << std::hex << exception.code() << " " << stdpp::encode::gbk_to_utf8(exception.what());
-        return 0;
+    static auto to_span(T* ptr, int size) -> std::span<T> {
+        return std::span<T>(ptr, size);
     }
 };

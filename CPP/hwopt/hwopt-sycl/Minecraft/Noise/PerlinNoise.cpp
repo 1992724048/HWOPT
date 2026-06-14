@@ -10,6 +10,8 @@
 
 using namespace minecraft_sycl;
 
+extern std::unordered_map<uint64_t, std::atomic<std::shared_ptr<sycl::queue>>> queue_map;
+
 PerlinNoise::PerlinNoise(const int queue_id, bool& init_done, const uint64_t seed, const std::pair<int, std::vector<double>>& pair, const bool use_new_initialization) : queue_id{queue_id},
     amplitudes_size{0},
     noise_levels{nullptr} {

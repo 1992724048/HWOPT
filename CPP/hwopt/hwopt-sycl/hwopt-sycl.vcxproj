@@ -14,14 +14,12 @@
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="Minecraft\Noise\ImprovedNoise.cpp" />
     <ClCompile Include="Minecraft\Noise\PerlinNoise.cpp" />
-    <ClCompile Include="TEST\SYCL-TEST.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Minecraft\Noise\ImprovedNoise.h" />
     <ClInclude Include="Minecraft\Noise\PerlinNoise.h" />
     <ClInclude Include="sycl-plugin.h" />
     <ClInclude Include="sycl-queue.h" />
-    <ClInclude Include="TEST\SYCL-TEST.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{1573e81b-39c2-400a-8587-1462df388ac9}</ProjectGuid>
