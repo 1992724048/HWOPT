@@ -1,0 +1,13 @@
+{
+  "itemGroup.hwopt": "Example Mod Tab",
+  "block.hwopt.example_block": "Example Block",
+  "item.hwopt.example_item": "Example Item",
+
+  "hwopt.configuration.title": "HWOPT Configs",
+  "hwopt.configuration.section.hwopt.common.toml": "HWOPT Configs",
+  "hwopt.configuration.section.hwopt.common.toml.title": "HWOPT Configs",
+  "hwopt.configuration.items": "Item List",
+  "hwopt.configuration.logDirtBlock": "Log Dirt Block",
+  "hwopt.configuration.magicNumberIntroduction": "Magic Number Text",
+  "hwopt.configuration.magicNumber": "Magic Number"
+}

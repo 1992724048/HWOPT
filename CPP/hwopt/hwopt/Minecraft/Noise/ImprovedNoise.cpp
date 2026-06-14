@@ -5,41 +5,41 @@
 #include <random>
 using namespace minecraft;
 
-ImprovedNoise::ImprovedNoise(std::mt19937_64& mt) {
+ImprovedNoise::ImprovedNoise(std::mt19937_64& random) {
     JavaNative::touch();
     std::uniform_real_distribution dist_double(0.0, 1.0);
 
-    this->xo = dist_double(mt) * 256.0F;
-    this->yo = dist_double(mt) * 256.0F;
-    this->zo = dist_double(mt) * 256.0F;
+    this->xo = dist_double(random) * 256.0F;
+    this->yo = dist_double(random) * 256.0F;
+    this->zo = dist_double(random) * 256.0F;
 
     for (int i = 0; i < 256; i++) {
         this->p[i] = static_cast<int8_t>(i);
     }
 
     for (int i = 0; i < 256; i++) {
-        std::uniform_int_distribution d(0, 255 - i);
-        const int offset = d(mt);
+        std::uniform_int_distribution distribution(0, 255 - i);
+        const int offset = distribution(random);
         const int8_t tmp = this->p[i];
         this->p[i] = this->p[i + offset];
         this->p[i + offset] = tmp;
     }
 }
 
-auto ImprovedNoise::noise(const double _x, const double _y, const double _z) const -> double {
-    return this->noise(_x, _y, _z, 0.0F, 0.0F);
+auto ImprovedNoise::noise(const double x, const double y, const double z) const -> double {
+    return this->noise(x, y, z, 0.0F, 0.0F);
 }
 
-auto ImprovedNoise::noise(const double _x, const double _y, const double _z, const double y_scale, const double y_fudge) const -> double {
-    const double x = _x + this->xo;
-    const double y = _y + this->yo;
-    const double z = _z + this->zo;
-    const int xf = std::floor(x);
-    const int yf = std::floor(y);
-    const int zf = std::floor(z);
-    const double xr = x - xf;
-    const double yr = y - yf;
-    const double zr = z - zf;
+auto ImprovedNoise::noise(const double x, const double y, const double z, const double y_scale, const double y_fudge) const -> double {
+    const double x1 = x + this->xo;
+    const double y1 = y + this->yo;
+    const double z1 = z + this->zo;
+    const int xf = std::floor(x1);
+    const int yf = std::floor(y1);
+    const int zf = std::floor(z1);
+    const double xr = x1 - xf;
+    const double yr = y1 - yf;
+    const double zr = z1 - zf;
     double yr_fudge;
     if (y_scale != 0.0) {
         double fudge_limit;
@@ -57,21 +57,41 @@ auto ImprovedNoise::noise(const double _x, const double _y, const double _z, con
     return this->sample_and_lerperm(xf, yf, zf, xr, yr - yr_fudge, zr, yr);
 }
 
-auto ImprovedNoise::noise_with_derivative(const double _x, const double _y, const double _z, double* derivativeOut) const -> double {
-    const double x = _x + this->xo;
-    const double y = _y + this->yo;
-    const double z = _z + this->zo;
-    const int xf = std::floor(x);
-    const int yf = std::floor(y);
-    const int zf = std::floor(z);
-    const double xr = x - xf;
-    const double yr = y - yf;
-    const double zr = z - zf;
-    return this->sample_with_derivative(xf, yf, zf, xr, yr, zr, derivativeOut);
+auto ImprovedNoise::noise_with_derivative(const double x, const double y, const double z, double* derivative_out) const -> double {
+    const double x1 = x + this->xo;
+    const double y1 = y + this->yo;
+    const double z1 = z + this->zo;
+    const int xf = std::floor(x1);
+    const int yf = std::floor(y1);
+    const int zf = std::floor(z1);
+    const double xr = x1 - xf;
+    const double yr = y1 - yf;
+    const double zr = z1 - zf;
+    return this->sample_with_derivative(xf, yf, zf, xr, yr, zr, derivative_out);
 }
 
 auto ImprovedNoise::add_methods() -> void {
-    // "ImprovedNoise::_create"_jf.reg<_create>();
+    "ImprovedNoise::_create"_jf.reg<_create>();
+    "ImprovedNoise::_destroy"_jf.reg<&ImprovedNoise::_destroy>();
+    "ImprovedNoise::noise"_jf.reg<static_cast<double(ImprovedNoise::*)(double, double, double, double, double) const>(&ImprovedNoise::noise)>();
+    "ImprovedNoise::grad_dot"_jf.reg<&ImprovedNoise::grad_dot>();
+    "ImprovedNoise::sample_and_lerperm"_jf.reg<&ImprovedNoise::sample_and_lerperm>();
+    "ImprovedNoise::sample_with_derivative"_jf.reg<&ImprovedNoise::sample_with_derivative>();
+    "ImprovedNoise::perm"_jf.reg<&ImprovedNoise::perm>();
+    "ImprovedNoise::noise_with_derivative"_jf.reg<&ImprovedNoise::noise_with_derivative>();
+}
+
+auto ImprovedNoise::_create(const double xo, const double yo, const double zo, const int8_t* array, const int len) -> ImprovedNoise* {
+    auto* noise = new ImprovedNoise();
+    noise->xo = xo;
+    noise->yo = yo;
+    noise->zo = zo;
+    std::memcpy(noise->p.data(), array, len);
+    return noise;
+}
+
+auto ImprovedNoise::_destroy() const -> void {
+    delete this;
 }
 
 inline auto ImprovedNoise::grad_dot(const int hash, const double x, const double y, const double z) -> double {
@@ -104,7 +124,7 @@ auto ImprovedNoise::sample_and_lerperm(const int x, const int y, const int z, co
     return lerp3(xAlpha, yAlpha, zAlpha, d000, d100, d010, d110, d001, d101, d011, d111);
 }
 
-auto ImprovedNoise::sample_with_derivative(const int x, const int y, const int z, const double xr, const double yr, const double zr, double* derivativeOut) const -> double {
+auto ImprovedNoise::sample_with_derivative(const int x, const int y, const int z, const double xr, const double yr, const double zr, double* derivative_out) const -> double {
     const int x0 = this->perm(x);
     const int x1 = this->perm(x + 1);
     const int xy00 = this->perm(x0 + y);
@@ -150,9 +170,9 @@ auto ImprovedNoise::sample_with_derivative(const int x, const int y, const int z
     const double dX = d1x + (xSD * d2x);
     const double dY = d1y + (ySD * d2y);
     const double dZ = d1z + (zSD * d2z);
-    derivativeOut[0] += dX;
-    derivativeOut[1] += dY;
-    derivativeOut[2] += dZ;
+    derivative_out[0] += dX;
+    derivative_out[1] += dY;
+    derivative_out[2] += dZ;
     return lerp3(xAlpha, yAlpha, zAlpha, d000, d100, d010, d110, d001, d101, d011, d111);
 }
 

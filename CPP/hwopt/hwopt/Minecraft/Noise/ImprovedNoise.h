@@ -6,20 +6,22 @@
 namespace minecraft {
     class __declspec(dllexport) ImprovedNoise final : JavaNative<ImprovedNoise> {
     public:
-        double xo;
-        double yo;
-        double zo;
+        double xo{};
+        double yo{};
+        double zo{};
 
-        explicit ImprovedNoise(std::mt19937_64& mt);
+        explicit ImprovedNoise(std::mt19937_64& random);
         ImprovedNoise() = default;
 
-        [[nodiscard]] auto noise(double _x, double _y, double _z) const -> double;
+        [[nodiscard]] auto noise(double x, double y, double z) const -> double;
 
-        [[nodiscard]] auto noise(double _x, double _y, double _z, double yScale, double yFudge) const -> double;
+        [[nodiscard]] auto noise(double x, double y, double z, double y_scale, double y_fudge) const -> double;
 
-        auto noise_with_derivative(double _x, double _y, double _z, double* derivativeOut) const -> double;
+        auto noise_with_derivative(double x, double y, double z, double* derivative_out) const -> double;
 
         static auto add_methods() -> void;
+        static auto _create(double xo, double yo, double zo, const int8_t* array, int len) -> ImprovedNoise*;
+        auto _destroy() const -> void;
     private:
         std::array<int8_t, 256> p{};
 
@@ -29,7 +31,7 @@ namespace minecraft {
 
         [[nodiscard]] auto sample_and_lerperm(int x, int y, int z, double xr, double yr, double zr, double yrOriginal) const -> double;
 
-        auto sample_with_derivative(int x, int y, int z, double xr, double yr, double zr, double* derivativeOut) const -> double;
+        auto sample_with_derivative(int x, int y, int z, double xr, double yr, double zr, double* derivative_out) const -> double;
 
         inline static auto smoothstep(double x) -> double;
 
