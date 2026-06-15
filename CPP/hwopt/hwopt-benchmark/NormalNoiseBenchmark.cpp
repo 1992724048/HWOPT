@@ -5,7 +5,6 @@
 
 static constexpr std::array AMPLITUDES{1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0};
 static constexpr int FIRST_OCTAVE = -8;
-static constexpr int AMPLITUDE_COUNT = 8;
 static constexpr bool USE_NEW_INIT = true;
 
 class NormalNoiseBenchmark : public testing::Test {
@@ -13,7 +12,7 @@ protected:
     minecraft::NormalNoise* noise{nullptr};
 
     auto SetUp() -> void override {
-        noise = minecraft::NormalNoise::_create(42, FIRST_OCTAVE, AMPLITUDES, AMPLITUDE_COUNT, USE_NEW_INIT);
+        noise = minecraft::NormalNoise::_create(42, FIRST_OCTAVE, AMPLITUDES.data(), AMPLITUDES.size(), USE_NEW_INIT);
     }
 
     auto TearDown() -> void override {
@@ -22,7 +21,7 @@ protected:
 };
 
 TEST_F(NormalNoiseBenchmark, GetValueSequential) {
-    constexpr int ITERATIONS = 10000000;
+    constexpr int ITERATIONS = 100000000;
     double result = 0.0;
     for (int i = 0; i < ITERATIONS; i++) {
         const double x = static_cast<double>(i) * 0.001;
@@ -35,7 +34,7 @@ TEST_F(NormalNoiseBenchmark, GetValueSequential) {
 }
 
 TEST_F(NormalNoiseBenchmark, GetValueRandomAccess) {
-    constexpr int ITERATIONS = 10000000;
+    constexpr int ITERATIONS = 100000000;
     double result = 0.0;
     for (int i = 0; i < ITERATIONS; i++) {
         const double x = i * 31 % 1000;
@@ -48,7 +47,7 @@ TEST_F(NormalNoiseBenchmark, GetValueRandomAccess) {
 }
 
 TEST_F(NormalNoiseBenchmark, GetValueChunkGrid) {
-    constexpr int CHUNK_SIZE = 16;
+    constexpr int CHUNK_SIZE = 128;
     constexpr int CHUNKS_X = 8;
     constexpr int CHUNKS_Z = 8;
     constexpr int BLOCKS = CHUNKS_X * CHUNKS_Z * CHUNK_SIZE * CHUNK_SIZE;
