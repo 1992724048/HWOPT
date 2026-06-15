@@ -23,7 +23,7 @@ namespace minecraft {
         static auto _create(double xo, double yo, double zo, const int8_t* array, int len) -> ImprovedNoise*;
         auto _destroy() const -> void;
     private:
-        std::array<int8_t, 256> p{};
+        std::array<uint8_t, 256> p{};
 
         inline static auto grad_dot(int hash, double x, double y, double z) -> double;
 

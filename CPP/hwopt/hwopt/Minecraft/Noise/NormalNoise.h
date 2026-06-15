@@ -4,8 +4,8 @@
 namespace minecraft {
     class HWOPT_API NormalNoise final : JavaNative<NormalNoise> {
     public:
-        PerlinNoise* first_ = nullptr;
-        PerlinNoise* second_ = nullptr;
+        PerlinNoise first_{};
+        PerlinNoise second_{};
         double value_factor_ = 0.0;
 
         NormalNoise() = default;
@@ -13,7 +13,7 @@ namespace minecraft {
         ~NormalNoise();
 
         static auto add_methods() -> void;
-        static auto _create(long seed, int firstOctave, const double* amplitudes, int size, bool useNewInit) -> NormalNoise*;
+        static auto _create(long seed, int first_octave, const double* amplitudes, int size, bool useNewInit) -> NormalNoise*;
         auto _destroy() const -> void;
 
         [[nodiscard]] auto get_value(double x, double y, double z) const -> double;

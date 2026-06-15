@@ -4,6 +4,8 @@
 #include <algorithm>
 #include <cmath>
 #include <random>
+
+#include "../../util.h"
 using namespace minecraft;
 
 ImprovedNoise::ImprovedNoise(std::mt19937_64& random) {
@@ -77,7 +79,7 @@ auto ImprovedNoise::add_methods() -> void {
 }
 
 auto ImprovedNoise::_create(const double xo, const double yo, const double zo, const int8_t* array, const int len) -> ImprovedNoise* {
-    auto* noise = new ImprovedNoise();
+    auto* noise = hwopt::util::mi_new<ImprovedNoise>();
     noise->xo = xo;
     noise->yo = yo;
     noise->zo = zo;
@@ -86,11 +88,11 @@ auto ImprovedNoise::_create(const double xo, const double yo, const double zo, c
 }
 
 auto ImprovedNoise::_destroy() const -> void {
-    delete this;
+    hwopt::util::mi_delete(this);
 }
 
 inline auto ImprovedNoise::grad_dot(const int hash, const double x, const double y, const double z) -> double {
-    const int idx = (hash & 15) * 3;
+    const int idx = (hash & 15);
     return (GRADIENT[idx] * x) + (GRADIENT[idx + 1] * y) + (GRADIENT[idx + 2] * z);
 }
 

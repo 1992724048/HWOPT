@@ -26,12 +26,37 @@
   <searchDirs>
    <searchCategory>
     <category type="u8_t">1</category>
+    <searchDirectory>
+     <name>E:\CODE\HWOPT\CPP\hwopt\hwopt</name>
+     <recursive type="bool">false</recursive>
+     <priority type="bool">true</priority>
+    </searchDirectory>
    </searchCategory>
    <searchCategory>
     <category type="u8_t">2</category>
+    <searchDirectory>
+     <name>E:\CODE\HWOPT\CPP\hwopt\hwopt</name>
+     <recursive type="bool">false</recursive>
+     <priority type="bool">true</priority>
+    </searchDirectory>
    </searchCategory>
    <searchCategory>
     <category type="u8_t">3</category>
+    <searchDirectory>
+     <name>E:\CODE\HWOPT\CPP\hwopt\hwopt\Minecraft</name>
+     <recursive type="bool">false</recursive>
+     <priority type="bool">true</priority>
+    </searchDirectory>
+    <searchDirectory>
+     <name>E:\CODE\HWOPT\CPP\hwopt\hwopt\Minecraft\Noise</name>
+     <recursive type="bool">false</recursive>
+     <priority type="bool">true</priority>
+    </searchDirectory>
+    <searchDirectory>
+     <name>E:\CODE\HWOPT\CPP\hwopt\hwopt\Minecraft\Block</name>
+     <recursive type="bool">false</recursive>
+     <priority type="bool">true</priority>
+    </searchDirectory>
    </searchCategory>
    <searchCategory>
     <category type="u8_t">4</category>
@@ -40,7 +65,7 @@
   <excludeFiles type="bag"/>
   <target_settings>
    <selected_workload>
-    <localhost>release</localhost>
+    <localhost>tripcounts</localhost>
    </selected_workload>
    <result_dir>
     <localhost>E:\CODE\HWOPT\Advisor\Minecraft</localhost>
@@ -54,9 +79,16 @@
       <workload>
        <targetName>attach-survey</targetName>
        <use_app_dir_as_work_dir type="bool">false</use_app_dir_as_work_dir>
-       <result_directory.path>E:\CODE\HWOPT\Advisor\Minecraft\r@@@{at}</result_directory.path>
        <attach.pid type="null"></attach.pid>
-       <search_directories type="bag"/>
+       <result_directory.path>E:\CODE\HWOPT\Advisor\Minecraft\r@@@{at}</result_directory.path>
+       <search_directories>
+        <item>
+         <value>sym:p=E:\CODE\HWOPT\CPP\hwopt\hwopt</value>
+        </item>
+        <item>
+         <value>bin:p=E:\CODE\HWOPT\CPP\hwopt\hwopt</value>
+        </item>
+       </search_directories>
        <context>
         <contextValue>
          <id>auto_finalize</id>
@@ -168,10 +200,17 @@
      <attach-tripcounts type="pointer" type_id="dasID_cctrl2::AttachWorkload" ptr_type="dasID_cctrl2::IWorkload">
       <workload>
        <targetName>attach-tripcounts</targetName>
-       <result_directory.path>E:\CODE\HWOPT\Advisor\Minecraft\r@@@{at}</result_directory.path>
        <use_app_dir_as_work_dir type="bool">false</use_app_dir_as_work_dir>
        <attach.pid type="null"></attach.pid>
-       <search_directories type="bag"/>
+       <result_directory.path>E:\CODE\HWOPT\Advisor\Minecraft\r@@@{at}</result_directory.path>
+       <search_directories>
+        <item>
+         <value>sym:p=E:\CODE\HWOPT\CPP\hwopt\hwopt</value>
+        </item>
+        <item>
+         <value>bin:p=E:\CODE\HWOPT\CPP\hwopt\hwopt</value>
+        </item>
+       </search_directories>
        <context>
         <contextValue>
          <id>auto_finalize</id>
@@ -324,164 +363,19 @@
        </context>
       </workload>
      </attach-tripcounts>
-     <debug type="pointer" type_id="dasID_cctrl2::ApplicationWorkload" ptr_type="dasID_cctrl2::IWorkload">
-      <workload>
-       <targetName>debug</targetName>
-       <use_app_dir_as_work_dir type="bool">true</use_app_dir_as_work_dir>
-       <result_directory.path>E:\CODE\HWOPT\Advisor\Minecraft\r@@@{at}</result_directory.path>
-       <search_directories type="bag"/>
-       <context>
-        <contextValue>
-         <id>analysis_mode</id>
-         <value>default</value>
-        </contextValue>
-        <contextValue>
-         <id>instance_of_interest</id>
-         <value type="s32_t">0</value>
-        </contextValue>
-        <contextValue>
-         <id>loop_call_count_limit</id>
-         <value type="s32_t">0</value>
-        </contextValue>
-        <contextValue>
-         <id>loops</id>
-         <value></value>
-        </contextValue>
-        <contextValue>
-         <id>mark-up-list</id>
-         <value></value>
-        </contextValue>
-        <contextValue>
-         <id>markup</id>
-         <value>gpu_generic</value>
-        </contextValue>
-        <contextValue>
-         <id>mrte_mode</id>
-         <value>auto</value>
-        </contextValue>
-        <contextValue>
-         <id>process_for_analysis</id>
-         <value></value>
-        </contextValue>
-        <contextValue>
-         <id>reduction_filtering</id>
-         <value type="bool">false</value>
-        </contextValue>
-        <contextValue>
-         <id>scope_filtering</id>
-         <value type="bool">true</value>
-        </contextValue>
-        <contextValue>
-         <id>select</id>
-         <value></value>
-        </contextValue>
-        <contextValue>
-         <id>stack_offset</id>
-         <value type="bool">true</value>
-        </contextValue>
-        <contextValue>
-         <id>suppressions</id>
-         <value>none</value>
-        </contextValue>
-        <contextValue>
-         <id>targetType</id>
-         <value>debug</value>
-        </contextValue>
-        <contextValue>
-         <id>vsdbg_support</id>
-         <value>off</value>
-        </contextValue>
-       </context>
-      </workload>
-     </debug>
-     <map type="pointer" type_id="dasID_cctrl2::ApplicationWorkload" ptr_type="dasID_cctrl2::IWorkload">
-      <workload>
-       <targetName>map</targetName>
-       <result_directory.path>E:\CODE\HWOPT\Advisor\Minecraft\r@@@{at}</result_directory.path>
-       <launch_app.inherit_sys_environment type="bool">true</launch_app.inherit_sys_environment>
-       <launch_app.mpi_run type="bool">false</launch_app.mpi_run>
-       <launch_app.mpi_max_rank type="null"></launch_app.mpi_max_rank>
-       <launch.userapppath>E:\CODE\HWOPT\CPP\hwopt\x64-Release\hwopt-benchmark.exe</launch.userapppath>
-       <launch.userappworkdir>E:\CODE\HWOPT\CPP\hwopt\x64-Release</launch.userappworkdir>
-       <launch_app.app_to_launch>E:\CODE\HWOPT\CPP\hwopt\x64-Release\hwopt-benchmark.exe</launch_app.app_to_launch>
-       <launch_app.app_parameters></launch_app.app_parameters>
-       <use_app_dir_as_work_dir type="bool">true</use_app_dir_as_work_dir>
-       <launch_app.working_folder>E:\CODE\HWOPT\CPP\hwopt\x64-Release</launch_app.working_folder>
-       <search_directories type="bag"/>
-       <context>
-        <contextValue>
-         <id>cachesimAssociativity</id>
-         <value>8</value>
-        </contextValue>
-        <contextValue>
-         <id>cachesimSets</id>
-         <value>4096</value>
-        </contextValue>
-        <contextValue>
-         <id>cachesim_cacheline_size</id>
-         <value>64</value>
-        </contextValue>
-        <contextValue>
-         <id>cachesim_mode</id>
-         <value>utilization</value>
-        </contextValue>
-        <contextValue>
-         <id>enableCacheSimulation</id>
-         <value type="bool">false</value>
-        </contextValue>
-        <contextValue>
-         <id>instance_of_interest</id>
-         <value type="s32_t">0</value>
-        </contextValue>
-        <contextValue>
-         <id>loop_call_count_limit</id>
-         <value type="s32_t">0</value>
-        </contextValue>
-        <contextValue>
-         <id>loops</id>
-         <value></value>
-        </contextValue>
-        <contextValue>
-         <id>mark-up-list</id>
-         <value></value>
-        </contextValue>
-        <contextValue>
-         <id>mrte_mode</id>
-         <value>auto</value>
-        </contextValue>
-        <contextValue>
-         <id>process_for_analysis</id>
-         <value></value>
-        </contextValue>
-        <contextValue>
-         <id>recordHeapMemory</id>
-         <value type="bool">true</value>
-        </contextValue>
-        <contextValue>
-         <id>recordStackFrame</id>
-         <value type="bool">true</value>
-        </contextValue>
-        <contextValue>
-         <id>select</id>
-         <value></value>
-        </contextValue>
-        <contextValue>
-         <id>suppressions</id>
-         <value>none</value>
-        </contextValue>
-        <contextValue>
-         <id>targetType</id>
-         <value>map</value>
-        </contextValue>
-       </context>
-      </workload>
-     </map>
      <projection type="pointer" type_id="dasID_cctrl2::CompileWorkload" ptr_type="dasID_cctrl2::IWorkload">
       <workload>
        <targetName>projection</targetName>
        <use_app_dir_as_work_dir type="bool">true</use_app_dir_as_work_dir>
        <result_directory.path>E:\CODE\HWOPT\Advisor\Minecraft\r@@@{at}</result_directory.path>
-       <search_directories type="bag"/>
+       <search_directories>
+        <item>
+         <value>sym:p=E:\CODE\HWOPT\CPP\hwopt\hwopt</value>
+        </item>
+        <item>
+         <value>bin:p=E:\CODE\HWOPT\CPP\hwopt\hwopt</value>
+        </item>
+       </search_directories>
        <context>
         <contextValue>
          <id>assume_dependencies</id>
@@ -658,20 +552,255 @@
        </context>
       </workload>
      </projection>
+     <suitability type="pointer" type_id="dasID_cctrl2::ApplicationWorkload" ptr_type="dasID_cctrl2::IWorkload">
+      <workload>
+       <targetName>suitability</targetName>
+       <launch_app.inherit_sys_environment type="bool">true</launch_app.inherit_sys_environment>
+       <launch_app.mpi_run type="bool">false</launch_app.mpi_run>
+       <launch_app.mpi_max_rank type="null"></launch_app.mpi_max_rank>
+       <launch.userapppath>E:\CODE\HWOPT\CPP\hwopt\x64-Release\hwopt-benchmark.exe</launch.userapppath>
+       <launch.userappworkdir>E:\CODE\HWOPT\CPP\hwopt\x64-Release</launch.userappworkdir>
+       <launch_app.app_to_launch>E:\CODE\HWOPT\CPP\hwopt\x64-Release\hwopt-benchmark.exe</launch_app.app_to_launch>
+       <launch_app.app_parameters></launch_app.app_parameters>
+       <use_app_dir_as_work_dir type="bool">true</use_app_dir_as_work_dir>
+       <launch_app.working_folder>E:\CODE\HWOPT\CPP\hwopt\x64-Release</launch_app.working_folder>
+       <result_directory.path>E:\CODE\HWOPT\Advisor\Minecraft\r@@@{at}</result_directory.path>
+       <search_directories>
+        <item>
+         <value>sym:p=E:\CODE\HWOPT\CPP\hwopt\hwopt</value>
+        </item>
+        <item>
+         <value>bin:p=E:\CODE\HWOPT\CPP\hwopt\hwopt</value>
+        </item>
+       </search_directories>
+       <context>
+        <contextValue>
+         <id>cpu_profiling</id>
+         <value type="bool">true</value>
+        </contextValue>
+        <contextValue>
+         <id>dataLimit</id>
+         <value type="s32_t">500</value>
+        </contextValue>
+        <contextValue>
+         <id>interval</id>
+         <value type="s32_t">10</value>
+        </contextValue>
+        <contextValue>
+         <id>mrte_mode</id>
+         <value>auto</value>
+        </contextValue>
+        <contextValue>
+         <id>process_for_analysis</id>
+         <value></value>
+        </contextValue>
+        <contextValue>
+         <id>targetType</id>
+         <value>suitability</value>
+        </contextValue>
+        <contextValue>
+         <id>type_opt</id>
+         <value>projection:stack</value>
+        </contextValue>
+       </context>
+      </workload>
+     </suitability>
+     <debug type="pointer" type_id="dasID_cctrl2::ApplicationWorkload" ptr_type="dasID_cctrl2::IWorkload">
+      <workload>
+       <targetName>debug</targetName>
+       <system.duration type="null"></system.duration>
+       <launch_app.inherit_sys_environment type="bool">true</launch_app.inherit_sys_environment>
+       <launch_app.mpi_run type="bool">false</launch_app.mpi_run>
+       <launch_app.mpi_max_rank type="null"></launch_app.mpi_max_rank>
+       <result_directory.path>E:\CODE\HWOPT\Advisor\Minecraft\r@@@{at}</result_directory.path>
+       <launch.userapppath>E:\CODE\HWOPT\CPP\hwopt\x64-Release\hwopt-benchmark.exe</launch.userapppath>
+       <launch.userappworkdir>E:\CODE\HWOPT\CPP\hwopt\x64-Release</launch.userappworkdir>
+       <launch_app.app_to_launch>E:\CODE\HWOPT\CPP\hwopt\x64-Release\hwopt-benchmark.exe</launch_app.app_to_launch>
+       <launch_app.app_parameters></launch_app.app_parameters>
+       <use_app_dir_as_work_dir type="bool">true</use_app_dir_as_work_dir>
+       <launch_app.working_folder>E:\CODE\HWOPT\CPP\hwopt\x64-Release</launch_app.working_folder>
+       <search_directories>
+        <item>
+         <value>sym:p=E:\CODE\HWOPT\CPP\hwopt\hwopt</value>
+        </item>
+        <item>
+         <value>bin:p=E:\CODE\HWOPT\CPP\hwopt\hwopt</value>
+        </item>
+       </search_directories>
+       <context>
+        <contextValue>
+         <id>analysis_mode</id>
+         <value>default</value>
+        </contextValue>
+        <contextValue>
+         <id>instance_of_interest</id>
+         <value type="s32_t">0</value>
+        </contextValue>
+        <contextValue>
+         <id>loop_call_count_limit</id>
+         <value type="s32_t">0</value>
+        </contextValue>
+        <contextValue>
+         <id>loops</id>
+         <value></value>
+        </contextValue>
+        <contextValue>
+         <id>mark-up-list</id>
+         <value></value>
+        </contextValue>
+        <contextValue>
+         <id>markup</id>
+         <value>gpu_generic</value>
+        </contextValue>
+        <contextValue>
+         <id>mrte_mode</id>
+         <value>auto</value>
+        </contextValue>
+        <contextValue>
+         <id>process_for_analysis</id>
+         <value></value>
+        </contextValue>
+        <contextValue>
+         <id>reduction_filtering</id>
+         <value type="bool">true</value>
+        </contextValue>
+        <contextValue>
+         <id>scope_filtering</id>
+         <value type="bool">true</value>
+        </contextValue>
+        <contextValue>
+         <id>select</id>
+         <value></value>
+        </contextValue>
+        <contextValue>
+         <id>stack_offset</id>
+         <value type="bool">true</value>
+        </contextValue>
+        <contextValue>
+         <id>suppressions</id>
+         <value>none</value>
+        </contextValue>
+        <contextValue>
+         <id>targetType</id>
+         <value>debug</value>
+        </contextValue>
+        <contextValue>
+         <id>vsdbg_support</id>
+         <value>off</value>
+        </contextValue>
+       </context>
+      </workload>
+     </debug>
+     <map type="pointer" type_id="dasID_cctrl2::ApplicationWorkload" ptr_type="dasID_cctrl2::IWorkload">
+      <workload>
+       <targetName>map</targetName>
+       <launch_app.inherit_sys_environment type="bool">true</launch_app.inherit_sys_environment>
+       <launch_app.mpi_run type="bool">false</launch_app.mpi_run>
+       <launch_app.mpi_max_rank type="null"></launch_app.mpi_max_rank>
+       <result_directory.path>E:\CODE\HWOPT\Advisor\Minecraft\r@@@{at}</result_directory.path>
+       <launch.userapppath>E:\CODE\HWOPT\CPP\hwopt\x64-Release\hwopt-benchmark.exe</launch.userapppath>
+       <launch.userappworkdir>E:\CODE\HWOPT\CPP\hwopt\x64-Release</launch.userappworkdir>
+       <launch_app.app_to_launch>E:\CODE\HWOPT\CPP\hwopt\x64-Release\hwopt-benchmark.exe</launch_app.app_to_launch>
+       <launch_app.app_parameters></launch_app.app_parameters>
+       <use_app_dir_as_work_dir type="bool">true</use_app_dir_as_work_dir>
+       <launch_app.working_folder>E:\CODE\HWOPT\CPP\hwopt\x64-Release</launch_app.working_folder>
+       <search_directories>
+        <item>
+         <value>sym:p=E:\CODE\HWOPT\CPP\hwopt\hwopt</value>
+        </item>
+        <item>
+         <value>bin:p=E:\CODE\HWOPT\CPP\hwopt\hwopt</value>
+        </item>
+       </search_directories>
+       <context>
+        <contextValue>
+         <id>cachesimAssociativity</id>
+         <value>16</value>
+        </contextValue>
+        <contextValue>
+         <id>cachesimSets</id>
+         <value>8192</value>
+        </contextValue>
+        <contextValue>
+         <id>cachesim_cacheline_size</id>
+         <value>65536</value>
+        </contextValue>
+        <contextValue>
+         <id>cachesim_mode</id>
+         <value>utilization</value>
+        </contextValue>
+        <contextValue>
+         <id>enableCacheSimulation</id>
+         <value type="bool">true</value>
+        </contextValue>
+        <contextValue>
+         <id>instance_of_interest</id>
+         <value type="s32_t">0</value>
+        </contextValue>
+        <contextValue>
+         <id>loop_call_count_limit</id>
+         <value type="s32_t">0</value>
+        </contextValue>
+        <contextValue>
+         <id>loops</id>
+         <value></value>
+        </contextValue>
+        <contextValue>
+         <id>mark-up-list</id>
+         <value></value>
+        </contextValue>
+        <contextValue>
+         <id>mrte_mode</id>
+         <value>auto</value>
+        </contextValue>
+        <contextValue>
+         <id>process_for_analysis</id>
+         <value></value>
+        </contextValue>
+        <contextValue>
+         <id>recordHeapMemory</id>
+         <value type="bool">true</value>
+        </contextValue>
+        <contextValue>
+         <id>recordStackFrame</id>
+         <value type="bool">true</value>
+        </contextValue>
+        <contextValue>
+         <id>select</id>
+         <value></value>
+        </contextValue>
+        <contextValue>
+         <id>suppressions</id>
+         <value>none</value>
+        </contextValue>
+        <contextValue>
+         <id>targetType</id>
+         <value>map</value>
+        </contextValue>
+       </context>
+      </workload>
+     </map>
      <release type="pointer" type_id="dasID_cctrl2::ApplicationWorkload" ptr_type="dasID_cctrl2::IWorkload">
       <workload>
        <targetName>release</targetName>
        <use_app_dir_as_work_dir type="bool">true</use_app_dir_as_work_dir>
        <launch_app.inherit_sys_environment type="bool">true</launch_app.inherit_sys_environment>
        <launch_app.mpi_run type="bool">false</launch_app.mpi_run>
-       <result_directory.path>E:\CODE\HWOPT\Advisor\Minecraft\r@@@{at}</result_directory.path>
        <launch.userapppath>E:\CODE\HWOPT\CPP\hwopt\x64-Release\hwopt-benchmark.exe</launch.userapppath>
        <launch_app.app_to_launch>E:\CODE\HWOPT\CPP\hwopt\x64-Release\hwopt-benchmark.exe</launch_app.app_to_launch>
        <launch_app.app_parameters></launch_app.app_parameters>
        <launch.userappworkdir>E:\CODE\HWOPT\CPP\hwopt\x64-Release</launch.userappworkdir>
        <launch_app.mpi_max_rank type="null"></launch_app.mpi_max_rank>
        <launch_app.working_folder>E:\CODE\HWOPT\CPP\hwopt\x64-Release</launch_app.working_folder>
-       <search_directories type="bag"/>
+       <result_directory.path>E:\CODE\HWOPT\Advisor\Minecraft\r@@@{at}</result_directory.path>
+       <search_directories>
+        <item>
+         <value>sym:p=E:\CODE\HWOPT\CPP\hwopt\hwopt</value>
+        </item>
+        <item>
+         <value>bin:p=E:\CODE\HWOPT\CPP\hwopt\hwopt</value>
+        </item>
+       </search_directories>
        <context>
         <contextValue>
          <id>auto_finalize</id>
@@ -780,58 +909,12 @@
        </context>
       </workload>
      </release>
-     <suitability type="pointer" type_id="dasID_cctrl2::ApplicationWorkload" ptr_type="dasID_cctrl2::IWorkload">
-      <workload>
-       <targetName>suitability</targetName>
-       <result_directory.path>E:\CODE\HWOPT\Advisor\Minecraft\r@@@{at}</result_directory.path>
-       <launch_app.inherit_sys_environment type="bool">true</launch_app.inherit_sys_environment>
-       <launch_app.mpi_run type="bool">false</launch_app.mpi_run>
-       <launch_app.mpi_max_rank type="null"></launch_app.mpi_max_rank>
-       <launch.userapppath>E:\CODE\HWOPT\CPP\hwopt\x64-Release\hwopt-benchmark.exe</launch.userapppath>
-       <launch.userappworkdir>E:\CODE\HWOPT\CPP\hwopt\x64-Release</launch.userappworkdir>
-       <launch_app.app_to_launch>E:\CODE\HWOPT\CPP\hwopt\x64-Release\hwopt-benchmark.exe</launch_app.app_to_launch>
-       <launch_app.app_parameters></launch_app.app_parameters>
-       <use_app_dir_as_work_dir type="bool">true</use_app_dir_as_work_dir>
-       <launch_app.working_folder>E:\CODE\HWOPT\CPP\hwopt\x64-Release</launch_app.working_folder>
-       <search_directories type="bag"/>
-       <context>
-        <contextValue>
-         <id>cpu_profiling</id>
-         <value type="bool">true</value>
-        </contextValue>
-        <contextValue>
-         <id>dataLimit</id>
-         <value type="s32_t">500</value>
-        </contextValue>
-        <contextValue>
-         <id>interval</id>
-         <value type="s32_t">10</value>
-        </contextValue>
-        <contextValue>
-         <id>mrte_mode</id>
-         <value>auto</value>
-        </contextValue>
-        <contextValue>
-         <id>process_for_analysis</id>
-         <value></value>
-        </contextValue>
-        <contextValue>
-         <id>targetType</id>
-         <value>suitability</value>
-        </contextValue>
-        <contextValue>
-         <id>type_opt</id>
-         <value>projection:stack</value>
-        </contextValue>
-       </context>
-      </workload>
-     </suitability>
      <tripcounts type="pointer" type_id="dasID_cctrl2::ApplicationWorkload" ptr_type="dasID_cctrl2::IWorkload">
       <workload>
        <targetName>tripcounts</targetName>
-       <result_directory.path>E:\CODE\HWOPT\Advisor\Minecraft\r@@@{at}</result_directory.path>
        <launch_app.inherit_sys_environment type="bool">true</launch_app.inherit_sys_environment>
        <launch_app.mpi_run type="bool">false</launch_app.mpi_run>
+       <result_directory.path>E:\CODE\HWOPT\Advisor\Minecraft\r@@@{at}</result_directory.path>
        <launch_app.mpi_max_rank type="null"></launch_app.mpi_max_rank>
        <launch.userapppath>E:\CODE\HWOPT\CPP\hwopt\x64-Release\hwopt-benchmark.exe</launch.userapppath>
        <launch.userappworkdir>E:\CODE\HWOPT\CPP\hwopt\x64-Release</launch.userappworkdir>
@@ -839,7 +922,14 @@
        <launch_app.app_parameters></launch_app.app_parameters>
        <use_app_dir_as_work_dir type="bool">true</use_app_dir_as_work_dir>
        <launch_app.working_folder>E:\CODE\HWOPT\CPP\hwopt\x64-Release</launch_app.working_folder>
-       <search_directories type="bag"/>
+       <search_directories>
+        <item>
+         <value>sym:p=E:\CODE\HWOPT\CPP\hwopt\hwopt</value>
+        </item>
+        <item>
+         <value>bin:p=E:\CODE\HWOPT\CPP\hwopt\hwopt</value>
+        </item>
+       </search_directories>
        <context>
         <contextValue>
          <id>auto_finalize</id>
@@ -863,7 +953,7 @@
         </contextValue>
         <contextValue>
          <id>config</id>
-         <value></value>
+         <value>pvc_xt_448xve</value>
         </contextValue>
         <contextValue>
          <id>count_memory_objects_accesses</id>
@@ -883,7 +973,7 @@
         </contextValue>
         <contextValue>
          <id>data_transfer</id>
-         <value>off</value>
+         <value>full</value>
         </contextValue>
         <contextValue>
          <id>data_transfer_analysis</id>
@@ -895,7 +985,7 @@
         </contextValue>
         <contextValue>
          <id>flops_and_masks</id>
-         <value type="bool">false</value>
+         <value type="bool">true</value>
         </contextValue>
         <contextValue>
          <id>gpu_conditional_metrics</id>
@@ -939,11 +1029,11 @@
         </contextValue>
         <contextValue>
          <id>profile_python</id>
-         <value>off</value>
+         <value>full</value>
         </contextValue>
         <contextValue>
          <id>profile_stripped_binaries</id>
-         <value type="bool">false</value>
+         <value type="bool">true</value>
         </contextValue>
         <contextValue>
          <id>show_report</id>

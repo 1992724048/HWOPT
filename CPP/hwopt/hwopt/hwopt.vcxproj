@@ -152,10 +152,11 @@
       </CCppSupport>
       <OptimizeForWindowsApplication>false</OptimizeForWindowsApplication>
       <BufferSecurityCheck>true</BufferSecurityCheck>
+      <GenerateDebugInformation>Full</GenerateDebugInformation>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
       <AdditionalDependencies>Fortran.lib;hwopt-sycl.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)..\..\JAVA\src\main\resources\native\win64\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>

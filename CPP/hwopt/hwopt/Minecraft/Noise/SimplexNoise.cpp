@@ -3,6 +3,8 @@
 #include "SimplexNoise.h"
 #include <cmath>
 #include <cstring>
+
+#include "../../util.h"
 using namespace minecraft;
 
 SimplexNoise::SimplexNoise() {
@@ -17,7 +19,7 @@ auto SimplexNoise::add_methods() -> void {
 }
 
 auto SimplexNoise::_create(const double xo, const double yo, const double zo, const int* array, const int len) -> SimplexNoise* {
-    auto* noise = new SimplexNoise();
+    auto* noise = hwopt::util::mi_new<SimplexNoise>();
     noise->xo = xo;
     noise->yo = yo;
     noise->zo = zo;
@@ -26,7 +28,7 @@ auto SimplexNoise::_create(const double xo, const double yo, const double zo, co
 }
 
 auto SimplexNoise::_destroy() const -> void {
-    delete this;
+    hwopt::util::mi_delete(this);
 }
 
 auto SimplexNoise::get_value2(const double xin, const double yin) const -> double {

@@ -4,19 +4,21 @@
 #include <cmath>
 #include <cstring>
 #include <random>
+
+#include "../../util.h"
 using namespace minecraft;
 
 static constexpr double ROUND_OFF = 3.3554432E7;
 
-PerlinNoise::PerlinNoise(std::mt19937_64& mt, const int firstOctave, const double* amplitudes, const int size, const bool useNewInit) {
+PerlinNoise::PerlinNoise(std::mt19937_64& mt, const int first_octave, const double* amplitudes, const int size, const bool use_new_init) {
     JavaNative::touch();
-    this->first_octave_ = firstOctave;
+    this->first_octave_ = first_octave;
     this->amplitudes_.assign(amplitudes, amplitudes + size);
     this->noise_levels_.resize(size);
 
-    const int zeroOctaveIndex = -firstOctave;
+    const int zeroOctaveIndex = -first_octave;
 
-    if (useNewInit) {
+    if (use_new_init) {
         for (int i = 0; i < size; i++) {
             if (this->amplitudes_[i] != 0.0) {
                 std::mt19937_64 octave_mt(mt());
@@ -53,11 +55,11 @@ auto PerlinNoise::add_methods() -> void {
 
 auto PerlinNoise::_create(const long seed, const int firstOctave, const double* amplitudes, const int size, const bool useNewInit) -> PerlinNoise* {
     std::mt19937_64 mt(static_cast<long long>(seed));
-    return new PerlinNoise(mt, firstOctave, amplitudes, size, useNewInit);
+    return hwopt::util::mi_new<PerlinNoise>(mt, firstOctave, amplitudes, size, useNewInit);
 }
 
 auto PerlinNoise::_destroy() const -> void {
-    delete this;
+    hwopt::util::mi_delete(this);
 }
 
 auto PerlinNoise::get_value3(const double x, const double y, const double z) const -> double {
@@ -68,30 +70,31 @@ auto PerlinNoise::get_value5(const double x, const double y, const double z, con
     double value = 0.0;
     double factor = this->lowest_freq_input_factor_;
     double value_factor = this->lowest_freq_value_factor_;
+    const auto& nl = this->noise_levels_;
+    const auto& amp = this->amplitudes_;
 
-    for (size_t i = 0; i < this->noise_levels_.size(); i++) {
-        if (this->amplitudes_[i] != 0.0) {
-            const double noiseVal = this->noise_levels_[i].noise(wrap(x * factor), wrap(y * factor), wrap(z * factor), yScale * factor, yFudge * factor);
-            value += this->amplitudes_[i] * noiseVal * value_factor;
+    for (size_t i = 0; i < nl.size(); i++) {
+        const double a = amp[i];
+        if (a != 0.0) {
+            const double t = factor;
+            value += a * nl[i].noise(wrap(x * t), wrap(y * t), wrap(z * t), yScale * t, yFudge * t) * value_factor;
         }
         factor *= 2.0;
-        value_factor /= 2.0;
+        value_factor *= 0.5;
     }
 
     return value;
 }
 
-auto PerlinNoise::edge_value(const double noiseValue) const -> double {
+auto PerlinNoise::edge_value(const double noise_value) const -> double {
     double value = 0.0;
     double value_factor = this->lowest_freq_value_factor_;
-
-    for (size_t i = 0; i < this->noise_levels_.size(); i++) {
-        if (this->amplitudes_[i] != 0.0) {
-            value += this->amplitudes_[i] * noiseValue * value_factor;
+    for (const double i : this->amplitudes_) {
+        if (i != 0.0) {
+            value += i * noise_value * value_factor;
         }
-        value_factor /= 2.0;
+        value_factor *= 0.5;
     }
-
     return value;
 }
 
@@ -106,5 +109,8 @@ auto PerlinNoise::amplitudes(double* out, const int size) const -> int {
 }
 
 auto PerlinNoise::wrap(const double x) -> double {
+    if (std::abs(x) < ROUND_OFF * 0.5) [[likely]] {
+        return x;
+    }
     return x - (std::floor((x / ROUND_OFF) + 0.5) * ROUND_OFF);
 }
