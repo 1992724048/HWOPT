@@ -6,7 +6,7 @@ import nativecode.dll.Name;
 import nativecode.dll.Static;
 
 @LibraryImport(dll = "hwopt.dll", structSize = 32)
-public interface NormalNoiseNative {
+public interface NormalNoiseNative extends AutoCloseable {
 	NormalNoiseNative NATIVE = FFMFactory.load(NormalNoiseNative.class);
 	
 	@Static
@@ -22,6 +22,7 @@ public interface NormalNoiseNative {
 	@Name("NormalNoise::max_value")
 	double maxValue();
 	
+	@Static
 	@Name("NormalNoise::expected_deviation")
 	double expected_deviation(int octave_span);
 }

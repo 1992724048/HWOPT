@@ -18,4 +18,7 @@ public interface NoiseChunkAccessor {
     
     @Invoker("getInterpolatedState")
     BlockState invokeGetInterpolatedState();
+
+    @Invoker("getInterpolatedDensity")
+    double invokeGetInterpolatedDensity();
 }

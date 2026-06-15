@@ -1,13 +1,13 @@
 {
-  "itemGroup.hwopt": "Example Mod Tab",
-  "block.hwopt.example_block": "Example Block",
-  "item.hwopt.example_item": "Example Item",
+  "hwopt.chunk_gen.stats": "§a[HWOPT]§r %s chunks in %s (avg %s, %s/s)",
 
-  "hwopt.configuration.title": "HWOPT Configs",
-  "hwopt.configuration.section.hwopt.common.toml": "HWOPT Configs",
-  "hwopt.configuration.section.hwopt.common.toml.title": "HWOPT Configs",
-  "hwopt.configuration.items": "Item List",
-  "hwopt.configuration.logDirtBlock": "Log Dirt Block",
-  "hwopt.configuration.magicNumberIntroduction": "Magic Number Text",
-  "hwopt.configuration.magicNumber": "Magic Number"
+  "hwopt.configuration.debug": "Debug",
+  "hwopt.configuration.debug.logChunkGen": "Log Chunk Generation",
+  "hwopt.configuration.debug.logChunkGen.tooltip": "Print chunk generation timing stats to chat",
+  "hwopt.configuration.debug.logChunkGenInterval": "Print Interval",
+  "hwopt.configuration.debug.logChunkGenInterval.tooltip": "Print stats every N chunks (0 = only at end of burst)",
+
+  "hwopt.configuration.world": "World",
+  "hwopt.configuration.world.spawnAtVillage": "Spawn at Village",
+  "hwopt.configuration.world.spawnAtVillage.tooltip": "Move world spawn to the nearest village"
 }

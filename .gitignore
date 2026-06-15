@@ -33,6 +33,7 @@ run
 logs
 packages
 NativeDll
+net
 
 repo
 *.tlog

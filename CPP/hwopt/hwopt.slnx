@@ -18,4 +18,7 @@
   <Project Path="hwopt/hwopt.vcxproj" Id="8336a515-3f32-4610-bf87-3ccfb9350a8b">
     <Build Solution="*|x86" Project="false" />
   </Project>
+  <Project Path="hwopt-benchmark/hwopt-benchmark.vcxproj" Id="a1b2c3d4-e5f6-7890-abcd-ef1234567890">
+    <Platform Project="x64" />
+  </Project>
 </Solution>

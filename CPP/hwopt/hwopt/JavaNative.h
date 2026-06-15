@@ -12,6 +12,12 @@
 #include <stdpp/exception.h>
 #include <stdpp/logger.h>
 
+#ifdef HWOPT_EXPORTS
+#define HWOPT_API __declspec(dllexport)
+#else
+#define HWOPT_API __declspec(dllimport)
+#endif
+
 template<auto MemFn>
 struct MethodThunk;
 

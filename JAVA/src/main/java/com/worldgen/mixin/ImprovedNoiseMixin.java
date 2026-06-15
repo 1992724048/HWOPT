@@ -1,19 +1,22 @@
 package com.worldgen.mixin;
 
-import com.google.common.annotations.VisibleForTesting;
 import library.dll.ImprovedNoiseNative;
 import nativecode.dll.FFMFactory;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.levelgen.synth.ImprovedNoise;
 import net.minecraft.world.level.levelgen.synth.NoiseUtils;
-import org.spongepowered.asm.mixin.*;
+import org.spongepowered.asm.mixin.Final;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(ImprovedNoise.class)
 public abstract class ImprovedNoiseMixin {
-	
+
 	@Shadow
 	@Final
 	public double xo;
@@ -26,54 +29,83 @@ public abstract class ImprovedNoiseMixin {
 	@Shadow
 	@Final
 	private byte[] p;
-	
+
 	@Unique
 	private ImprovedNoiseNative hwopt$nativePtr;
-	
+
+	@Shadow
+	protected abstract double noise(double x, double y, double z, double yScale, double yFudge);
+
+	@Unique
+	private static ImprovedNoiseNative hwopt$gradDot;
+	@Unique
+	private static boolean hwopt$gradDotInit;
+
 	@Inject(method = "<init>", at = @At("RETURN"))
 	private void hwopt$init(RandomSource random, CallbackInfo ci) {
 		this.hwopt$nativePtr = FFMFactory.trackCleaner(this, ImprovedNoiseNative.create(xo, yo, zo, p));
 	}
-	
-	@Overwrite
-	public double noise(double _x, double _y, double _z) {
-		return this.noise(_x, _y, _z, 0.0, 0.0);
+
+	@Inject(method = "noise(DDD)D", at = @At("HEAD"), cancellable = true)
+	private void hwopt$noise(double _x, double _y, double _z, CallbackInfoReturnable<Double> cir) {
+		if (this.hwopt$nativePtr != null) {
+			cir.setReturnValue(this.noise(_x, _y, _z, 0.0, 0.0));
+		}
 	}
-	
-	@Overwrite
-	@Deprecated
-	public double noise(double _x, double _y, double _z, double yScale, double yFudge) {
-		return this.hwopt$nativePtr.noise(_x, _y, _z, yScale, yFudge);
+
+	@Inject(method = "noise(DDDDD)D", at = @At("HEAD"), cancellable = true)
+	private void hwopt$noise(double _x, double _y, double _z, double yScale, double yFudge, CallbackInfoReturnable<Double> cir) {
+		if (this.hwopt$nativePtr != null) {
+			cir.setReturnValue(this.hwopt$nativePtr.noise(_x, _y, _z, yScale, yFudge));
+		}
 	}
-	
-	@Overwrite
-	public double noiseWithDerivative(double _x, double _y, double _z, double[] derivativeOut) {
-		return this.hwopt$nativePtr.noise_with_derivative(_x, _y, _z, derivativeOut);
+
+	@Inject(method = "noiseWithDerivative", at = @At("HEAD"), cancellable = true)
+	private void hwopt$noiseWithDerivative(double _x, double _y, double _z, double[] derivativeOut, CallbackInfoReturnable<Double> cir) {
+		if (this.hwopt$nativePtr != null) {
+			cir.setReturnValue(this.hwopt$nativePtr.noise_with_derivative(_x, _y, _z, derivativeOut));
+		}
 	}
-	
-	@Overwrite
-	private static double gradDot(int hash, double x, double y, double z) {
-		return ImprovedNoiseNative.instance().grad_dot(hash, x, y, z);
+
+	@Inject(method = "gradDot", at = @At("HEAD"), cancellable = true)
+	private static void hwopt$gradDot(int hash, double x, double y, double z, CallbackInfoReturnable<Double> cir) {
+		if (!hwopt$gradDotInit) {
+			try {
+				hwopt$gradDot = ImprovedNoiseNative.instance();
+			} catch (Throwable ignored) {}
+			hwopt$gradDotInit = true;
+		}
+		if (hwopt$gradDot != null) {
+			cir.setReturnValue(hwopt$gradDot.grad_dot(hash, x, y, z));
+		}
 	}
-	
-	@Overwrite
-	private int p(int x) {
-		return this.hwopt$nativePtr.perm(x);
+
+	@Inject(method = "p(I)I", at = @At("HEAD"), cancellable = true)
+	private void hwopt$p(int x, CallbackInfoReturnable<Integer> cir) {
+		if (this.hwopt$nativePtr != null) {
+			cir.setReturnValue(this.hwopt$nativePtr.perm(x));
+		}
 	}
-	
-	@Overwrite
-	private double sampleAndLerp(int x, int y, int z, double xr, double yr, double zr, double yrOriginal) {
-		return this.hwopt$nativePtr.sample_and_lerperm(x, y, z, xr, yr, zr, yrOriginal);
+
+	@Inject(method = "sampleAndLerp", at = @At("HEAD"), cancellable = true)
+	private void hwopt$sampleAndLerp(int x, int y, int z, double xr, double yr, double zr, double yrOriginal, CallbackInfoReturnable<Double> cir) {
+		if (this.hwopt$nativePtr != null) {
+			cir.setReturnValue(this.hwopt$nativePtr.sample_and_lerperm(x, y, z, xr, yr, zr, yrOriginal));
+		}
 	}
-	
-	@Overwrite
-	private double sampleWithDerivative(int x, int y, int z, double xr, double yr, double zr, double[] derivativeOut) {
-		return this.hwopt$nativePtr.sample_with_derivative(x, y, z, xr, yr, zr, derivativeOut);
+
+	@Inject(method = "sampleWithDerivative", at = @At("HEAD"), cancellable = true)
+	private void hwopt$sampleWithDerivative(int x, int y, int z, double xr, double yr, double zr, double[] derivativeOut, CallbackInfoReturnable<Double> cir) {
+		if (this.hwopt$nativePtr != null) {
+			cir.setReturnValue(this.hwopt$nativePtr.sample_with_derivative(x, y, z, xr, yr, zr, derivativeOut));
+		}
 	}
-	
-	@Overwrite
-	@VisibleForTesting
-	public void parityConfigString(StringBuilder sb) {
-		NoiseUtils.parityNoiseOctaveConfigString(sb, this.xo, this.yo, this.zo, this.p);
+
+	@Inject(method = "parityConfigString", at = @At("HEAD"), cancellable = true)
+	private void hwopt$parityConfigString(StringBuilder sb, CallbackInfo ci) {
+		if (this.hwopt$nativePtr != null) {
+			NoiseUtils.parityNoiseOctaveConfigString(sb, this.xo, this.yo, this.zo, this.p);
+			ci.cancel();
+		}
 	}
 }

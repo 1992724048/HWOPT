@@ -1,37 +1,35 @@
 package com.hwpp.mod;
 
-import java.util.List;
-
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.common.ModConfigSpec;
 
-// An example config class. This is not required, but it's a good idea to have one to keep your config organized.
-// Demonstrates how to use Neo's config APIs
 public enum Config {
     ;
     private static final ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder();
 
-    public static final ModConfigSpec.BooleanValue LOG_DIRT_BLOCK = Config.BUILDER
-            .comment("Whether to log the dirt block on common setup")
-            .define("logDirtBlock", true);
+    static {
+        BUILDER.push("debug");
+        LOG_CHUNK_GEN = BUILDER
+                .comment("Print chunk generation timing stats to chat")
+                .translation("hwopt.configuration.debug.logChunkGen")
+                .define("logChunkGen", false);
+        LOG_CHUNK_GEN_INTERVAL = BUILDER
+                .comment("Print interval in chunks (0 = only at end of burst)")
+                .translation("hwopt.configuration.debug.logChunkGenInterval")
+                .defineInRange("logChunkGenInterval", 0, 0, 10000);
+        BUILDER.pop();
 
-    public static final ModConfigSpec.IntValue MAGIC_NUMBER = Config.BUILDER
-            .comment("A magic number")
-            .defineInRange("magicNumber", 42, 0, Integer.MAX_VALUE);
+        BUILDER.push("world");
+        SPAWN_AT_VILLAGE = BUILDER
+                .comment("Move world spawn to the nearest village")
+                .translation("hwopt.configuration.world.spawnAtVillage")
+                .define("spawnAtVillage", false);
+        BUILDER.pop();
 
-    public static final ModConfigSpec.ConfigValue<String> MAGIC_NUMBER_INTRODUCTION = Config.BUILDER
-            .comment("What you want the introduction message to be for the magic number")
-            .define("magicNumberIntroduction", "The magic number is... ");
-
-    // a list of strings that are treated as resource locations for items
-    public static final ModConfigSpec.ConfigValue<List<? extends String>> ITEM_STRINGS = Config.BUILDER
-            .comment("A list of items to log on common setup.")
-            .defineListAllowEmpty("items", List.of("minecraft:iron_ingot"), () -> "", Config::validateItemName);
-
-    static final ModConfigSpec SPEC = Config.BUILDER.build();
-
-    private static boolean validateItemName(Object obj) {
-        return obj instanceof final String itemName && BuiltInRegistries.ITEM.containsKey(Identifier.parse(itemName));
+        SPEC = BUILDER.build();
     }
+
+    public static final ModConfigSpec.BooleanValue LOG_CHUNK_GEN;
+    public static final ModConfigSpec.IntValue LOG_CHUNK_GEN_INTERVAL;
+    public static final ModConfigSpec.BooleanValue SPAWN_AT_VILLAGE;
+    public static final ModConfigSpec SPEC;
 }

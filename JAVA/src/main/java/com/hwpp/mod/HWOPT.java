@@ -1,40 +1,18 @@
 package com.hwpp.mod;
 
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
-import net.neoforged.neoforge.event.entity.player.PlayerEvent;
-import net.neoforged.neoforge.event.level.LevelEvent;
-import net.neoforged.neoforge.event.server.ServerStartedEvent;
-import net.neoforged.neoforge.event.server.ServerStoppedEvent;
-import net.neoforged.neoforge.event.server.ServerStoppingEvent;
-import org.slf4j.Logger;
-
 import com.mojang.logging.LogUtils;
-
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.network.chat.Component;
-import net.minecraft.world.food.FoodProperties;
-import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.CreativeModeTabs;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.material.MapColor;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
-import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
-import net.neoforged.neoforge.event.server.ServerStartingEvent;
-import net.neoforged.neoforge.registries.DeferredBlock;
-import net.neoforged.neoforge.registries.DeferredHolder;
-import net.neoforged.neoforge.registries.DeferredItem;
-import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.event.level.LevelEvent;
+import org.slf4j.Logger;
 
 @Mod(HWOPT.MODID)
 public class HWOPT {
@@ -42,69 +20,26 @@ public class HWOPT {
     public static final Logger LOGGER = LogUtils.getLogger();
     public static long seed;
 
-    // mod类的构造子是加载mod时运行的第一个代码。
-    // FML 会识别一些参数类型，比如 IEventBus 或 ModContainer，并自动传递。
     public HWOPT(final IEventBus modEventBus, final ModContainer modContainer) {
-
-        // 注册 commonSetup 方法进行 modloading
         modEventBus.addListener(this::commonSetup);
-
-        // 报名参加我们感兴趣的服务器及其他游戏活动。
-        // 注意，当且仅当我们希望*该*类（HWOPT）直接响应事件时，这是必要的。
-        // 如果该类中没有@SubscribeEvent注释函数，如下面的 onServerStarting（） 那样，请不要添加这行。
         NeoForge.EVENT_BUS.register(this);
-
-        // 将该物品注册到创意标签页
         modEventBus.addListener(this::addCreative);
-
-        // 注册我们模组的ModConfigSpec，这样FML才能帮我们创建并加载配置文件
         modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
     }
 
     private void commonSetup(final FMLCommonSetupEvent event) {
-        if (Config.LOG_DIRT_BLOCK.getAsBoolean()) {
-            LOGGER.info("DIRT BLOCK >> {}", BuiltInRegistries.BLOCK.getKey(Blocks.DIRT));
-        }
-        LOGGER.info("{}{}", Config.MAGIC_NUMBER_INTRODUCTION.get(), Config.MAGIC_NUMBER.getAsInt());
-        Config.ITEM_STRINGS.get().forEach((item) -> LOGGER.info("ITEM >> {}", item));
     }
 
     private void addCreative(final BuildCreativeModeTabContentsEvent event) {
     }
 
     @SubscribeEvent
-    public void onServerStarting(final ServerStartingEvent event) {
-        HWOPT.LOGGER.info("server starting");
-    }
-
-    @SubscribeEvent
-    public void onServerStopping(final ServerStoppingEvent event) {
-        HWOPT.LOGGER.info("server stopping");
-    }
-
-    @SubscribeEvent
-    public void onServerStopped(final ServerStoppedEvent event) {
-        HWOPT.LOGGER.info("server stopped");
-    }
-
-    @SubscribeEvent
-    public void onServerStarted(final ServerStartedEvent event) {
-        HWOPT.LOGGER.info("server started");
-    }
-
-    @SubscribeEvent
-    public void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
-        if (event.getEntity() instanceof ServerPlayer player) {
-            LOGGER.info("Player joined: {}", player.getName());
-        }
-    }
-    
-    @SubscribeEvent
     public void onWorldLoad(LevelEvent.Load event) {
         if (event.getLevel() instanceof ServerLevel level) {
             seed = level.getSeed();
-            System.out.println("Seed is: " + seed);
+            if (level.dimension() == Level.OVERWORLD) {
+                ChunkGenStats.reset();
+            }
         }
     }
-
 }

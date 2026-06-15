@@ -1,5 +1,6 @@
 package com.server.world.mixin;
 
+import com.hwpp.mod.Config;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
@@ -20,6 +21,9 @@ import java.util.Optional;
 public abstract class MinecraftServerMixin {
     @Inject(method = "setInitialSpawn", at = @At("HEAD"), cancellable = true)
     private static void hwopt$spawnAtVillage(ServerLevel level, ServerLevelData levelData, boolean spawnBonusChest, boolean isDebug, LevelLoadListener levelLoadListener, CallbackInfo ci) {
+        if (!Config.SPAWN_AT_VILLAGE.getAsBoolean()) {
+            return;
+        }
         if (!level.dimension().equals(Level.OVERWORLD)) {
             return;
         }
@@ -28,7 +32,7 @@ public abstract class MinecraftServerMixin {
         if (villagePos.isEmpty()) {
             return;
         }
-        
+
         BlockPos village = villagePos.get();
         BlockPos spawn = level.getHeightmapPos(Heightmap.Types.WORLD_SURFACE, village);
 

@@ -1,13 +1,13 @@
 {
-  "itemGroup.hwopt": "Example Mod Tab",
-  "block.hwopt.example_block": "Example Block",
-  "item.hwopt.example_item": "Example Item",
+  "hwopt.chunk_gen.stats": "§a[HWOPT]§r %s 个区块/%s (均 %s, %s/s)",
 
-  "hwopt.configuration.title": "HWOPT Configs",
-  "hwopt.configuration.section.hwopt.common.toml": "HWOPT Configs",
-  "hwopt.configuration.section.hwopt.common.toml.title": "HWOPT Configs",
-  "hwopt.configuration.items": "Item List",
-  "hwopt.configuration.logDirtBlock": "Log Dirt Block",
-  "hwopt.configuration.magicNumberIntroduction": "Magic Number Text",
-  "hwopt.configuration.magicNumber": "Magic Number"
+  "hwopt.configuration.debug": "调试",
+  "hwopt.configuration.debug.logChunkGen": "记录区块生成",
+  "hwopt.configuration.debug.logChunkGen.tooltip": "在聊天栏输出区块生成耗时统计",
+  "hwopt.configuration.debug.logChunkGenInterval": "输出间隔",
+  "hwopt.configuration.debug.logChunkGenInterval.tooltip": "每 N 个区块输出一次 (0 = 仅在生成结束时输出)",
+
+  "hwopt.configuration.world": "世界",
+  "hwopt.configuration.world.spawnAtVillage": "在村庄出生",
+  "hwopt.configuration.world.spawnAtVillage.tooltip": "将世界出生点移动到最近的村庄"
 }

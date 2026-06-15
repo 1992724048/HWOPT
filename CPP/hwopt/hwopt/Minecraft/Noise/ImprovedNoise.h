@@ -4,7 +4,7 @@
 #include "../../JavaNative.h"
 
 namespace minecraft {
-    class __declspec(dllexport) ImprovedNoise final : JavaNative<ImprovedNoise> {
+    class ImprovedNoise final : JavaNative<ImprovedNoise> {
     public:
         double xo{};
         double yo{};
@@ -96,7 +96,7 @@ namespace minecraft {
             -1
         };
     };
-}
+} // namespace minecraft
 
 namespace fortran {
     using namespace minecraft;
@@ -107,4 +107,4 @@ namespace fortran {
         DLL_API auto ImprovedNoise_noise_5(const ImprovedNoise* state, double x, double y, double z, double yScale, double yFudge) -> double;
         DLL_API auto ImprovedNoise_noise_with_derivative(const ImprovedNoise* state, double x, double y, double z, double* derivativeOut) -> double;
     }
-}
+} // namespace fortran

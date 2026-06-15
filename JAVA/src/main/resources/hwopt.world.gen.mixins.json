@@ -1,10 +1,13 @@
-﻿{
+{
   "required": true,
   "package": "com.worldgen.mixin",
   "compatibilityLevel": "JAVA_25",
   "mixins": [
     "NoiseBasedChunkGeneratorMixin",
-    "ImprovedNoiseMixin"
+    "ImprovedNoiseMixin",
+    "PerlinNoiseMixin",
+    "NormalNoiseMixin",
+    "SimplexNoiseMixin"
   ],
   "injectors": {
     "defaultRequire": 1
