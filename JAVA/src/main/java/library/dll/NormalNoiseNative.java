@@ -7,11 +7,17 @@ import nativecode.dll.Static;
 
 @LibraryImport(dll = "hwopt.dll", structSize = 32)
 public interface NormalNoiseNative extends AutoCloseable {
-	NormalNoiseNative NATIVE = FFMFactory.load(NormalNoiseNative.class);
+	class Holder {
+		static final NormalNoiseNative INSTANCE = FFMFactory.load(NormalNoiseNative.class);
+	}
+	
+	static NormalNoiseNative instance() {
+		return NormalNoiseNative.Holder.INSTANCE;
+	}
 	
 	@Static
 	@Name("NormalNoise::_create")
-	NormalNoiseNative create(long seed, int firstOctave, double[] amplitudes, int size, boolean useNewInitialization);
+	NormalNoiseNative create(double value_factor, double max_value);
 
 	@Name("NormalNoise::_destroy")
 	void destroy();
@@ -21,6 +27,18 @@ public interface NormalNoiseNative extends AutoCloseable {
 	
 	@Name("NormalNoise::max_value")
 	double maxValue();
+	
+	@Name("NormalNoise::set_first")
+	void setFirst(int firstOctave, double[] amplitudes, double lowest_freq_value_factor, double lowest_freq_input_factor, double max_value);
+	
+	@Name("NormalNoise::set_second")
+	void setSecond(int firstOctave, double[] amplitudes, double lowest_freq_value_factor, double lowest_freq_input_factor, double max_value);
+	
+	@Name("NormalNoise::add_noise_to_first")
+	void addNoiseToFirst(int index, double xo, double yo, double zo, byte[] array);
+	
+	@Name("NormalNoise::add_noise_to_second")
+	void addNoiseToSecond(int index, double xo, double yo, double zo, byte[] array);
 	
 	@Static
 	@Name("NormalNoise::expected_deviation")

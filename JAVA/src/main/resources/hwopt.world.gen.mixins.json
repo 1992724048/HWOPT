@@ -6,7 +6,8 @@
     "NoiseBasedChunkGeneratorMixin",
     "ImprovedNoiseMixin",
     "PerlinNoiseMixin",
-    "SimplexNoiseMixin"
+    "SimplexNoiseMixin",
+    "NormalNoiseMixin"
   ],
   "injectors": {
     "defaultRequire": 1
