@@ -6,7 +6,6 @@
     "NoiseBasedChunkGeneratorMixin",
     "ImprovedNoiseMixin",
     "PerlinNoiseMixin",
-    "NormalNoiseMixin",
     "SimplexNoiseMixin"
   ],
   "injectors": {

@@ -28,16 +28,12 @@ public interface ImprovedNoiseNative extends AutoCloseable {
 
 	@Static
 	@Name("ImprovedNoise::_create")
-	ImprovedNoiseNative create(double xo, double yo, double zo, byte[] array, int len);
+	ImprovedNoiseNative _create(double xo, double yo, double zo, byte[] array);
 
 	static ImprovedNoiseNative create(double xo, double yo, double zo, byte[] array) {
-		return instance().create(xo, yo, zo, array, array.length);
+		return instance()._create(xo, yo, zo, array);
 	}
-
-	static ImprovedNoiseNative create() {
-		return instance().create(0, 0, 0, new byte[0], 0);
-	}
-
+	
 	@Name("ImprovedNoise::_destroy")
 	void destroy();
 

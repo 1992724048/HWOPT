@@ -128,68 +128,62 @@ public abstract class NoiseBasedChunkGeneratorMixin {
 		final NoiseChunkAccessor noiseAccessor = (NoiseChunkAccessor) noiseChunk;
 		final NoiseGeneratorSettings genSettings = this.settings.value();
 		final BlockState defaultBlock = genSettings.defaultBlock();
-		
+
 		final Heightmap oceanFloor = centerChunk.getOrCreateHeightmapUnprimed(Heightmap.Types.OCEAN_FLOOR_WG);
 		final Heightmap worldSurface = centerChunk.getOrCreateHeightmapUnprimed(Heightmap.Types.WORLD_SURFACE_WG);
-		
+
 		final ChunkPos chunkPos = centerChunk.getPos();
 		final int chunkStartBlockX = chunkPos.getMinBlockX();
 		final int chunkStartBlockZ = chunkPos.getMinBlockZ();
 		final int baseLocalX = chunkStartBlockX & 15;
 		final int baseLocalZ = chunkStartBlockZ & 15;
-		
+
 		final Aquifer aquifer = noiseChunk.aquifer();
 		noiseChunk.initializeForFirstCellX();
-		
+
 		final int cellWidth = noiseAccessor.invokeCellWidth();
 		final int cellHeight = noiseAccessor.invokeCellHeight();
 		final int cellCountX = 16 / cellWidth;
 		final int cellCountZ = 16 / cellWidth;
-		
+
 		final BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
-		
+
 		final int sizeX = cellCountX * cellWidth;
 		final int sizeY = cellCountY * cellHeight;
 		final int sizeZ = cellCountZ * cellWidth;
-		final int strideY = sizeX * sizeZ;
 		final int baseY = cellMinY * cellHeight;
-		
-		final int totalSize = sizeX * sizeY * sizeZ;
-		final short[] noiseCache = new short[totalSize];
-		
+
+		final short[] noiseCache = new short[sizeX * sizeY * sizeZ];
+
 		for (int cellX = 0; cellX < cellCountX; cellX++) {
 			noiseChunk.advanceCellX(cellX);
-			
+
 			for (int cellZ = 0; cellZ < cellCountZ; cellZ++) {
 				for (int cellY = cellCountY - 1; cellY >= 0; cellY--) {
 					noiseChunk.selectCellYZ(cellY, cellZ);
-					
+
 					for (int yInCell = cellHeight - 1; yInCell >= 0; yInCell--) {
 						final int posY = (cellMinY + cellY) * cellHeight + yInCell;
 						noiseChunk.updateForY(posY, (double) yInCell / cellHeight);
-						
-						final int arrayY = posY - baseY;
-						final int zSliceBase = arrayY * strideY;
-						
+
+						final int yIdx = cellY * cellHeight + yInCell;
+
 						for (int xInCell = 0; xInCell < cellWidth; xInCell++) {
-							final int worldX = chunkStartBlockX + cellX * cellWidth + xInCell;
-							noiseChunk.updateForX(worldX, (double) xInCell / cellWidth);
-							
-							final int arrayX = cellX * cellWidth + xInCell;
-							
+							noiseChunk.updateForX(chunkStartBlockX + cellX * cellWidth + xInCell, (double) xInCell / cellWidth);
+
+							final int xIdx = cellX * cellWidth + xInCell;
+
 							for (int zInCell = 0; zInCell < cellWidth; zInCell++) {
-								final int worldZ = chunkStartBlockZ + cellZ * cellWidth + zInCell;
-								noiseChunk.updateForZ(worldZ, (double) zInCell / cellWidth);
-								
-								final int arrayZ = cellZ * cellWidth + zInCell;
-								final int arrayIndex = arrayX + sizeX * arrayZ + zSliceBase;
-								
+								noiseChunk.updateForZ(chunkStartBlockZ + cellZ * cellWidth + zInCell, (double) zInCell / cellWidth);
+
+								final int zIdx = cellZ * cellWidth + zInCell;
+
 								BlockState state = noiseAccessor.invokeGetInterpolatedState();
 								if (state == null) {
 									state = defaultBlock;
 								}
-								
-								noiseCache[arrayIndex] = BlockIdRegistry.getId(state.getBlock());
+
+								noiseCache[(yIdx * sizeZ + zIdx) * sizeX + xIdx] = BlockIdRegistry.getId(state.getBlock());
 							}
 						}
 					}
@@ -198,12 +192,12 @@ public abstract class NoiseBasedChunkGeneratorMixin {
 			noiseChunk.swapSlices();
 		}
 		noiseChunk.stopInterpolation();
-		
+
 		final boolean scheduleFluid = aquifer.shouldScheduleFluidUpdate();
-		
+
 		int lastSectionIndex = -1;
 		LevelChunkSection section = null;
-		
+
 		for (int y = sizeY - 1; y >= 0; y--) {
 			final int posY = baseY + y;
 			final int sectionIndex = centerChunk.getSectionIndex(posY);
@@ -212,27 +206,26 @@ public abstract class NoiseBasedChunkGeneratorMixin {
 				lastSectionIndex = sectionIndex;
 			}
 			if (section == null) continue;
-			
+
 			final int localY = posY & 15;
-			final int yOff = y * strideY;
-			
+
 			for (int z = 0; z < sizeZ; z++) {
 				final int localZ = (baseLocalZ + z) & 15;
 				final int worldZ = chunkStartBlockZ + z;
-				final int lineBase = yOff + z * sizeX;
-				
+				final int zBase = (y * sizeZ + z) * sizeX;
+
 				for (int x = 0; x < sizeX; x++) {
-					final short blockId = noiseCache[lineBase + x];
+					final short blockId = noiseCache[zBase + x];
 					if (blockId == AIR_ID) continue;
-					
+
 					final BlockState state = BlockIdRegistry.blockStates[blockId];
 					final int localX = (baseLocalX + x) & 15;
 					final int worldX = chunkStartBlockX + x;
-					
+
 					section.setBlockState(localX, localY, localZ, state, false);
 					oceanFloor.update(localX, posY, localZ, state);
 					worldSurface.update(localX, posY, localZ, state);
-					
+
 					if (scheduleFluid && !state.getFluidState().isEmpty()) {
 						pos.set(worldX, posY, worldZ);
 						centerChunk.markPosForPostprocessing(pos);
@@ -240,7 +233,7 @@ public abstract class NoiseBasedChunkGeneratorMixin {
 				}
 			}
 		}
-		
+
 		return centerChunk;
 	}
 	

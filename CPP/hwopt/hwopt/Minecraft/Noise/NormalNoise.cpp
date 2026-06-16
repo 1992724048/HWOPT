@@ -4,18 +4,16 @@
 #include <algorithm>
 #include <climits>
 #include <cmath>
-#include <random>
 
 #include "../../util.h"
 using namespace minecraft;
 
 static constexpr double INPUT_FACTOR = 1.0181268882175227;
 
-NormalNoise::NormalNoise(const long seed, const int firstOctave, const double* amplitudes, const int size, const bool use_new_init) {
+NormalNoise::NormalNoise(Xoroshiro128PlusPlus& rng, const int first_octave, const double* amplitudes, const int size, const bool use_new_init) {
     JavaNative::touch();
-    std::mt19937_64 mt(static_cast<long long>(seed));
-    this->first_ = PerlinNoise(mt, firstOctave, amplitudes, size, use_new_init);
-    this->second_ = PerlinNoise(mt, firstOctave, amplitudes, size, use_new_init);
+    this->first_ = PerlinNoise(rng, first_octave, amplitudes, size, use_new_init);
+    this->second_ = PerlinNoise(rng, first_octave, amplitudes, size, use_new_init);
 
     int min_octave = INT_MAX;
     int max_octave = INT_MIN;
@@ -40,8 +38,9 @@ auto NormalNoise::add_methods() -> void {
     "NormalNoise::expected_deviation"_jf.reg<&NormalNoise::expected_deviation>();
 }
 
-auto NormalNoise::_create(const long seed, const int first_octave, const double* amplitudes, const int size, const bool useNewInit) -> NormalNoise* {
-    return hwopt::util::mi_new<NormalNoise>(seed, first_octave, amplitudes, size, useNewInit);
+auto NormalNoise::_create(long long seed, const int first_octave, const double* amplitudes, const int size, const bool use_new_init) -> NormalNoise* {
+    Xoroshiro128PlusPlus rng(static_cast<uint64_t>(static_cast<long long>(seed)));
+    return hwopt::util::mi_new<NormalNoise>(rng, first_octave, amplitudes, size, use_new_init);
 }
 
 auto NormalNoise::_destroy() const -> void {
@@ -59,6 +58,6 @@ auto NormalNoise::max_value() const -> double {
     return (this->first_.max_value_ + this->second_.max_value_) * this->value_factor_;
 }
 
-auto NormalNoise::expected_deviation(int octaveSpan) -> double {
-    return 0.1 * (1.0 + (1.0 / static_cast<double>(octaveSpan + 1)));
+auto NormalNoise::expected_deviation(int octave_span) -> double {
+    return 0.1 * (1.0 + (1.0 / static_cast<double>(octave_span + 1)));
 }

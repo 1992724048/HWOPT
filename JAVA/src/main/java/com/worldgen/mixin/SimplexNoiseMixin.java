@@ -13,8 +13,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import static library.dll.SimplexNoiseNative.NATIVE;
-
 @Mixin(SimplexNoise.class)
 public abstract class SimplexNoiseMixin {
 
@@ -36,7 +34,7 @@ public abstract class SimplexNoiseMixin {
 
 	@Inject(method = "<init>", at = @At("RETURN"))
 	private void hwopt$init(final RandomSource random, final CallbackInfo ci) {
-		this.hwopt$nativePtr = FFMFactory.trackCleaner(this, NATIVE.create(this.xo, this.yo, this.zo, p, p.length));
+		this.hwopt$nativePtr = FFMFactory.trackCleaner(this, SimplexNoiseNative.instance().create(this.xo, this.yo, this.zo, p));
 	}
 
 	@Inject(method = "getValue(DD)D", at = @At("HEAD"), cancellable = true)

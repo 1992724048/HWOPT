@@ -15,41 +15,31 @@ import static org.objectweb.asm.Opcodes.*;
 
 /**
  * 本地接口实现类的字节码生成器。
- * <p>
- * 使用 ASM 在运行时为 {@code @LibraryImport} 接口生成隐藏类实现，
- * 生成的类通过 {@link MethodHandle} 调用本地函数，支持以下方法类型：
- * <ul>
- *   <li>本地函数方法 — 通过 {@code MethodHandle.invokeExact} 调用</li>
- *   <li>{@code @Field} 结构体字段 — 直接读写内存偏移</li>
- *   <li>{@code @FieldArray} 结构体数组字段 — 切片 + 拷贝</li>
- * </ul>
+ * 使用 ASM 在运行时为 {@code @LibraryImport} 接口生成隐藏类实现。
  */
 enum StubGenerator {
 	;
-	
-	/**
-	 * 字段类型对应的 ASM 描述符信息
-	 */
+
+	/** 字段类型对应的 ASM 描述符 */
 	private record FieldTypeInfo(String layoutName, String layoutDesc, String getDesc, String setDesc, int returnOpcode,
 	                             int loadOpcode) {
 	}
-	
+
 	private static final String FFM_FACTORY = "nativecode/dll/FFMFactory";
 	private static final String MEMORY_SEGMENT = "java/lang/foreign/MemorySegment";
-	
+
 	private static final Map<Class<?>, FieldTypeInfo> FIELD_TYPES = Map.of(int.class, new FieldTypeInfo("JAVA_INT", "Ljava/lang/foreign/ValueLayout$OfInt;", "(Ljava/lang/foreign/ValueLayout$OfInt;J)I", "(Ljava/lang/foreign/ValueLayout$OfInt;JI)V", IRETURN, ILOAD), long.class, new FieldTypeInfo("JAVA_LONG", "Ljava/lang/foreign/ValueLayout$OfLong;", "(Ljava/lang/foreign/ValueLayout$OfLong;J)J", "(Ljava/lang/foreign/ValueLayout$OfLong;JJ)V", LRETURN, LLOAD), double.class, new FieldTypeInfo("JAVA_DOUBLE", "Ljava/lang/foreign/ValueLayout$OfDouble;", "(Ljava/lang/foreign/ValueLayout$OfDouble;J)D", "(Ljava/lang/foreign/ValueLayout$OfDouble;JD)V", DRETURN, DLOAD), float.class, new FieldTypeInfo("JAVA_FLOAT", "Ljava/lang/foreign/ValueLayout$OfFloat;", "(Ljava/lang/foreign/ValueLayout$OfFloat;J)F", "(Ljava/lang/foreign/ValueLayout$OfFloat;JF)V", FRETURN, FLOAD), short.class, new FieldTypeInfo("JAVA_SHORT", "Ljava/lang/foreign/ValueLayout$OfShort;", "(Ljava/lang/foreign/ValueLayout$OfShort;J)S", "(Ljava/lang/foreign/ValueLayout$OfShort;JS)V", IRETURN, ILOAD), byte.class, new FieldTypeInfo("JAVA_BYTE", "Ljava/lang/foreign/ValueLayout$OfByte;", "(Ljava/lang/foreign/ValueLayout$OfByte;J)B", "(Ljava/lang/foreign/ValueLayout$OfByte;JB)V", IRETURN, ILOAD), boolean.class, new FieldTypeInfo("JAVA_BOOLEAN", "Ljava/lang/foreign/ValueLayout$OfBoolean;", "(Ljava/lang/foreign/ValueLayout$OfBoolean;J)Z", "(Ljava/lang/foreign/ValueLayout$OfBoolean;JZ)V", IRETURN, ILOAD));
-	
+
 	/**
 	 * 生成接口实现类的字节码。
 	 *
 	 * @param api     标注了 {@code @LibraryImport} 的接口
-	 * @param methods 接口中所有抽象方法（包括 {@code @Field} 和 {@code @FieldArray}）
-	 * @return 生成的类字节码，可通过 {@link java.lang.invoke.MethodHandles.Lookup#defineHiddenClass} 加载
+	 * @param methods 接口中所有抽象方法
+	 * @return 生成的类字节码
 	 */
 	static byte[] generate(Class<?> api, List<Method> methods) {
 		String implName = api.getName().replace('.', '/') + "$FFM";
 		String apiName = api.getName().replace('.', '/');
-		
 		LibraryImport lib = api.getAnnotation(LibraryImport.class);
 		if (lib == null) {
 			throw new IllegalStateException("Missing @LibraryImport");
@@ -58,24 +48,20 @@ enum StubGenerator {
 		if (structSize <= 0) {
 			throw new IllegalStateException("structSize must be > 0");
 		}
-		
 		List<Method> nativeMethods = new ArrayList<>();
 		for (Method m : methods) {
 			if (!m.isAnnotationPresent(Field.class)) {
 				nativeMethods.add(m);
 			}
 		}
-		
 		ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS);
 		cw.visit(V21, ACC_PUBLIC | ACC_FINAL, implName, null, "java/lang/Object",
 				new String[]{apiName, "java/lang/AutoCloseable"});
-
 		emitFields(cw, implName, nativeMethods.size());
 		emitClinit(cw, implName, nativeMethods.size());
 		emitCtor(cw, implName);
 		emitDefaultCtor(cw, implName);
 		emitCloseMethod(cw, implName);
-		
 		int nativeIndex = 0;
 		for (Method m : methods) {
 			if (m.isAnnotationPresent(Field.class)) {
@@ -88,36 +74,19 @@ enum StubGenerator {
 				emitMethod(cw, implName, m, nativeIndex++, structSize);
 			}
 		}
-		
 		cw.visitEnd();
 		return cw.toByteArray();
 	}
-	
-	/**
-	 * 生成类的静态字段声明：每个本地方法对应一个 {@code static final MethodHandle} 字段，
-	 * 以及一个用于存储本地对象指针的 {@code ptr} 字段。
-	 *
-	 * @param cw                类写入器
-	 * @param implName          生成类的内部名（如 {@code com/example/MyApi$FFM}）
-	 * @param nativeMethodCount 需要绑定的本地方法数量
-	 */
+
+	/** 生成 MethodHandle 静态字段和 {@code ptr} 字段。 */
 	private static void emitFields(ClassWriter cw, String implName, int nativeMethodCount) {
 		for (int i = 0; i < nativeMethodCount; i++) {
 			cw.visitField(ACC_PRIVATE | ACC_STATIC | ACC_FINAL, "MH" + i, "Ljava/lang/invoke/MethodHandle;", null, null).visitEnd();
 		}
 		cw.visitField(ACC_PRIVATE | ACC_FINAL, "ptr", "Ljava/lang/foreign/MemorySegment;", null, null).visitEnd();
 	}
-	
-	/**
-	 * 生成 {@code <clinit>} 静态初始化块。
-	 * <p>
-	 * 在类加载时通过 {@link FFMFactory#getHandle(int)} 将所有本地方法句柄
-	 * 绑定到对应的 {@code MH0, MH1, ...} 静态字段。
-	 *
-	 * @param cw       类写入器
-	 * @param implName 生成类的内部名
-	 * @param count    本地方法数量
-	 */
+
+	/** 生成 {@code <clinit>}，通过 {@link FFMFactory#getHandle(int)} 绑定 MH 字段。 */
 	private static void emitClinit(ClassWriter cw, String implName, int count) {
 		MethodVisitor mv = cw.visitMethod(ACC_STATIC, "<clinit>", "()V", null, null);
 		mv.visitCode();
@@ -130,15 +99,8 @@ enum StubGenerator {
 		mv.visitMaxs(0, 0);
 		mv.visitEnd();
 	}
-	
-	/**
-	 * 生成接受 {@link MemorySegment} 指针的私有构造函数。
-	 * <p>
-	 * 供"创建"方法（返回接口类型）使用，将本地返回的指针包装为接口实例。
-	 *
-	 * @param cw       类写入器
-	 * @param implName 生成类的内部名
-	 */
+
+	/** 生成接受 {@link MemorySegment} 的私有构造函数，供"创建"方法使用。 */
 	private static void emitCtor(ClassWriter cw, String implName) {
 		MethodVisitor mv = cw.visitMethod(ACC_PRIVATE, "<init>", "(Ljava/lang/foreign/MemorySegment;)V", null, null);
 		mv.visitCode();
@@ -151,15 +113,8 @@ enum StubGenerator {
 		mv.visitMaxs(0, 0);
 		mv.visitEnd();
 	}
-	
-	/**
-	 * 生成无参默认构造函数。
-	 * <p>
-	 * 供 {@link FFMFactory#load(Class)} 返回实例时使用。
-	 *
-	 * @param cw       类写入器
-	 * @param implName 生成类的内部名
-	 */
+
+	/** 生成无参默认构造函数，供 {@link FFMFactory#load} 使用。 */
 	private static void emitDefaultCtor(ClassWriter cw, String implName) {
 		MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "<init>", "()V", null, null);
 		mv.visitCode();
@@ -170,12 +125,7 @@ enum StubGenerator {
 		mv.visitEnd();
 	}
 
-	/**
-	 * 生成 {@code close()} 方法，实现 {@link AutoCloseable}。
-	 * <p>
-	 * 直接委托给接口中声明的 {@code destroy()} 方法。
-	 * 生成的类可直接用于 try-with-resources 或 {@link java.lang.ref.Cleaner}。
-	 */
+	/** 生成 {@code close()} 方法，委托给接口中声明的 {@code destroy()}。 */
 	private static void emitCloseMethod(ClassWriter cw, String implName) {
 		MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "close", "()V",
 				null, new String[]{"java/lang/Exception"});
@@ -188,36 +138,23 @@ enum StubGenerator {
 	}
 
 	/**
-	 * 生成 {@code @Field} 结构体字段的 getter/setter 方法。
-	 * <p>
-	 * 无参方法为 getter（读取），单参数方法为 setter（写入）。
-	 * 通过 {@link MemorySegment#get} / {@link MemorySegment#set} 直接读写指定偏移处的内存。
-	 *
-	 * @param cw       类写入器
-	 * @param implName 生成类的内部名
-	 * @param m        字段访问方法
-	 * @param offset   字段在结构体中的字节偏移量
+	 * 生成 {@code @Field} 的 getter/setter。
+	 * 无参为 getter，单参数为 setter，直接读写 {@code ptr} 的偏移处内存。
 	 */
 	private static void emitFieldMethod(ClassWriter cw, String implName, Method m, long offset) {
 		MethodType mt = MethodType.methodType(m.getReturnType(), m.getParameterTypes());
 		MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, m.getName(), mt.toMethodDescriptorString(), null, null);
 		mv.visitCode();
-		
-		// this.ptr
 		mv.visitVarInsn(ALOAD, 0);
 		mv.visitFieldInsn(GETFIELD, implName, "ptr", "Ljava/lang/foreign/MemorySegment;");
-		
 		boolean getter = m.getParameterCount() == 0;
 		Class<?> type = getter ? m.getReturnType() : m.getParameterTypes()[0];
-		
 		FieldTypeInfo info = FIELD_TYPES.get(type);
 		if (info == null) {
 			throw new IllegalStateException("Unsupported @Field type: " + type);
 		}
-		
 		mv.visitFieldInsn(GETSTATIC, "java/lang/foreign/ValueLayout", info.layoutName(), info.layoutDesc());
 		mv.visitLdcInsn(offset);
-		
 		if (getter) {
 			mv.visitMethodInsn(INVOKEINTERFACE, MEMORY_SEGMENT, "get", info.getDesc(), true);
 			mv.visitInsn(info.returnOpcode());
@@ -226,28 +163,13 @@ enum StubGenerator {
 			mv.visitMethodInsn(INVOKEINTERFACE, MEMORY_SEGMENT, "set", info.setDesc(), true);
 			mv.visitInsn(RETURN);
 		}
-		
 		mv.visitMaxs(0, 0);
 		mv.visitEnd();
 	}
 
 	/**
 	 * 生成 {@code @FieldView} 零拷贝视图方法。
-	 * <p>
-	 * 返回本地内存的 {@link MemorySegment} 切片，不拷贝数据。
-	 * 用户通过 {@code MemorySegment.get/set} 按需读写，无分配、无拷贝。
-	 * <p>
-	 * 生成的代码等价于：
-	 * <pre>{@code
-	 * public MemorySegment fieldName() {
-	 *     return this.ptr.asSlice(offset, size);
-	 * }
-	 * }</pre>
-	 *
-	 * @param cw       类写入器
-	 * @param implName 生成类的内部名
-	 * @param m        字段访问方法（必须返回 {@link MemorySegment}，无参）
-	 * @param fv       {@code @FieldView} 注解实例
+	 * 返回 {@code this.ptr.asSlice(offset, size)}。
 	 */
 	private static void emitFieldViewMethod(ClassWriter cw, String implName, Method m, FieldView fv) {
 		if (m.getReturnType() != MemorySegment.class) {
@@ -256,12 +178,9 @@ enum StubGenerator {
 		if (m.getParameterCount() != 0) {
 			throw new IllegalStateException("@FieldView must be a no-arg getter");
 		}
-
 		MethodType mt = MethodType.methodType(MemorySegment.class);
 		MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, m.getName(), mt.toMethodDescriptorString(), null, null);
 		mv.visitCode();
-
-		// return this.ptr.asSlice(offset, size);
 		mv.visitVarInsn(ALOAD, 0);
 		mv.visitFieldInsn(GETFIELD, implName, "ptr", "Ljava/lang/foreign/MemorySegment;");
 		mv.visitLdcInsn(fv.offset());
@@ -269,41 +188,26 @@ enum StubGenerator {
 		mv.visitMethodInsn(INVOKEINTERFACE, MEMORY_SEGMENT, "asSlice",
 				"(JJ)Ljava/lang/foreign/MemorySegment;", true);
 		mv.visitInsn(ARETURN);
-
 		mv.visitMaxs(0, 0);
 		mv.visitEnd();
 	}
 
 	/**
-	 * 生成 {@code @FieldArray} 结构体数组字段的访问方法。
-	 * <p>
-	 * 支持 getter 和 setter 两种模式：
-	 * <ul>
-	 *   <li><b>getter</b>（无参，返回数组）：从本地内存切片拷贝到 Java 数组并返回</li>
-	 *   <li><b>setter</b>（有参，返回 void）：将 Java 数组拷贝到本地内存切片</li>
-	 * </ul>
-	 * 支持的数组类型：{@code int[]}、{@code double[]}、{@code byte[]}。
-	 *
-	 * @param cw       类写入器
-	 * @param implName 生成类的内部名
-	 * @param m        字段访问方法
-	 * @param fa       {@code @FieldArray} 注解实例
+	 * 生成 {@code @FieldArray} 的 getter/setter。
+	 * 支持 {@code int[]}/{@code double[]}/{@code byte[]} 类型的数组字段读写。
 	 */
 	private static void emitFieldArrayMethod(ClassWriter cw, String implName, Method m, FieldArray fa) {
 		Class<?> rt = m.getReturnType();
 		boolean getter = m.getParameterCount() == 0;
-
 		if (getter && !rt.isArray()) {
 			throw new IllegalStateException("@FieldArray getter must return array");
 		}
 		if (!getter && rt != void.class) {
 			throw new IllegalStateException("@FieldArray setter must return void");
 		}
-
 		Class<?> ct = getter ? rt.getComponentType() : m.getParameterTypes()[0];
 		long offset = fa.offset();
 		int len = fa.length();
-
 		int elemSize;
 		String ofArrayDesc;
 		if (ct == double.class) {
@@ -318,16 +222,12 @@ enum StubGenerator {
 		} else {
 			throw new IllegalStateException("Unsupported @FieldArray type: " + ct);
 		}
-
 		MethodType mt = MethodType.methodType(rt, getter ? new Class<?>[0] : new Class<?>[]{ct.arrayType()});
 		MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, m.getName(), mt.toMethodDescriptorString(), null, null);
 		mv.visitCode();
 
+		// slot 0: this, slot 1: slice, slot 2: arr, slot 3: arrSeg
 		if (getter) {
-			// getter: native → Java
-			// slot 0: this, slot 1: slice, slot 2: arr, slot 3: arrSeg
-
-			// MemorySegment slice = this.ptr.asSlice(offset, len * elemSize);
 			mv.visitVarInsn(ALOAD, 0);
 			mv.visitFieldInsn(GETFIELD, implName, "ptr", "Ljava/lang/foreign/MemorySegment;");
 			mv.visitLdcInsn(offset);
@@ -335,32 +235,21 @@ enum StubGenerator {
 			mv.visitMethodInsn(INVOKEINTERFACE, MEMORY_SEGMENT, "asSlice",
 					"(JJ)Ljava/lang/foreign/MemorySegment;", true);
 			mv.visitVarInsn(ASTORE, 1);
-
-			// T[] arr = new T[len];
 			mv.visitIntInsn(SIPUSH, len);
 			int newType = ct == double.class ? T_DOUBLE : ct == byte.class ? T_BYTE : T_INT;
 			mv.visitIntInsn(NEWARRAY, newType);
 			mv.visitVarInsn(ASTORE, 2);
-
-			// arrSeg = MemorySegment.ofArray(arr);
 			mv.visitVarInsn(ALOAD, 2);
 			mv.visitMethodInsn(INVOKESTATIC, MEMORY_SEGMENT, "ofArray", ofArrayDesc, false);
 			mv.visitVarInsn(ASTORE, 3);
-
-			// arrSeg.copyFrom(slice);
 			mv.visitVarInsn(ALOAD, 3);
 			mv.visitVarInsn(ALOAD, 1);
 			mv.visitMethodInsn(INVOKEINTERFACE, MEMORY_SEGMENT, "copyFrom",
 					"(Ljava/lang/foreign/MemorySegment;)V", true);
-
-			// return arr;
 			mv.visitVarInsn(ALOAD, 2);
 			mv.visitInsn(ARETURN);
 		} else {
-			// setter: Java → native
 			// slot 0: this, slot 1: array param, slot 2: slice, slot 3: arrSeg
-
-			// MemorySegment slice = this.ptr.asSlice(offset, len * elemSize);
 			mv.visitVarInsn(ALOAD, 0);
 			mv.visitFieldInsn(GETFIELD, implName, "ptr", "Ljava/lang/foreign/MemorySegment;");
 			mv.visitLdcInsn(offset);
@@ -368,94 +257,133 @@ enum StubGenerator {
 			mv.visitMethodInsn(INVOKEINTERFACE, MEMORY_SEGMENT, "asSlice",
 					"(JJ)Ljava/lang/foreign/MemorySegment;", true);
 			mv.visitVarInsn(ASTORE, 2);
-
-			// MemorySegment arrSeg = MemorySegment.ofArray(arr);
 			mv.visitVarInsn(ALOAD, 1);
 			mv.visitMethodInsn(INVOKESTATIC, MEMORY_SEGMENT, "ofArray", ofArrayDesc, false);
 			mv.visitVarInsn(ASTORE, 3);
-
-			// slice.copyFrom(arrSeg);
 			mv.visitVarInsn(ALOAD, 2);
 			mv.visitVarInsn(ALOAD, 3);
 			mv.visitMethodInsn(INVOKEINTERFACE, MEMORY_SEGMENT, "copyFrom",
 					"(Ljava/lang/foreign/MemorySegment;)V", true);
-
 			mv.visitInsn(RETURN);
 		}
-
 		mv.visitMaxs(0, 0);
 		mv.visitEnd();
 	}
-	
+
 	/**
 	 * 生成本地函数方法的实现。
-	 * <p>
-	 * 生成的代码流程：
-	 * <ol>
-	 *   <li>加载对应的 {@code MethodHandle} 静态字段</li>
-	 *   <li>加载 {@code this.ptr}（实例方法）或跳过（静态方法/"创建"方法）</li>
-	 *   <li>加载并转换参数（String→CString, 数组→MemorySegment）</li>
-	 *   <li>调用 {@code MethodHandle.invokeExact}</li>
-	 *   <li>处理返回值（基本类型直接返回，"创建"方法 reinterpret + 包装为接口实例）</li>
-	 * </ol>
 	 *
-	 * @param cw         类写入器
-	 * @param implName   生成类的内部名
-	 * @param m          本地函数方法
-	 * @param index      方法句柄在 {@code MH} 字段数组中的索引
-	 * @param structSize 结构体字节大小（用于"创建"方法的 reinterpret）
+	 * <p>对于包含 String / 数组 / 结构体参数的方法，自动插入
+	 * {@link FFMFactory#beginDowncall()} / {@link FFMFactory#endDowncall()}
+	 * 以管理临时 native 内存的生命周期。
 	 */
 	private static void emitMethod(ClassWriter cw, String implName, Method m, int index, long structSize) {
 		MethodType javaMT = MethodType.methodType(m.getReturnType(), m.getParameterTypes());
 		MethodType nativeMT = buildNativeMethodType(m);
-
 		boolean isCreate = m.getReturnType().isInterface();
+		boolean isSpanReturn = m.getReturnType().isArray();
+		boolean isStructReturn = FFMFactory.isStructClass(m.getReturnType());
 		boolean skipThis = m.isAnnotationPresent(Static.class) || Modifier.isStatic(m.getModifiers());
 		boolean isJavaStatic = Modifier.isStatic(m.getModifiers());
-
+		boolean needsScope = hasTempAllocParams(m);
 		int access = ACC_PUBLIC | (isJavaStatic ? ACC_STATIC : 0);
 		MethodVisitor mv = cw.visitMethod(access, m.getName(), javaMT.toMethodDescriptorString(), null, null);
 		mv.visitCode();
 
-		// 加载 MethodHandle
+		if (needsScope) {
+			mv.visitMethodInsn(INVOKESTATIC, FFM_FACTORY, "beginDowncall", "()V", false);
+		}
 		mv.visitFieldInsn(GETSTATIC, implName, "MH" + index, "Ljava/lang/invoke/MethodHandle;");
-
-		// 加载 this 指针（仅实例方法 + 非 @Static 方法）
 		if (!isCreate && !skipThis) {
 			mv.visitVarInsn(ALOAD, 0);
 			mv.visitFieldInsn(GETFIELD, implName, "ptr", "Ljava/lang/foreign/MemorySegment;");
 		}
-		
-		// 加载参数（静态方法从 slot 0 开始，实例方法从 slot 1 开始）
-		emitLoadParams(mv, m.getParameterTypes(), isJavaStatic ? 0 : 1);
-		
-		// 调用本地函数
+		int startSlot = isJavaStatic ? 0 : 1;
+		emitLoadParams(mv, m.getParameterTypes(), startSlot);
 		mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/invoke/MethodHandle", "invokeExact", nativeMT.toMethodDescriptorString(), false);
-		
-		// 处理返回值
-		if (isCreate) {
-			emitCreateReturn(mv, implName, structSize);
+
+		if (needsScope) {
+			boolean nonVoid = m.getReturnType() != void.class;
+			int returnSlot = 0;
+			if (nonVoid) {
+				returnSlot = calcReturnSlot(m, startSlot);
+				if (isCreate || isSpanReturn || isStructReturn || !m.getReturnType().isPrimitive()) {
+					mv.visitVarInsn(ASTORE, returnSlot);
+				} else {
+					Class<?> rt = m.getReturnType();
+					if (rt == long.class || rt == double.class) {
+						mv.visitVarInsn(rt == long.class ? LSTORE : DSTORE, returnSlot);
+					} else {
+						mv.visitVarInsn(ISTORE, returnSlot);
+					}
+				}
+			}
+			mv.visitMethodInsn(INVOKESTATIC, FFM_FACTORY, "endDowncall", "()V", false);
+			if (!nonVoid) {
+				mv.visitInsn(RETURN);
+			} else {
+				if (isCreate || isSpanReturn || isStructReturn || !m.getReturnType().isPrimitive()) {
+					mv.visitVarInsn(ALOAD, returnSlot);
+					if (isCreate) {
+						emitCreateReturn(mv, implName, structSize);
+					} else if (isSpanReturn) {
+						emitSpanReturn(mv, m.getReturnType());
+					} else if (isStructReturn) {
+						mv.visitLdcInsn(org.objectweb.asm.Type.getType(m.getReturnType()));
+						mv.visitMethodInsn(INVOKESTATIC, FFM_FACTORY, "fromNativeObject", "(Ljava/lang/foreign/MemorySegment;Ljava/lang/Class;)Ljava/lang/Object;", false);
+						mv.visitTypeInsn(CHECKCAST, m.getReturnType().getName().replace('.', '/'));
+						mv.visitInsn(ARETURN);
+					} else {
+						emitReturn(mv, m.getReturnType());
+					}
+				} else {
+					Class<?> rt = m.getReturnType();
+					mv.visitVarInsn(rt == long.class || rt == double.class
+						? (rt == long.class ? LLOAD : DLOAD) : ILOAD, returnSlot);
+					emitReturn(mv, rt);
+				}
+			}
 		} else {
-			emitReturn(mv, m.getReturnType());
+			if (isCreate) {
+				emitCreateReturn(mv, implName, structSize);
+			} else if (isSpanReturn) {
+				emitSpanReturn(mv, m.getReturnType());
+			} else if (isStructReturn) {
+				mv.visitLdcInsn(org.objectweb.asm.Type.getType(m.getReturnType()));
+				mv.visitMethodInsn(INVOKESTATIC, FFM_FACTORY, "fromNativeObject", "(Ljava/lang/foreign/MemorySegment;Ljava/lang/Class;)Ljava/lang/Object;", false);
+				mv.visitTypeInsn(CHECKCAST, m.getReturnType().getName().replace('.', '/'));
+				mv.visitInsn(ARETURN);
+			} else {
+				emitReturn(mv, m.getReturnType());
+			}
 		}
-		
 		mv.visitMaxs(0, 0);
 		mv.visitEnd();
 	}
-	
+
+	/** 判断方法是否有需要临时内存分配的参数类型（String / 数组 / 结构体类）。 */
+	private static boolean hasTempAllocParams(Method m) {
+		for (Class<?> p : m.getParameterTypes()) {
+			if (p == String.class || p.isArray() || FFMFactory.isStructClass(p)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/** 计算返回值的 local slot 索引（基于参数类型列表）。 */
+	private static int calcReturnSlot(Method m, int startSlot) {
+		int slot = startSlot;
+		for (Class<?> p : m.getParameterTypes()) {
+			slot += (p == long.class || p == double.class) ? 2 : 1;
+		}
+		return slot;
+	}
+
 	/**
 	 * 生成参数加载指令。
-	 * <p>
-	 * 按照 JVM 调用约定逐个加载参数到操作数栈，同时处理类型转换：
-	 * <ul>
-	 *   <li>基本类型：直接 {@code xLOAD}</li>
-	 *   <li>{@link String}：转换为 {@code MemorySegment}（通过 {@code FFMFactory.toCString}）</li>
-	 *   <li>数组：转换为 {@code MemorySegment}（通过 {@code FFMFactory.toNative}）</li>
-	 *   <li>其他引用类型：直接 {@code ALOAD}</li>
-	 * </ul>
-	 *
-	 * @param mv     方法访问器
-	 * @param params 参数类型数组
+	 * String → {@code toCStringTemp}、数组 → {@code toNativeTemp}、
+	 * 结构体 → {@code toNativeObjectTemp}。
 	 */
 	private static void emitLoadParams(MethodVisitor mv, Class<?>[] params, int startSlot) {
 		int slot = startSlot;
@@ -470,46 +398,47 @@ enum StubGenerator {
 				mv.visitVarInsn(DLOAD, slot);
 			} else if (p == String.class) {
 				mv.visitVarInsn(ALOAD, slot);
-				mv.visitMethodInsn(INVOKESTATIC, FFM_FACTORY, "toCString", "(Ljava/lang/String;)Ljava/lang/foreign/MemorySegment;", false);
+				mv.visitMethodInsn(INVOKESTATIC, FFM_FACTORY, "toCStringTemp", "(Ljava/lang/String;)Ljava/lang/foreign/MemorySegment;", false);
 			} else if (p.isArray()) {
 				mv.visitVarInsn(ALOAD, slot);
-				String sig = "(" + p.descriptorString() + ")Ljava/lang/foreign/MemorySegment;";
-				mv.visitMethodInsn(INVOKESTATIC, FFM_FACTORY, "toNative", sig, false);
+				if (p.getComponentType().isInterface()) {
+					mv.visitMethodInsn(INVOKESTATIC, FFM_FACTORY, "toNativeInterfaceTemp", "([Ljava/lang/Object;)Ljava/lang/foreign/MemorySegment;", false);
+				} else {
+					String sig = "(" + p.descriptorString() + ")Ljava/lang/foreign/MemorySegment;";
+					mv.visitMethodInsn(INVOKESTATIC, FFM_FACTORY, "toNativeTemp", sig, false);
+				}
+			} else if (p == MemorySegment.class) {
+				mv.visitVarInsn(ALOAD, slot);
+			} else if (p.isInterface()) {
+				mv.visitVarInsn(ALOAD, slot);
+				String implName = p.getName().replace('.', '/') + "$FFM";
+				mv.visitFieldInsn(GETFIELD, implName, "ptr", "Ljava/lang/foreign/MemorySegment;");
+			} else if (FFMFactory.isStructClass(p)) {
+				mv.visitVarInsn(ALOAD, slot);
+				mv.visitMethodInsn(INVOKESTATIC, FFM_FACTORY, "toNativeObjectTemp", "(Ljava/lang/Object;)Ljava/lang/foreign/MemorySegment;", false);
 			} else {
 				mv.visitVarInsn(ALOAD, slot);
 			}
 			slot += (p == long.class || p == double.class) ? 2 : 1;
 		}
 	}
-	
+
 	/**
 	 * 生成"创建"方法的返回处理。
-	 * <p>
-	 * 将本地函数返回的 {@code MemorySegment} 指针 reinterpret 为结构体大小，
-	 * 然后通过私有构造函数包装为接口实例。
-	 *
-	 * @param mv         方法访问器
-	 * @param implName   生成类的内部名
-	 * @param structSize 结构体字节大小
+	 * 将返回的 {@link MemorySegment} reinterpret + 包装为接口实例。
 	 */
 	private static void emitCreateReturn(MethodVisitor mv, String implName, long structSize) {
-		// ptr = ptr.reinterpret(structSize)
+		// ptr.reinterpret(structSize) → new Impl(ptr) → ARETURN
 		mv.visitLdcInsn(structSize);
 		mv.visitMethodInsn(INVOKEINTERFACE, MEMORY_SEGMENT, "reinterpret", "(J)Ljava/lang/foreign/MemorySegment;", true);
-		// new Impl(ptr)
 		mv.visitTypeInsn(NEW, implName);
 		mv.visitInsn(DUP_X1);
 		mv.visitInsn(SWAP);
 		mv.visitMethodInsn(INVOKESPECIAL, implName, "<init>", "(Ljava/lang/foreign/MemorySegment;)V", false);
 		mv.visitInsn(ARETURN);
 	}
-	
-	/**
-	 * 生成基本类型/引用类型的返回指令。
-	 *
-	 * @param mv         方法访问器
-	 * @param returnType Java 返回类型
-	 */
+
+	/** 生成基本类型/引用类型的返回指令。 */
 	private static void emitReturn(MethodVisitor mv, Class<?> returnType) {
 		if (returnType == void.class) {
 			mv.visitInsn(RETURN);
@@ -525,28 +454,54 @@ enum StubGenerator {
 			mv.visitInsn(ARETURN);
 		}
 	}
-	
+
 	/**
-	 * 构建本地函数的 {@link MethodType}，用于 {@code MethodHandle.invokeExact} 调用。
-	 * <p>
-	 * 将 Java 方法签名转换为本地函数签名：
-	 * <ul>
-	 *   <li>实例方法：插入 {@code MemorySegment} 作为第一个参数（this 指针）</li>
-	 *   <li>{@link String} / 数组 / {@link MemorySegment} 参数：映射为 {@code MemorySegment}</li>
-	 *   <li>引用类型返回值：映射为 {@code MemorySegment}</li>
-	 * </ul>
-	 *
-	 * @param m Java 方法
-	 * @return 本地函数的 {@link MethodType}
+	 * 生成 {@code std::span} 返回值的处理代码。
+	 * 通过 {@code FFMFactory.fromSpanXxx} 将 {@link MemorySegment} 转换为 Java 数组。
+	 */
+	private static void emitSpanReturn(MethodVisitor mv, Class<?> returnType) {
+		Class<?> ct = returnType.getComponentType();
+		String fromSpanMethod;
+		String fromSpanDesc;
+		if (ct.isInterface()) {
+			fromSpanMethod = "fromSpanStruct";
+			fromSpanDesc = "(Ljava/lang/foreign/MemorySegment;Ljava/lang/Class;)[Ljava/lang/Object;";
+			mv.visitLdcInsn(org.objectweb.asm.Type.getType(ct));
+		} else if (ct == double.class) {
+			fromSpanMethod = "fromSpanDouble";
+			fromSpanDesc = "(Ljava/lang/foreign/MemorySegment;)[D";
+		} else if (ct == int.class) {
+			fromSpanMethod = "fromSpanInt";
+			fromSpanDesc = "(Ljava/lang/foreign/MemorySegment;)[I";
+		} else if (ct == float.class) {
+			fromSpanMethod = "fromSpanFloat";
+			fromSpanDesc = "(Ljava/lang/foreign/MemorySegment;)[F";
+		} else if (ct == long.class) {
+			fromSpanMethod = "fromSpanLong";
+			fromSpanDesc = "(Ljava/lang/foreign/MemorySegment;)[J";
+		} else if (ct == short.class) {
+			fromSpanMethod = "fromSpanShort";
+			fromSpanDesc = "(Ljava/lang/foreign/MemorySegment;)[S";
+		} else if (ct == byte.class) {
+			fromSpanMethod = "fromSpanByte";
+			fromSpanDesc = "(Ljava/lang/foreign/MemorySegment;)[B";
+		} else {
+			throw new IllegalStateException("Unsupported span element type: " + ct);
+		}
+		mv.visitMethodInsn(INVOKESTATIC, FFM_FACTORY, fromSpanMethod, fromSpanDesc, false);
+		mv.visitInsn(ARETURN);
+	}
+
+	/**
+	 * 构建本地函数的 {@link MethodType}，用于 {@code MethodHandle.invokeExact}。
+	 * 实例方法插入 {@code MemorySegment} 类型作为 this 指针参数。
 	 */
 	private static MethodType buildNativeMethodType(Method m) {
 		boolean isCreate = m.getReturnType().isInterface();
 		boolean isStatic = m.isAnnotationPresent(Static.class) || Modifier.isStatic(m.getModifiers());
-		
 		Class<?>[] pts = m.getParameterTypes();
 		boolean hasThis = !isCreate && !isStatic;
 		Class<?>[] nativePts = new Class<?>[pts.length + (hasThis ? 1 : 0)];
-		
 		int i = 0;
 		if (hasThis) {
 			nativePts[i++] = MemorySegment.class;
@@ -554,21 +509,13 @@ enum StubGenerator {
 		for (Class<?> p : pts) {
 			nativePts[i++] = isRefType(p) ? MemorySegment.class : p;
 		}
-		
 		Class<?> rt = m.getReturnType();
 		Class<?> nativeRt = (isCreate || isRefType(rt)) ? MemorySegment.class : rt;
 		return MethodType.methodType(nativeRt, nativePts);
 	}
-	
-	/**
-	 * 判断 Java 类型是否为引用类型（数组、{@link String}、{@link MemorySegment}）。
-	 * <p>
-	 * 引用类型在本地调用中统一映射为 {@code MemorySegment}。
-	 *
-	 * @param c Java 类型
-	 * @return 如果是引用类型返回 {@code true}
-	 */
+
+	/** 判断类型是否在本地层映射为 {@link MemorySegment}。 */
 	private static boolean isRefType(Class<?> c) {
-		return c.isArray() || c == String.class || c == MemorySegment.class;
+		return c.isArray() || c == String.class || c == MemorySegment.class || c.isInterface() || FFMFactory.isStructClass(c);
 	}
 }

@@ -3,28 +3,19 @@
 #include "ImprovedNoise.h"
 #include <algorithm>
 #include <cmath>
+#include <cstring>
 #include <random>
 
 #include "../../util.h"
 using namespace minecraft;
 
-ImprovedNoise::ImprovedNoise(std::mt19937_64& random) {
+static constexpr double SHIFT_UP_EPSILON = 1.0000000116860974E-7;
+
+ImprovedNoise::ImprovedNoise(const double xo, const double yo, const double zo, const std::span<int8_t> perm) : xo(xo),
+                                                                                                                yo(yo),
+                                                                                                                zo(zo) {
     JavaNative::touch();
-    std::uniform_real_distribution dist_double(0.0, 1.0);
-
-    this->xo = dist_double(random) * 256.0;
-    this->yo = dist_double(random) * 256.0;
-    this->zo = dist_double(random) * 256.0;
-
-    for (int i = 0; i < 256; i++) {
-        this->p[i] = static_cast<int8_t>(i);
-    }
-
-    for (int i = 0; i < 256; i++) {
-        std::uniform_int_distribution distribution(0, 255 - i);
-        const int offset = distribution(random);
-        std::swap(this->p[i], this->p[i + offset]);
-    }
+    std::memcpy(this->p.data(), perm.data(), perm.size());
 }
 
 auto ImprovedNoise::noise(const double x, const double y, const double z) const -> double {
@@ -49,12 +40,12 @@ auto ImprovedNoise::noise(const double x, const double y, const double z, const 
         fudge_limit = yr;
     }
 
-    const double yr_fudge = y_scale != 0.0 ? std::floor((fudge_limit / y_scale) + 1.0E-7) * y_scale : 0.0;
+    const double yr_fudge = y_scale != 0.0 ? std::floor((fudge_limit / y_scale) + SHIFT_UP_EPSILON) * y_scale : 0.0;
 
     return sample_and_lerperm(xf, yf, zf, xr, yr - yr_fudge, zr, yr);
 }
 
-auto ImprovedNoise::noise_with_derivative(const double x, const double y, const double z, double* derivative_out) const -> double {
+auto ImprovedNoise::noise_with_derivative(const double x, const double y, const double z, const std::span<double> derivative_out) const -> double {
     const double x1 = x + this->xo;
     const double y1 = y + this->yo;
     const double z1 = z + this->zo;
@@ -78,12 +69,12 @@ auto ImprovedNoise::add_methods() -> void {
     "ImprovedNoise::noise_with_derivative"_jf.reg<&ImprovedNoise::noise_with_derivative>();
 }
 
-auto ImprovedNoise::_create(const double xo, const double yo, const double zo, const int8_t* array, const int len) -> ImprovedNoise* {
+auto ImprovedNoise::_create(const double xo, const double yo, const double zo, const std::span<int8_t> array) -> ImprovedNoise* {
     auto* noise = hwopt::util::mi_new<ImprovedNoise>();
     noise->xo = xo;
     noise->yo = yo;
     noise->zo = zo;
-    std::memcpy(noise->p.data(), array, static_cast<size_t>(len));
+    std::memcpy(noise->p.data(), array.data(), array.size());
     return noise;
 }
 
@@ -92,7 +83,7 @@ auto ImprovedNoise::_destroy() const -> void {
 }
 
 inline auto ImprovedNoise::grad_dot(const int hash, const double x, const double y, const double z) -> double {
-    const int idx = (hash & 15);
+    const int idx = (hash & 15) * 3;
     return (GRADIENT[idx] * x) + (GRADIENT[idx + 1] * y) + (GRADIENT[idx + 2] * z);
 }
 
@@ -100,7 +91,7 @@ auto ImprovedNoise::perm(const int x) const -> int {
     return this->p[x & 0xFF] & 0xFF;
 }
 
-auto ImprovedNoise::sample_and_lerperm(const int x, const int y, const int z, const double xr, const double yr, const double zr, const double yrOriginal) const -> double {
+auto ImprovedNoise::sample_and_lerperm(const int x, const int y, const int z, const double xr, const double yr, const double zr, const double yr_original) const -> double {
     const int x0 = perm(x);
     const int x1 = perm(x + 1);
     const int xy00 = perm(x0 + y);
@@ -115,10 +106,10 @@ auto ImprovedNoise::sample_and_lerperm(const int x, const int y, const int z, co
     const double d101 = grad_dot(perm(xy10 + z + 1), xr - 1.0, yr, zr - 1.0);
     const double d011 = grad_dot(perm(xy01 + z + 1), xr, yr - 1.0, zr - 1.0);
     const double d111 = grad_dot(perm(xy11 + z + 1), xr - 1.0, yr - 1.0, zr - 1.0);
-    return lerp3(smoothstep(xr), smoothstep(yrOriginal), smoothstep(zr), d000, d100, d010, d110, d001, d101, d011, d111);
+    return lerp3(smoothstep(xr), smoothstep(yr_original), smoothstep(zr), d000, d100, d010, d110, d001, d101, d011, d111);
 }
 
-auto ImprovedNoise::sample_with_derivative(const int x, const int y, const int z, const double xr, const double yr, const double zr, double* derivative_out) const -> double {
+auto ImprovedNoise::sample_with_derivative(const int x, const int y, const int z, const double xr, const double yr, const double zr, std::span<double> derivative_out) const -> double {
     const int x0 = perm(x);
     const int x1 = perm(x + 1);
     const int xy00 = perm(x0 + y);

@@ -33,14 +33,6 @@ public abstract class ImprovedNoiseMixin {
 	@Unique
 	private ImprovedNoiseNative hwopt$nativePtr;
 
-	@Shadow
-	protected abstract double noise(double x, double y, double z, double yScale, double yFudge);
-
-	@Unique
-	private static ImprovedNoiseNative hwopt$gradDot;
-	@Unique
-	private static boolean hwopt$gradDotInit;
-
 	@Inject(method = "<init>", at = @At("RETURN"))
 	private void hwopt$init(RandomSource random, CallbackInfo ci) {
 		this.hwopt$nativePtr = FFMFactory.trackCleaner(this, ImprovedNoiseNative.create(xo, yo, zo, p));
@@ -49,7 +41,7 @@ public abstract class ImprovedNoiseMixin {
 	@Inject(method = "noise(DDD)D", at = @At("HEAD"), cancellable = true)
 	private void hwopt$noise(double _x, double _y, double _z, CallbackInfoReturnable<Double> cir) {
 		if (this.hwopt$nativePtr != null) {
-			cir.setReturnValue(this.noise(_x, _y, _z, 0.0, 0.0));
+			cir.setReturnValue(hwopt$nativePtr.noise(_x, _y, _z, 0.0, 0.0));
 		}
 	}
 
@@ -69,15 +61,7 @@ public abstract class ImprovedNoiseMixin {
 
 	@Inject(method = "gradDot", at = @At("HEAD"), cancellable = true)
 	private static void hwopt$gradDot(int hash, double x, double y, double z, CallbackInfoReturnable<Double> cir) {
-		if (!hwopt$gradDotInit) {
-			try {
-				hwopt$gradDot = ImprovedNoiseNative.instance();
-			} catch (Throwable ignored) {}
-			hwopt$gradDotInit = true;
-		}
-		if (hwopt$gradDot != null) {
-			cir.setReturnValue(hwopt$gradDot.grad_dot(hash, x, y, z));
-		}
+		cir.setReturnValue(ImprovedNoiseNative.instance().grad_dot(hash, x, y, z));
 	}
 
 	@Inject(method = "p(I)I", at = @At("HEAD"), cancellable = true)

@@ -15,17 +15,18 @@ namespace minecraft {
         std::vector<ImprovedNoise> noise_levels_;
 
         PerlinNoise() = default;
-        PerlinNoise(std::mt19937_64& mt, int first_octave, const double* amplitudes, int size, bool use_new_init);
+        PerlinNoise(int first_octave, std::span<double> amplitudes, double lowest_freq_value_factor, double lowest_freq_input_factor, double max_value);
 
         static auto add_methods() -> void;
-        static auto _create(long seed, int firstOctave, const double* amplitudes, int size, bool useNewInit) -> PerlinNoise*;
+        static auto _create(int first_octave, std::span<double> amplitudes, double lowest_freq_value_factor, double lowest_freq_input_factor, double max_value) -> PerlinNoise*;
         auto _destroy() const -> void;
 
+        auto add_noise(int index, double xo, double yo, double zo, std::span<int8_t> array) -> void;
+
         [[nodiscard]] auto get_value3(double x, double y, double z) const -> double;
-        [[nodiscard]] auto get_value5(double x, double y, double z, double yScale, double yFudge) const -> double;
+        [[nodiscard]] auto get_value5(double x, double y, double z, double y_scale, double y_fudge) const -> double;
         [[nodiscard]] auto edge_value(double noise_value) const -> double;
-        [[nodiscard]] auto amplitudes_size() const -> int;
-        auto amplitudes(double* out, int size) const -> int;
+        [[nodiscard]] auto amplitudes() -> std::span<double>;
 
         static auto wrap(double x) -> double;
     };

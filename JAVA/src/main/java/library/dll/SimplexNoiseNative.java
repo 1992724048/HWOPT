@@ -4,11 +4,17 @@ import nativecode.dll.*;
 
 @LibraryImport(dll = "hwopt.dll", structSize = 280)
 public interface SimplexNoiseNative extends AutoCloseable {
-	SimplexNoiseNative NATIVE = FFMFactory.load(SimplexNoiseNative.class);
-
+	class Holder {
+		static final SimplexNoiseNative INSTANCE = FFMFactory.load(SimplexNoiseNative.class);
+	}
+	
+	static SimplexNoiseNative instance() {
+		return Holder.INSTANCE;
+	}
+	
 	@Static
 	@Name("SimplexNoise::_create")
-	SimplexNoiseNative create(double xo, double yo, double zo, int[] array, int len);
+	SimplexNoiseNative create(double xo, double yo, double zo, int[] array);
 
 	@Name("SimplexNoise::_destroy")
 	void destroy();

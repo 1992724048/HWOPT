@@ -12,7 +12,7 @@ public interface NormalNoiseNative extends AutoCloseable {
 	@Static
 	@Name("NormalNoise::_create")
 	NormalNoiseNative create(long seed, int firstOctave, double[] amplitudes, int size, boolean useNewInitialization);
-	
+
 	@Name("NormalNoise::_destroy")
 	void destroy();
 	

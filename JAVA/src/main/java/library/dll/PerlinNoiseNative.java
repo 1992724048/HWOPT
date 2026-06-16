@@ -2,11 +2,15 @@ package library.dll;
 
 import nativecode.dll.*;
 
-import java.lang.foreign.MemorySegment;
-
 @LibraryImport(dll = "hwopt.dll", structSize = 96)
 public interface PerlinNoiseNative extends AutoCloseable {
-	PerlinNoiseNative NATIVE = FFMFactory.load(PerlinNoiseNative.class);
+	class Holder {
+		static final PerlinNoiseNative INSTANCE = FFMFactory.load(PerlinNoiseNative.class);
+	}
+	
+	static PerlinNoiseNative instance() {
+		return PerlinNoiseNative.Holder.INSTANCE;
+	}
 	
 	@Field(offset = 8)
 	int first_octave();
@@ -22,10 +26,13 @@ public interface PerlinNoiseNative extends AutoCloseable {
 	
 	@Static
 	@Name("PerlinNoise::_create")
-	PerlinNoiseNative create(long seed, int firstOctave, double[] amplitudes, int size, boolean useNewInitialization);
+	PerlinNoiseNative create(int firstOctave, double[] amplitudes, double lowest_freq_value_factor, double lowest_freq_input_factor, double max_value);
 	
 	@Name("PerlinNoise::_destroy")
 	void destroy();
+	
+	@Name("PerlinNoise::add_noise")
+	double addNoise(int index, double xo, double yo, double zo, byte[] array);
 	
 	@Name("PerlinNoise::get_value3")
 	double getValue(double x, double y, double z);
@@ -37,8 +44,5 @@ public interface PerlinNoiseNative extends AutoCloseable {
 	double edgeValue(double noiseValue);
 	
 	@Name("PerlinNoise::_amplitudes")
-	int amplitudes(MemorySegment amplitudes, int size);
-	
-	@Name("PerlinNoise::_amplitudes_size")
-	int amplitudesSize();
+	double[] amplitudes();
 }

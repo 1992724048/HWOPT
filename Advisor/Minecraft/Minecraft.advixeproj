@@ -19,10 +19,6 @@
  </rdmgr>
  <contextValues type="bag"/>
  <All_Configurations-All_Platforms>
-  <per_group_workloads>
-   <release>release</release>
-   <tripcounts>tripcounts</tripcounts>
-  </per_group_workloads>
   <searchDirs>
    <searchCategory>
     <category type="u8_t">1</category>
@@ -63,6 +59,10 @@
    </searchCategory>
   </searchDirs>
   <excludeFiles type="bag"/>
+  <per_group_workloads>
+   <release>release</release>
+   <tripcounts>tripcounts</tripcounts>
+  </per_group_workloads>
   <target_settings>
    <selected_workload>
     <localhost>tripcounts</localhost>
@@ -973,7 +973,7 @@
         </contextValue>
         <contextValue>
          <id>data_transfer</id>
-         <value>full</value>
+         <value>off</value>
         </contextValue>
         <contextValue>
          <id>data_transfer_analysis</id>

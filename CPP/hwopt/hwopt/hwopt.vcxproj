@@ -130,17 +130,17 @@
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <ExceptionHandling>Async</ExceptionHandling>
-      <GenerateAlternateCodePaths>ARROWLAKE-S</GenerateAlternateCodePaths>
-      <UseProcessorExtensions>ARROWLAKE-S</UseProcessorExtensions>
+      <GenerateAlternateCodePaths>AVX2</GenerateAlternateCodePaths>
+      <UseProcessorExtensions>AVX2</UseProcessorExtensions>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <OpenMP>GenerateParallelCode</OpenMP>
-      <FloatingPointModel>Fast</FloatingPointModel>
+      <FloatingPointModel>Precise</FloatingPointModel>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <Optimization>MaxSpeedHighLevel</Optimization>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <StringPooling>true</StringPooling>
-      <EnableEnhancedInstructionSet>ARROWLAKE-S</EnableEnhancedInstructionSet>
+      <EnableEnhancedInstructionSet>AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
       <ControlFlowGuard>false</ControlFlowGuard>
       <AdditionalIncludeDirectories>..\hwopt-sycl\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <FloatingPointExceptions>false</FloatingPointExceptions>
@@ -167,7 +167,6 @@
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="Minecraft\Block\BlockIdRegistry.cpp" />
     <ClCompile Include="Minecraft\Noise\ImprovedNoise.cpp" />
-    <ClCompile Include="Minecraft\Noise\NormalNoise.cpp" />
     <ClCompile Include="Minecraft\Noise\PerlinNoise.cpp" />
     <ClCompile Include="Minecraft\Noise\SimplexNoise.cpp" />
   </ItemGroup>
@@ -175,7 +174,6 @@
     <ClInclude Include="Minecraft\Block\BlockIdRegistry.h" />
     <ClInclude Include="Minecraft\Noise\ImprovedNoise.h" />
     <ClInclude Include="JavaNative.h" />
-    <ClInclude Include="Minecraft\Noise\NormalNoise.h" />
     <ClInclude Include="Minecraft\Noise\PerlinNoise.h" />
     <ClInclude Include="Minecraft\Noise\SimplexNoise.h" />
     <ClInclude Include="util.h" />

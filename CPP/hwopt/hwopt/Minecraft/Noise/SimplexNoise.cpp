@@ -18,12 +18,12 @@ auto SimplexNoise::add_methods() -> void {
     "SimplexNoise::get_value3"_jf.reg<&SimplexNoise::get_value3>();
 }
 
-auto SimplexNoise::_create(const double xo, const double yo, const double zo, const int* array, const int len) -> SimplexNoise* {
+auto SimplexNoise::_create(const double xo, const double yo, const double zo, const std::span<int> array) -> SimplexNoise* {
     auto* noise = hwopt::util::mi_new<SimplexNoise>();
     noise->xo = xo;
     noise->yo = yo;
     noise->zo = zo;
-    std::memcpy(noise->p.data(), array, static_cast<size_t>(len));
+    std::memcpy(noise->p.data(), array.data(), array.size());
     return noise;
 }
 
