@@ -63,19 +63,13 @@ public final class FFMFactory {
 		return lib.getHandle(index);
 	}
 
-	public static void beginDowncall() { BumpAllocators.beginDowncall(); }
-
 	public static void endDowncall() { BumpAllocators.endDowncall(); }
 
 	public static MemorySegment tempAlloc(long size) { return BumpAllocators.tempAlloc(size); }
 
 	public static MemorySegment toCString(String s) { return Strings.toCString(s); }
 
-	public static MemorySegment toCStringFast(String s) { return Strings.toCStringFast(s); }
-
 	public static MemorySegment toCStringTemp(String s) { return Strings.toCStringTemp(s); }
-
-	public static MemorySegment toCStringFastTemp(String s) { return Strings.toCStringFastTemp(s); }
 
 	public static double[] fromSpanDouble(MemorySegment spanPtr) { return SpanSupport.fromSpanDouble(spanPtr); }
 	public static int[] fromSpanInt(MemorySegment spanPtr) { return SpanSupport.fromSpanInt(spanPtr); }
@@ -98,8 +92,6 @@ public final class FFMFactory {
 		private static final ThreadLocal<MemorySegment> TEMP_BUF = ThreadLocal.withInitial(() -> ARENA.allocate(TEMP_BUF_SIZE));
 		private static final ThreadLocal<int[]> TEMP_POS = ThreadLocal.withInitial(() -> new int[]{0});
 
-		static void beginDowncall() {}
-
 		static void endDowncall() {
 			TEMP_POS.get()[0] = 0;
 		}
@@ -121,44 +113,41 @@ public final class FFMFactory {
 		}
 	}
 
-	/** C string conversions (global arena and per-call temp variants). */
+	/** C string conversion. */
 	static final class Strings {
 		static MemorySegment toCString(String s) {
 			return ARENA.allocateFrom(s);
 		}
 
-		static MemorySegment toCStringFast(String s) {
+		static MemorySegment toCStringTemp(String s) {
 			int len = s.length();
+			boolean ascii = true;
 			for (int i = 0; i < len; i++) {
 				if (s.charAt(i) > 127) {
-					return ARENA.allocateFrom(s);
+					ascii = false;
+					break;
 				}
 			}
-			MemorySegment seg = ARENA.allocate(len + 1);
-			for (int i = 0; i < len; i++) {
-				seg.set(ValueLayout.JAVA_BYTE, i, (byte) s.charAt(i));
+			if (ascii) {
+				MemorySegment seg = BumpAllocators.tempAlloc(len + 1);
+				for (int i = 0; i < len; i++) {
+					seg.set(ValueLayout.JAVA_BYTE, i, (byte) s.charAt(i));
+				}
+				seg.set(ValueLayout.JAVA_BYTE, len, (byte) 0);
+				return seg;
 			}
-			seg.set(ValueLayout.JAVA_BYTE, len, (byte) 0);
-			return seg;
-		}
-
-		static MemorySegment toCStringTemp(String s) {
 			byte[] bytes = s.getBytes(StandardCharsets.UTF_8);
 			MemorySegment seg = BumpAllocators.tempAlloc(bytes.length + 1);
 			MemorySegment.copy(bytes, 0, seg, ValueLayout.JAVA_BYTE, 0, bytes.length);
 			seg.set(ValueLayout.JAVA_BYTE, bytes.length, (byte) 0);
 			return seg;
 		}
-
-		static MemorySegment toCStringFastTemp(String s) {
-			return toCStringTemp(s);
-		}
 	}
 
 	/** 从 C++ 返回的 {@code std::span} 中读取数据到 Java 数组。 */
 	static final class SpanSupport {
 		static double[] fromSpanDouble(MemorySegment spanPtr) {
-			if (spanPtr == null || spanPtr == MemorySegment.NULL) return new double[0];
+			if (spanPtr == MemorySegment.NULL) return new double[0];
 			MemorySegment data = spanPtr.get(ValueLayout.ADDRESS, 0);
 			long size = spanPtr.get(ValueLayout.JAVA_LONG, 8);
 			if (size == 0) return new double[0];
@@ -168,7 +157,7 @@ public final class FFMFactory {
 		}
 
 		static int[] fromSpanInt(MemorySegment spanPtr) {
-			if (spanPtr == null || spanPtr == MemorySegment.NULL) return new int[0];
+			if (spanPtr == MemorySegment.NULL) return new int[0];
 			MemorySegment data = spanPtr.get(ValueLayout.ADDRESS, 0);
 			long size = spanPtr.get(ValueLayout.JAVA_LONG, 8);
 			if (size == 0) return new int[0];
@@ -178,7 +167,7 @@ public final class FFMFactory {
 		}
 
 		static float[] fromSpanFloat(MemorySegment spanPtr) {
-			if (spanPtr == null || spanPtr == MemorySegment.NULL) return new float[0];
+			if (spanPtr == MemorySegment.NULL) return new float[0];
 			MemorySegment data = spanPtr.get(ValueLayout.ADDRESS, 0);
 			long size = spanPtr.get(ValueLayout.JAVA_LONG, 8);
 			if (size == 0) return new float[0];
@@ -188,7 +177,7 @@ public final class FFMFactory {
 		}
 
 		static long[] fromSpanLong(MemorySegment spanPtr) {
-			if (spanPtr == null || spanPtr == MemorySegment.NULL) return new long[0];
+			if (spanPtr == MemorySegment.NULL) return new long[0];
 			MemorySegment data = spanPtr.get(ValueLayout.ADDRESS, 0);
 			long size = spanPtr.get(ValueLayout.JAVA_LONG, 8);
 			if (size == 0) return new long[0];
@@ -198,7 +187,7 @@ public final class FFMFactory {
 		}
 
 		static short[] fromSpanShort(MemorySegment spanPtr) {
-			if (spanPtr == null || spanPtr == MemorySegment.NULL) return new short[0];
+			if (spanPtr == MemorySegment.NULL) return new short[0];
 			MemorySegment data = spanPtr.get(ValueLayout.ADDRESS, 0);
 			long size = spanPtr.get(ValueLayout.JAVA_LONG, 8);
 			if (size == 0) return new short[0];
@@ -208,7 +197,7 @@ public final class FFMFactory {
 		}
 
 		static byte[] fromSpanByte(MemorySegment spanPtr) {
-			if (spanPtr == null || spanPtr == MemorySegment.NULL) return new byte[0];
+			if (spanPtr == MemorySegment.NULL) return new byte[0];
 			MemorySegment data = spanPtr.get(ValueLayout.ADDRESS, 0);
 			long size = spanPtr.get(ValueLayout.JAVA_LONG, 8);
 			if (size == 0) return new byte[0];
