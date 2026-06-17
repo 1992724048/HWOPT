@@ -17,13 +17,7 @@ import net.minecraft.world.level.chunk.LevelChunkSection;
 import net.minecraft.world.level.levelgen.*;
 import net.minecraft.world.level.levelgen.blending.Blender;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
-import org.spongepowered.asm.mixin.Final;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.Unique;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import org.spongepowered.asm.mixin.*;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -43,16 +37,15 @@ public abstract class NoiseBasedChunkGeneratorMixin {
 	@Unique
 	private static final Executor WORLDGEN_EXECUTOR = Executors.newFixedThreadPool(Math.max(2, Runtime.getRuntime().availableProcessors()), runnable -> new Thread(runnable, "hwopt-worldgen-thread"));
 	
-	@Inject(method = "fillFromNoise", at = @At("HEAD"), cancellable = true)
-	public void hwopt$fillFromNoise(final Blender blender, final RandomState randomState, final StructureManager structureManager, final ChunkAccess centerChunk, final CallbackInfoReturnable<CompletableFuture<ChunkAccess>> cir) {
+	@Overwrite
+	public CompletableFuture<ChunkAccess> fillFromNoise(final Blender blender, final RandomState randomState, final StructureManager structureManager, final ChunkAccess centerChunk) {
 		final NoiseSettings noiseSettings = this.settings.value().noiseSettings().clampToHeightAccessor(centerChunk.getHeightAccessorForGeneration());
 		final int minY = noiseSettings.minY();
 		final int cellYMin = Mth.floorDiv(minY, noiseSettings.getCellHeight());
 		final int cellCountY = Mth.floorDiv(noiseSettings.height(), noiseSettings.getCellHeight());
 		
 		if (cellCountY <= 0) {
-			cir.setReturnValue(CompletableFuture.completedFuture(centerChunk));
-			return;
+			return CompletableFuture.completedFuture(centerChunk);
 		}
 		
 		ChunkGenStats.ACTIVE_GEN.incrementAndGet();
@@ -77,10 +70,8 @@ public abstract class NoiseBasedChunkGeneratorMixin {
 				}
 			}
 		}, WORLDGEN_EXECUTOR);
-		
 		hwopt$attachStatsHook(future);
-		
-		cir.setReturnValue(future);
+		return future;
 	}
 	
 	@Shadow

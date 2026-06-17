@@ -39,7 +39,7 @@ auto NormalNoise::set_first(const int first_octave,
                             const double lowest_freq_value_factor,
                             const double lowest_freq_input_factor,
                             const double max_value) -> void {
-    std::span<double> sp(amplitudes, amplitudes_size);
+    std::span sp(amplitudes, amplitudes_size);
     first.first_octave_ = first_octave;
     first.amplitudes_.assign(sp.data(), sp.data() + sp.size());
     first.noise_levels_.resize(sp.size());

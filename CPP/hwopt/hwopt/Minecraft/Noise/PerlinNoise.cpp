@@ -29,7 +29,7 @@ auto PerlinNoise::add_methods() -> void {
 }
 
 auto PerlinNoise::_create(const int first_octave, double* amplitudes, const int amplitudes_size, double lowest_freq_value_factor, double lowest_freq_input_factor, double max_value) -> PerlinNoise* {
-    std::span<double> sp(amplitudes, amplitudes_size);
+    std::span sp(amplitudes, amplitudes_size);
     return hwopt::util::mi_new<PerlinNoise>(first_octave, sp, lowest_freq_value_factor, lowest_freq_input_factor, max_value);
 }
 
