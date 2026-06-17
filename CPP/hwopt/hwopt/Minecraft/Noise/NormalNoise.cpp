@@ -1,16 +1,13 @@
-﻿// 2026-06-15
+﻿// 2026-06-17 03:23:49
 
 #include "NormalNoise.h"
-#include <algorithm>
-#include <climits>
-#include <cmath>
 
 #include "../../util.h"
 using namespace minecraft;
 
 static constexpr double INPUT_FACTOR = 1.0181268882175227;
 
-NormalNoise::NormalNoise(const double value_factor, double max_value) {
+NormalNoise::NormalNoise(const double value_factor, const double max_value) {
     JavaNative::touch();
     this->value_factor = value_factor;
     this->max_value_field = max_value;
@@ -36,38 +33,50 @@ auto NormalNoise::_destroy() const -> void {
     hwopt::util::mi_delete(this);
 }
 
-auto NormalNoise::set_first(const int first_octave, std::span<double> amplitudes, const double lowest_freq_value_factor, const double lowest_freq_input_factor, const double max_value) -> void {
+auto NormalNoise::set_first(const int first_octave,
+                            double* amplitudes,
+                            const int amplitudes_size,
+                            const double lowest_freq_value_factor,
+                            const double lowest_freq_input_factor,
+                            const double max_value) -> void {
+    std::span<double> sp(amplitudes, amplitudes_size);
     first.first_octave_ = first_octave;
-    first.amplitudes_.assign(amplitudes.data(), amplitudes.data() + amplitudes.size());
-    first.noise_levels_.resize(amplitudes.size());
+    first.amplitudes_.assign(sp.data(), sp.data() + sp.size());
+    first.noise_levels_.resize(sp.size());
     first.lowest_freq_input_factor_ = lowest_freq_input_factor;
     first.lowest_freq_value_factor_ = lowest_freq_value_factor;
     first.max_value_ = max_value;
 }
 
-auto NormalNoise::set_second(const int first_octave, std::span<double> amplitudes, const double lowest_freq_value_factor, const double lowest_freq_input_factor, const double max_value) -> void {
+auto NormalNoise::set_second(const int first_octave,
+                             double* amplitudes,
+                             const int amplitudes_size,
+                             const double lowest_freq_value_factor,
+                             const double lowest_freq_input_factor,
+                             const double max_value) -> void {
+    std::span<double> sp(amplitudes, amplitudes_size);
     second.first_octave_ = first_octave;
-    second.amplitudes_.assign(amplitudes.data(), amplitudes.data() + amplitudes.size());
-    second.noise_levels_.resize(amplitudes.size());
+    second.amplitudes_.assign(sp.data(), sp.data() + sp.size());
+    second.noise_levels_.resize(sp.size());
     second.lowest_freq_input_factor_ = lowest_freq_input_factor;
     second.lowest_freq_value_factor_ = lowest_freq_value_factor;
     second.max_value_ = max_value;
 }
 
-auto NormalNoise::add_noise_to_first(const int index, const double xo, const double yo, const double zo, const std::span<int8_t> array) -> void {
+auto NormalNoise::add_noise_to_first(const int index, const double xo, const double yo, const double zo, int8_t* array, const int array_size) -> void {
     auto& noise = first.noise_levels_[index];
     noise.xo = xo;
     noise.yo = yo;
     noise.zo = zo;
-    std::memcpy(noise.p.data(), array.data(), array.size());
+    std::memcpy(noise.p.data(), array, array_size);
 }
 
-auto NormalNoise::add_noise_to_second(const int index, const double xo, const double yo, const double zo, const std::span<int8_t> array) -> void {
+auto NormalNoise::add_noise_to_second(const int index, const double xo, const double yo, const double zo, int8_t* array, const int array_size) -> void {
     auto& noise = second.noise_levels_[index];
     noise.xo = xo;
     noise.yo = yo;
     noise.zo = zo;
-    std::memcpy(noise.p.data(), array.data(), array.size());
+    std::memcpy(noise.p.data(), array, array_size);
 }
 
 auto NormalNoise::get_value(const double x, const double y, const double z) const -> double {

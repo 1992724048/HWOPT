@@ -22,6 +22,8 @@ using namespace std::chrono_literals;
 auto APIENTRY DllMain(HMODULE hModule, const DWORD ul_reason_for_call, LPVOID lpReserved) -> BOOL {
     switch (ul_reason_for_call) {
         case DLL_PROCESS_ATTACH:
+            stdpp::log::Logger::set_level(stdpp::log::Level::Trace, stdpp::log::LoggerType::ConsoleLogger);
+            // stdpp::log::Logger::open_console();
             mi_stats_reset();
             JavaNativeBase::init_all();
             break;
@@ -43,13 +45,13 @@ auto init_sycl_device() -> void {
     }
 
     std::stringstream ss;
-    ss << "\n设备列表:\n";
+    ss << "设备列表:";
 
     for (const auto& [type, name, platform] : exp.value()) {
-        ss << magic_enum::enum_name<stdpp::sycl::DeviceType>(type) << ": " << name << " (" << platform << ")\n";
+        ss << "\n\t\t" << magic_enum::enum_name<stdpp::sycl::DeviceType>(type) << ": " << name << " (" << platform << ")";
     }
 
-    IMSG << ss.str();
+    ILOG << ss.str();
 }
 
 extern "C" API auto JAVA_ResolveFunction(const char* name) -> void* {
@@ -57,7 +59,10 @@ extern "C" API auto JAVA_ResolveFunction(const char* name) -> void* {
     std::call_once(flag, init_sycl_device);
 
     if (const auto opt = JavaNativeBase::get_method(name)) {
+        DLOG << "函数 '" << name << "' 地址: 0x" << std::hex << reinterpret_cast<int64_t>(opt.value());
         return opt.value();
     }
+
+    ELOG << "函数 '" << name << "' 未找到!";
     return nullptr;
 }

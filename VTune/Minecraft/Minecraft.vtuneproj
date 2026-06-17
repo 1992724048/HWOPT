@@ -133,7 +133,7 @@
    </workloads>
   </target_settings>
   <analysis_type_settings>
-   <selected_analysis_type_path>C:\Program Files (x86)\Intel\oneAPI\vtune\2026.0\config\analysis_type\memory_access.cfg</selected_analysis_type_path>
+   <selected_analysis_type_path>C:\Program Files (x86)\Intel\oneAPI\vtune\2026.0\config\analysis_type\survey.cfg</selected_analysis_type_path>
    <localhost>
     <launch>
      <at_start_point>
@@ -145,7 +145,7 @@
        </contextValue>
        <contextValue>
         <id>collectMemoryBW</id>
-        <value type="bool">false</value>
+        <value type="bool">true</value>
        </contextValue>
        <contextValue>
         <id>collectPCIeBW</id>

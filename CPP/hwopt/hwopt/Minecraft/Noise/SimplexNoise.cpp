@@ -1,8 +1,6 @@
-﻿// 2026-06-15
+﻿// 2026-06-17 03:26:03
 
 #include "SimplexNoise.h"
-#include <cmath>
-#include <cstring>
 
 #include "../../util.h"
 using namespace minecraft;
@@ -18,12 +16,12 @@ auto SimplexNoise::add_methods() -> void {
     "SimplexNoise::get_value3"_jf.reg<&SimplexNoise::get_value3>();
 }
 
-auto SimplexNoise::_create(const double xo, const double yo, const double zo, const std::span<int> array) -> SimplexNoise* {
+auto SimplexNoise::_create(const double xo, const double yo, const double zo, int* array, const int array_size) -> SimplexNoise* {
     auto* noise = hwopt::util::mi_new<SimplexNoise>();
     noise->xo = xo;
     noise->yo = yo;
     noise->zo = zo;
-    std::memcpy(noise->p.data(), array.data(), array.size());
+    std::memcpy(noise->p.data(), array, array_size * sizeof(int));
     return noise;
 }
 

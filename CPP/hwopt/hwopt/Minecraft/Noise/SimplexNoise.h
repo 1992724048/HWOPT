@@ -13,7 +13,7 @@ namespace minecraft {
         SimplexNoise();
 
         static auto add_methods() -> void;
-        static auto _create(double xo, double yo, double zo, std::span<int> array) -> SimplexNoise*;
+        static auto _create(double xo, double yo, double zo, int* array, int array_size) -> SimplexNoise*;
         auto _destroy() const -> void;
 
         [[nodiscard]] auto get_value2(double xin, double yin) const -> double;

@@ -1,8 +1,7 @@
-﻿// 2026-06-15
+﻿// 2026-06-17 03:23:58
 
 #include "PerlinNoise.h"
 #include <cmath>
-#include <cstring>
 
 #include "../../util.h"
 using namespace minecraft;
@@ -29,20 +28,21 @@ auto PerlinNoise::add_methods() -> void {
     "PerlinNoise::add_noise"_jf.reg<&PerlinNoise::add_noise>();
 }
 
-auto PerlinNoise::_create(const int first_octave, std::span<double> amplitudes, double lowest_freq_value_factor, double lowest_freq_input_factor, double max_value) -> PerlinNoise* {
-    return hwopt::util::mi_new<PerlinNoise>(first_octave, amplitudes, lowest_freq_value_factor, lowest_freq_input_factor, max_value);
+auto PerlinNoise::_create(const int first_octave, double* amplitudes, const int amplitudes_size, double lowest_freq_value_factor, double lowest_freq_input_factor, double max_value) -> PerlinNoise* {
+    std::span<double> sp(amplitudes, amplitudes_size);
+    return hwopt::util::mi_new<PerlinNoise>(first_octave, sp, lowest_freq_value_factor, lowest_freq_input_factor, max_value);
 }
 
 auto PerlinNoise::_destroy() const -> void {
     hwopt::util::mi_delete(this);
 }
 
-auto PerlinNoise::add_noise(const int index, const double xo, const double yo, const double zo, const std::span<int8_t> array) -> void {
+auto PerlinNoise::add_noise(const int index, const double xo, const double yo, const double zo, int8_t* array, const int array_size) -> void {
     auto& noise = noise_levels_[index];
     noise.xo = xo;
     noise.yo = yo;
     noise.zo = zo;
-    std::memcpy(noise.p.data(), array.data(), array.size());
+    std::memcpy(noise.p.data(), array, array_size);
 }
 
 auto PerlinNoise::get_value3(const double x, const double y, const double z) const -> double {

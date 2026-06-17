@@ -1,9 +1,7 @@
-﻿// 2026-06-15
+﻿// 2026-06-17 03:23:08
 
 #include "ImprovedNoise.h"
-#include <algorithm>
 #include <cmath>
-#include <cstring>
 #include <random>
 
 #include "../../util.h"
@@ -41,11 +39,11 @@ auto ImprovedNoise::noise(const double x, const double y, const double z, const 
     }
 
     const double yr_fudge = y_scale != 0.0 ? std::floor((fudge_limit / y_scale) + SHIFT_UP_EPSILON) * y_scale : 0.0;
-
     return sample_and_lerperm(xf, yf, zf, xr, yr - yr_fudge, zr, yr);
 }
 
-auto ImprovedNoise::noise_with_derivative(const double x, const double y, const double z, const std::span<double> derivative_out) const -> double {
+auto ImprovedNoise::noise_with_derivative(const double x, const double y, const double z, double* derivative_out, const int derivative_out_size) const -> double {
+    std::span<double> derivative_span(derivative_out, derivative_out_size);
     const double x1 = x + this->xo;
     const double y1 = y + this->yo;
     const double z1 = z + this->zo;
@@ -55,7 +53,7 @@ auto ImprovedNoise::noise_with_derivative(const double x, const double y, const 
     const double xr = x1 - xf;
     const double yr = y1 - yf;
     const double zr = z1 - zf;
-    return sample_with_derivative(xf, yf, zf, xr, yr, zr, derivative_out);
+    return sample_with_derivative(xf, yf, zf, xr, yr, zr, derivative_span.data(), derivative_span.size());
 }
 
 auto ImprovedNoise::add_methods() -> void {
@@ -69,12 +67,12 @@ auto ImprovedNoise::add_methods() -> void {
     "ImprovedNoise::noise_with_derivative"_jf.reg<&ImprovedNoise::noise_with_derivative>();
 }
 
-auto ImprovedNoise::_create(const double xo, const double yo, const double zo, const std::span<int8_t> array) -> ImprovedNoise* {
+auto ImprovedNoise::_create(const double xo, const double yo, const double zo, const int8_t* array, const int array_size) -> ImprovedNoise* {
     auto* noise = hwopt::util::mi_new<ImprovedNoise>();
     noise->xo = xo;
     noise->yo = yo;
     noise->zo = zo;
-    std::memcpy(noise->p.data(), array.data(), array.size());
+    std::memcpy(noise->p.data(), array, array_size);
     return noise;
 }
 
@@ -87,11 +85,11 @@ inline auto ImprovedNoise::grad_dot(const int hash, const double x, const double
     return (GRADIENT[idx] * x) + (GRADIENT[idx + 1] * y) + (GRADIENT[idx + 2] * z);
 }
 
-auto ImprovedNoise::perm(const int x) const -> int {
+inline auto ImprovedNoise::perm(const int x) const -> int {
     return this->p[x & 0xFF] & 0xFF;
 }
 
-auto ImprovedNoise::sample_and_lerperm(const int x, const int y, const int z, const double xr, const double yr, const double zr, const double yr_original) const -> double {
+inline auto ImprovedNoise::sample_and_lerperm(const int x, const int y, const int z, const double xr, const double yr, const double zr, const double yr_original) const -> double {
     const int x0 = perm(x);
     const int x1 = perm(x + 1);
     const int xy00 = perm(x0 + y);
@@ -109,7 +107,14 @@ auto ImprovedNoise::sample_and_lerperm(const int x, const int y, const int z, co
     return lerp3(smoothstep(xr), smoothstep(yr_original), smoothstep(zr), d000, d100, d010, d110, d001, d101, d011, d111);
 }
 
-auto ImprovedNoise::sample_with_derivative(const int x, const int y, const int z, const double xr, const double yr, const double zr, std::span<double> derivative_out) const -> double {
+inline auto ImprovedNoise::sample_with_derivative(const int x,
+                                                  const int y,
+                                                  const int z,
+                                                  const double xr,
+                                                  const double yr,
+                                                  const double zr,
+                                                  double* derivative_out,
+                                                  const int derivative_out_size) const -> double {
     const int x0 = perm(x);
     const int x1 = perm(x + 1);
     const int xy00 = perm(x0 + y);
@@ -198,6 +203,6 @@ inline auto ImprovedNoise::lerp3(const double alpha1,
     return lerp(alpha3, lerp2(alpha1, alpha2, x000, x100, x010, x110), lerp2(alpha1, alpha2, x001, x101, x011, x111));
 }
 
-auto ImprovedNoise::dot(const int* g, const double x, const double y, const double z) -> double {
+inline auto ImprovedNoise::dot(const int* g, const double x, const double y, const double z) -> double {
     return (g[0] * x) + (g[1] * y) + (g[2] * z);
 }

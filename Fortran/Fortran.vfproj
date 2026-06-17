@@ -39,7 +39,7 @@
 			<Tool Name="VFManifestTool" SuppressStartupBanner="true"/>
 		</Configuration>
 		<Configuration Name="Release|x64" UseCompiler="ifxCompiler" OutputDirectory="$(SolutionDir)..\..\JAVA\src\main\resources\native\win64\" IntermediateDirectory=".\$(Platform)-$(Configuration)\build\" ConfigurationType="typeDynamicLibrary" WholeProgramOptimization="true">
-			<Tool Name="VFFortranCompilerTool" SuppressStartupBanner="true" MultiProcessorCompilation="true" Optimization="optimizeFull" GenAlternateCodePaths="codeForArrowlakeS" UseProcessorExtensions="codeExclusivelyArrowlakeS" MatrixLibrary="mlYes" EnableEnhancedInstructionSet="codeArchALS" FixedFormLineLength="fixedLength132" OpenMP="OpenMPParallelCode" EnableOpenMPSupport="OpenMPParallelCodeIFX" FloatingPointModel="precise" UseWindowsLibs="true" UsePortlib="true" UseMkl="mklParallel" UseILP64Interfaces="true"/>
+			<Tool Name="VFFortranCompilerTool" SuppressStartupBanner="true" DebugInformationFormat="debugEnabled" MultiProcessorCompilation="true" Optimization="optimizeFull" GenAlternateCodePaths="codeForAVX2" UseProcessorExtensions="codeExclusivelyAVX2" BufferedIO="true" MatrixLibrary="mlYes" EnableEnhancedInstructionSet="codeArchAVX" FixedFormLineLength="fixedLength132" OpenMP="OpenMPParallelCode" EnableOpenMPSupport="OpenMPParallelCodeIFX" FloatingPointModel="precise" UseWindowsLibs="true" UsePortlib="true" UseMkl="mklParallel" UseILP64Interfaces="true"/>
 			<Tool Name="VFLinkerTool" SuppressStartupBanner="true" SubSystem="subSystemWindows" LinkDLL="true"/>
 			<Tool Name="VFResourceCompilerTool"/>
 			<Tool Name="VFMidlTool" SuppressStartupBanner="true" TargetEnvironment="midlTargetAMD64"/>

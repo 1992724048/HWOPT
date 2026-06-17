@@ -16,10 +16,10 @@ namespace minecraft {
         static auto _create(double value_factor, double max_value) -> NormalNoise*;
         auto _destroy() const -> void;
 
-        auto set_first(int first_octave, std::span<double> amplitudes, double lowest_freq_value_factor, double lowest_freq_input_factor, double max_value) -> void;
-        auto set_second(int first_octave, std::span<double> amplitudes, double lowest_freq_value_factor, double lowest_freq_input_factor, double max_value) -> void;
-        auto add_noise_to_first(int index, double xo, double yo, double zo, std::span<int8_t> array) -> void;
-        auto add_noise_to_second(int index, double xo, double yo, double zo, std::span<int8_t> array) -> void;
+        auto set_first(int first_octave, double* amplitudes, int amplitudes_size, double lowest_freq_value_factor, double lowest_freq_input_factor, double max_value) -> void;
+        auto set_second(int first_octave, double* amplitudes, int amplitudes_size, double lowest_freq_value_factor, double lowest_freq_input_factor, double max_value) -> void;
+        auto add_noise_to_first(int index, double xo, double yo, double zo, int8_t* array, int array_size) -> void;
+        auto add_noise_to_second(int index, double xo, double yo, double zo, int8_t* array, int array_size) -> void;
 
         [[nodiscard]] auto get_value(double x, double y, double z) const -> double;
         [[nodiscard]] auto max_value() const -> double;

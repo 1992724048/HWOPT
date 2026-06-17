@@ -18,12 +18,19 @@ import java.lang.invoke.VarHandle;
 @Mixin(NormalNoise.class)
 public abstract class NormalNoiseMixin {
 	
+	@Unique
 	private static final VarHandle HWOPT_FIRST_OCTAVE;
+	@Unique
 	private static final VarHandle HWOPT_AMPLITUDES;
+	@Unique
 	private static final VarHandle HWOPT_LOWEST_FREQ_VALUE_FACTOR;
+	@Unique
 	private static final VarHandle HWOPT_LOWEST_FREQ_INPUT_FACTOR;
+	@Unique
 	private static final VarHandle HWOPT_MAX_VALUE;
+	@Unique
 	private static final VarHandle HWOPT_NOISE_LEVELS;
+	@Unique
 	private static final VarHandle HWOPT_P;
 	
 	static {
@@ -60,12 +67,12 @@ public abstract class NormalNoiseMixin {
 	@Inject(method = "<init>", at = @At("RETURN"))
 	private void hwopt$init(CallbackInfo ci) {
 		hwopt$nativePtr = FFMFactory.trackCleaner(this, NormalNoiseNative.instance().create(valueFactor, maxValue));
-		initPerlin(first, true);
-		initPerlin(second, false);
+		jAVA$initPerlin(first, true);
+		jAVA$initPerlin(second, false);
 	}
 	
 	@Unique
-	private void initPerlin(PerlinNoise perlin, boolean isFirst) {
+	private void jAVA$initPerlin(PerlinNoise perlin, boolean isFirst) {
 		int firstOctave = (int) HWOPT_FIRST_OCTAVE.get(perlin);
 		DoubleList amplitudes = (DoubleList) HWOPT_AMPLITUDES.get(perlin);
 		double lowestFreqValueFactor = (double) HWOPT_LOWEST_FREQ_VALUE_FACTOR.get(perlin);
@@ -98,7 +105,7 @@ public abstract class NormalNoiseMixin {
 			cir.setReturnValue(this.hwopt$nativePtr.getValue(x, y, z));
 		}
 	}
-	
+
 	@Inject(method = "maxValue", at = @At("HEAD"), cancellable = true)
 	private void hwopt$maxValue(CallbackInfoReturnable<Double> cir) {
 		if (this.hwopt$nativePtr != null) {

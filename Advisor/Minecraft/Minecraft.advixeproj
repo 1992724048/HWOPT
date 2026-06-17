@@ -19,6 +19,10 @@
  </rdmgr>
  <contextValues type="bag"/>
  <All_Configurations-All_Platforms>
+  <per_group_workloads>
+   <release>release</release>
+   <tripcounts>tripcounts</tripcounts>
+  </per_group_workloads>
   <searchDirs>
    <searchCategory>
     <category type="u8_t">1</category>
@@ -59,10 +63,6 @@
    </searchCategory>
   </searchDirs>
   <excludeFiles type="bag"/>
-  <per_group_workloads>
-   <release>release</release>
-   <tripcounts>tripcounts</tripcounts>
-  </per_group_workloads>
   <target_settings>
    <selected_workload>
     <localhost>tripcounts</localhost>
@@ -411,7 +411,7 @@
         </contextValue>
         <contextValue>
          <id>config</id>
-         <value>pvc_xt_448xve</value>
+         <value>xehpg_512xve</value>
         </contextValue>
         <contextValue>
          <id>count_logical_instructions</id>
@@ -941,7 +941,7 @@
         </contextValue>
         <contextValue>
          <id>cache_config</id>
-         <value></value>
+         <value>1:1w:2k:8l</value>
         </contextValue>
         <contextValue>
          <id>cache_simulation</id>
@@ -953,7 +953,7 @@
         </contextValue>
         <contextValue>
          <id>config</id>
-         <value>pvc_xt_448xve</value>
+         <value>xehpg_512xve</value>
         </contextValue>
         <contextValue>
          <id>count_memory_objects_accesses</id>
@@ -1077,7 +1077,7 @@
         </contextValue>
         <contextValue>
          <id>trip_counts</id>
-         <value type="bool">true</value>
+         <value type="bool">false</value>
         </contextValue>
        </context>
       </workload>
