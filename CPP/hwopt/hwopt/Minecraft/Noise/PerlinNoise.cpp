@@ -21,8 +21,9 @@ PerlinNoise::PerlinNoise(const int first_octave, std::span<double> amplitudes, c
 auto PerlinNoise::add_methods() -> void {
     "PerlinNoise::_create"_jf.reg<_create>();
     "PerlinNoise::_destroy"_jf.reg<&PerlinNoise::_destroy>();
-    "PerlinNoise::get_value3"_jf.reg<&PerlinNoise::get_value3>();
-    "PerlinNoise::get_value5"_jf.reg<&PerlinNoise::get_value5>();
+    "PerlinNoise::get_value3"_jf.reg<static_cast<double(PerlinNoise::*)(double, double, double) const>(&PerlinNoise::get_value)>();
+    "PerlinNoise::get_value5"_jf.reg<static_cast<double(PerlinNoise::*)(double, double, double, double, double) const>(&PerlinNoise::get_value)>();
+    "PerlinNoise::get_values"_jf.reg<&PerlinNoise::get_values>();
     "PerlinNoise::edge_value"_jf.reg<&PerlinNoise::edge_value>();
     "PerlinNoise::_amplitudes"_jf.reg<&PerlinNoise::amplitudes>();
     "PerlinNoise::max_broken_value"_jf.reg<&PerlinNoise::max_broken_value>();
@@ -42,11 +43,11 @@ auto PerlinNoise::add_noise(const int index, ImprovedNoise* noise) -> void {
     noise_levels_[index] = noise;
 }
 
-auto PerlinNoise::get_value3(const double x, const double y, const double z) const -> double {
-    return this->get_value5(x, y, z, 0.0, 0.0);
+auto PerlinNoise::get_value(const double x, const double y, const double z) const -> double {
+    return this->get_value(x, y, z, 0.0, 0.0);
 }
 
-auto PerlinNoise::get_value5(const double x, const double y, const double z, const double y_scale, const double y_fudge) const -> double {
+auto PerlinNoise::get_value(const double x, const double y, const double z, const double y_scale, const double y_fudge) const -> double {
     double value = 0.0;
     double factor = this->lowest_freq_input_factor_;
     double value_factor = this->lowest_freq_value_factor_;
@@ -62,6 +63,12 @@ auto PerlinNoise::get_value5(const double x, const double y, const double z, con
         value_factor *= 0.5;
     }
     return value;
+}
+
+auto PerlinNoise::get_values(const double* xs, int xs_len, const double* ys, int ys_len, const double* zs, int zs_len, double* result, int result_len) const -> void {
+    for (int i = 0; i < result_len; i++) {
+        result[i] = get_value(xs[i], ys[i], zs[i]);
+    }
 }
 
 auto PerlinNoise::edge_value(const double noise_value) const -> double {
@@ -89,8 +96,5 @@ auto PerlinNoise::get_octave_noise(const int i) const -> ImprovedNoise* {
 }
 
 auto PerlinNoise::wrap(const double x) -> double {
-    if (std::abs(x) < ROUND_OFF * 0.5) [[likely]] {
-        return x;
-    }
-    return x - (std::floor((x / ROUND_OFF) + 0.5) * ROUND_OFF);
+    return x - std::floor(x / static_cast<double>(3.3554432E7F) + static_cast<double>(0.5F)) * static_cast<double>(3.3554432E7F);
 }

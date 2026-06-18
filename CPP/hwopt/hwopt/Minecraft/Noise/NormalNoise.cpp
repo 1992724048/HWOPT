@@ -23,6 +23,7 @@ auto NormalNoise::add_methods() -> void {
     "NormalNoise::max_value"_jf.reg<&NormalNoise::max_value>();
     "NormalNoise::expected_deviation"_jf.reg<&NormalNoise::expected_deviation>();
     "NormalNoise::set_perlin_noise"_jf.reg<&NormalNoise::set_perlin_noise>();
+    "NormalNoise::get_values"_jf.reg<&NormalNoise::get_values>();
 }
 
 auto NormalNoise::_create(double value_factor, double max_value) -> NormalNoise* {
@@ -42,7 +43,13 @@ auto NormalNoise::get_value(const double x, const double y, const double z) cons
     const double x2 = x * INPUT_FACTOR;
     const double y2 = y * INPUT_FACTOR;
     const double z2 = z * INPUT_FACTOR;
-    return (this->first->get_value3(x, y, z) + this->second->get_value3(x2, y2, z2)) * this->value_factor;
+    return (this->first->get_value(x, y, z) + this->second->get_value(x2, y2, z2)) * this->value_factor;
+}
+
+auto NormalNoise::get_values(const double* xs, int xs_len, const double* ys, int ys_len, const double* zs, int zs_len, double* result, int result_len) const -> void {
+    for (int i = 0; i < result_len; i++) {
+        result[i] = get_value(xs[i], ys[i], zs[i]);
+    }
 }
 
 auto NormalNoise::max_value() const -> double {

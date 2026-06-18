@@ -36,11 +36,11 @@ logoFile="icon.png" #optional
 #credits="" #optional
 
 # The authors of the mod, displayed in the mod UI (optional)
-authors="suimo"
+authors="The HWOPT Team"
 
 # The description text for the mod (multi line!) (#mandatory)
 description='''
-Enhance game performance using hardware features
+HWOPT (Hardware Optimization) is a Minecraft optimization mod that rewrites vanilla algorithms in C++, invoked via the Java 25 FFM API for low-overhead native calls. GPU acceleration (SYCL/DPC++) is used to boost game performance.
 '''
 
 # The [[mixins]] block allows you to declare your mixin config to FML so that it gets loaded.

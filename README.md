@@ -1,11 +1,11 @@
-<div align="center">
+﻿<div align="center">
 <picture><source media="(prefers-color-scheme: dark)" srcset="icon.png"><source media="(prefers-color-scheme: light)" srcset="icon.png"><img alt="HWOPT" src="icon.png" width="128"></picture>
 
 # HWOPT — 硬件加速优化模组
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-![NeoForge](https://img.shields.io/badge/NeoForge-26.1.2.75-blue)
-![Minecraft](https://img.shields.io/badge/Minecraft-26.1.2%20-brightgreen)
+![NeoForge](https://img.shields.io/badge/NeoForge-26.2.0.2-blue)
+![Minecraft](https://img.shields.io/badge/Minecraft-26.2%20-brightgreen)
 ![Java](https://img.shields.io/badge/Java-25-orange)
 ![Status](https://img.shields.io/badge/Status-WIP-red)
 
@@ -14,10 +14,13 @@
 
 HWOPT (Hardware Optimization) 是一个 Minecraft 优化模组，使用 C++ 重写了原版的算法，通过 Java 25 FFM API 实现低开销本地调用。通过 GPU（SYCL/DPC++）加速游戏性能。
 
+## 加入我们
+- 811499127 (QQ)
+
 ## 项目状态
 **正在开发中...** 噪声算法已可用。GPU 加速（SYCL）和剩余优化正在开发。
 
-### 噪声算法加速
+#### 噪声算法加速
 
 - **ImprovedNoise** — Java -> C++
 - **PerlinNoise** — Java -> C++
@@ -25,15 +28,14 @@ HWOPT (Hardware Optimization) 是一个 Minecraft 优化模组，使用 C++ 重�
 - **NormalNoise** — Java -> C++
 - **BlendedNoise** — Java -> C++
 
-### 游戏功能
+#### 游戏功能
 
 - **村庄出生点** — 可选将世界出生点设置为最近村庄
 
-### 模组加载器及版本支持情况
-| 游戏版本 | NeoForge | Forge | Fabric |
-|-----------|----------|-------|--------|
-| 26.1.2 | ![支持](https://img.shields.io/badge/支持-brightgreen) | ![无计划](https://img.shields.io/badge/无计划-lightgrey) | ![无计划](https://img.shields.io/badge/无计划-lightgrey) |
-| 26.2 | ![计划中](https://img.shields.io/badge/计划中-brightgreen) | ![无计划](https://img.shields.io/badge/无计划-lightgrey) | ![无计划](https://img.shields.io/badge/无计划-lightgrey) |
+#### 模组加载器及版本支持情况
+| 游戏版本 | NeoForge                                           | Forge | Fabric |
+|-----------|----------------------------------------------------|-------|--------|
+| 26.2 | ![支持](https://img.shields.io/badge/支持-brightgreen) | ![无计划](https://img.shields.io/badge/无计划-lightgrey) | ![无计划](https://img.shields.io/badge/无计划-lightgrey) |
 
 ## 快速开始
 

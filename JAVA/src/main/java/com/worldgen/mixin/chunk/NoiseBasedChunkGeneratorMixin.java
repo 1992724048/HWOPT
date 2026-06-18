@@ -239,7 +239,7 @@ public abstract class NoiseBasedChunkGeneratorMixin {
 					
 					if (scheduleFluid && !state.getFluidState().isEmpty()) {
 						pos.set(worldX, posY, worldZ);
-						centerChunk.markPosForPostprocessing(pos);
+						centerChunk.markPosForPostProcessing(pos);
 					}
 				}
 			}

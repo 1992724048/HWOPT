@@ -12,11 +12,11 @@ SimplexNoise::SimplexNoise() {
 auto SimplexNoise::add_methods() -> void {
     "SimplexNoise::_create"_jf.reg<_create>();
     "SimplexNoise::_destroy"_jf.reg<&SimplexNoise::_destroy>();
-    "SimplexNoise::get_value2"_jf.reg<&SimplexNoise::get_value2>();
-    "SimplexNoise::get_value3"_jf.reg<&SimplexNoise::get_value3>();
+    "SimplexNoise::get_value2"_jf.reg<static_cast<double(SimplexNoise::*)(double, double) const>(&SimplexNoise::get_value)>();
+    "SimplexNoise::get_value3"_jf.reg<static_cast<double(SimplexNoise::*)(double, double, double) const>(&SimplexNoise::get_value)>();
 }
 
-auto SimplexNoise::_create(const double xo, const double yo, const double zo, int* array, const int array_size) -> SimplexNoise* {
+auto SimplexNoise::_create(const double xo, const double yo, const double zo, const int* array, const int array_size) -> SimplexNoise* {
     auto* noise = hwopt::util::mi_new<SimplexNoise>();
     noise->xo = xo;
     noise->yo = yo;
@@ -29,7 +29,11 @@ auto SimplexNoise::_destroy() const -> void {
     hwopt::util::mi_delete(this);
 }
 
-auto SimplexNoise::get_value2(const double xin, const double yin) const -> double {
+auto SimplexNoise::dot(const double* g, const double x, const double y, const double z) -> double {
+    return (g[0] * x) + (g[1] * y) + (g[2] * z);
+}
+
+auto SimplexNoise::get_value(const double xin, const double yin) const -> double {
     const double s = (xin + yin) * F2;
     const int i = static_cast<int>(std::floor(xin + s));
     const int j = static_cast<int>(std::floor(yin + s));
@@ -65,7 +69,7 @@ auto SimplexNoise::get_value2(const double xin, const double yin) const -> doubl
     return 70.0 * (n0 + n1 + n2);
 }
 
-auto SimplexNoise::get_value3(const double xin, const double yin, const double zin) const -> double {
+auto SimplexNoise::get_value(const double xin, const double yin, const double zin) const -> double {
     constexpr double F3 = 0.3333333333333333;
     constexpr double G3 = 0.16666666666666666;
 
@@ -158,10 +162,6 @@ auto SimplexNoise::get_value3(const double xin, const double yin, const double z
 
 auto SimplexNoise::perm(const int x) const -> int {
     return this->p[x & 0xFF] & 0xFF;
-}
-
-auto SimplexNoise::dot(const int* g, const double x, const double y, const double z) -> double {
-    return (g[0] * x) + (g[1] * y) + (g[2] * z);
 }
 
 auto SimplexNoise::get_corner_noise3d(const int index, const double x, const double y, const double z, const double base) -> double {

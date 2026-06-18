@@ -60,15 +60,23 @@ auto ImprovedNoise::noise_with_derivative(const double x, const double y, const 
     return sample_with_derivative(xf, yf, zf, xr, yr, zr, derivative_span.data(), derivative_span.size());
 }
 
+auto ImprovedNoise::get_values(const double* xs, int xs_len, const double* ys, int ys_len, const double* zs, int zs_len, double* result, int result_len) const -> void {
+    for (int i = 0; i < result_len; i++) {
+        result[i] = noise(xs[i], ys[i], zs[i]);
+    }
+}
+
 auto ImprovedNoise::add_methods() -> void {
     "ImprovedNoise::_create"_jf.reg<_create>();
     "ImprovedNoise::_destroy"_jf.reg<&ImprovedNoise::_destroy>();
-    "ImprovedNoise::noise"_jf.reg<static_cast<double(ImprovedNoise::*)(double, double, double, double, double) const>(&ImprovedNoise::noise)>();
+    "ImprovedNoise::noise3"_jf.reg<static_cast<double(ImprovedNoise::*)(double, double, double) const>(&ImprovedNoise::noise)>();
+    "ImprovedNoise::noise5"_jf.reg<static_cast<double(ImprovedNoise::*)(double, double, double, double, double) const>(&ImprovedNoise::noise)>();
     "ImprovedNoise::grad_dot"_jf.reg<&ImprovedNoise::grad_dot>();
     "ImprovedNoise::sample_and_lerperm"_jf.reg<&ImprovedNoise::sample_and_lerperm>();
     "ImprovedNoise::sample_with_derivative"_jf.reg<&ImprovedNoise::sample_with_derivative>();
     "ImprovedNoise::perm"_jf.reg<&ImprovedNoise::perm>();
     "ImprovedNoise::noise_with_derivative"_jf.reg<&ImprovedNoise::noise_with_derivative>();
+    "ImprovedNoise::get_values"_jf.reg<&ImprovedNoise::get_values>();
 }
 
 auto ImprovedNoise::_create(const double xo, const double yo, const double zo, const int8_t* array, const int array_size) -> ImprovedNoise* {
@@ -135,14 +143,14 @@ inline auto ImprovedNoise::sample_with_derivative(const int x,
     const int idx011 = (perm(xy01 + z + 1) & 15) * 3;
     const int idx111 = (perm(xy11 + z + 1) & 15) * 3;
 
-    const int* g000 = &GRADIENT[idx000];
-    const int* g100 = &GRADIENT[idx100];
-    const int* g010 = &GRADIENT[idx010];
-    const int* g110 = &GRADIENT[idx110];
-    const int* g001 = &GRADIENT[idx001];
-    const int* g101 = &GRADIENT[idx101];
-    const int* g011 = &GRADIENT[idx011];
-    const int* g111 = &GRADIENT[idx111];
+    const double* g000 = &GRADIENT[idx000];
+    const double* g100 = &GRADIENT[idx100];
+    const double* g010 = &GRADIENT[idx010];
+    const double* g110 = &GRADIENT[idx110];
+    const double* g001 = &GRADIENT[idx001];
+    const double* g101 = &GRADIENT[idx101];
+    const double* g011 = &GRADIENT[idx011];
+    const double* g111 = &GRADIENT[idx111];
 
     const double d000 = SimplexNoise::dot(g000, xr, yr, zr);
     const double d100 = SimplexNoise::dot(g100, xr - 1.0, yr, zr);

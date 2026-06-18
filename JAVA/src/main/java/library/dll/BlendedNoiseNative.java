@@ -27,4 +27,7 @@ public interface BlendedNoiseNative extends AutoCloseable {
 	
 	@Name("BlendedNoise::compute")
 	double compute(double x, double y, double z);
+	
+	@Name("BlendedNoise::get_values")
+	void getValues(double[] xs, double[] ys, double[] zs, double[] result);
 }

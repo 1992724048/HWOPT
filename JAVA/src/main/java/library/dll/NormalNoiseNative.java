@@ -25,6 +25,9 @@ public interface NormalNoiseNative extends AutoCloseable {
 	@Name("NormalNoise::get_value")
 	double getValue(double x, double y, double z);
 	
+	@Name("NormalNoise::get_values")
+	void getValues(double[] xs, double[] ys, double[] zs, double[] result);
+
 	@Name("NormalNoise::max_value")
 	double maxValue();
 	

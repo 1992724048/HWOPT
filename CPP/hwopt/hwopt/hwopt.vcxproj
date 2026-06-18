@@ -58,6 +58,7 @@
     <Import Project="..\..\..\..\Library\mimalloc\mimalloc.vcxitems" Label="Shared" />
     <Import Project="..\..\..\..\Library\parallel_hashmap\parallel_hashmap.vcxitems" Label="Shared" />
     <Import Project="..\..\..\..\Library\glm\glm.vcxitems" Label="Shared" />
+    <Import Project="..\..\..\..\Library\Proxy\Proxy.vcxitems" Label="Shared" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -130,8 +131,8 @@
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <ExceptionHandling>Async</ExceptionHandling>
-      <GenerateAlternateCodePaths>AVX2</GenerateAlternateCodePaths>
-      <UseProcessorExtensions>AVX2</UseProcessorExtensions>
+      <GenerateAlternateCodePaths>None</GenerateAlternateCodePaths>
+      <UseProcessorExtensions>None</UseProcessorExtensions>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <OpenMP>GenerateParallelCode</OpenMP>
       <FloatingPointModel>Precise</FloatingPointModel>

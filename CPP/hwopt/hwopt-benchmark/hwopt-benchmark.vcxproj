@@ -108,7 +108,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="NormalNoiseBenchmark.cpp" />
+    <ClCompile Include="NoiseBenchmark.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\hwopt\hwopt.vcxproj">

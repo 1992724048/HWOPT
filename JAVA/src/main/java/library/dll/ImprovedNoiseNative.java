@@ -37,7 +37,10 @@ public interface ImprovedNoiseNative extends AutoCloseable {
 	@Name("ImprovedNoise::_destroy")
 	void destroy();
 
-	@Name("ImprovedNoise::noise")
+	@Name("ImprovedNoise::noise3")
+	double noise(double x, double y, double z);
+	
+	@Name("ImprovedNoise::noise5")
 	double noise(double x, double y, double z, double y_scale, double y_fudge);
 
 	@Static
@@ -55,4 +58,7 @@ public interface ImprovedNoiseNative extends AutoCloseable {
 
 	@Name("ImprovedNoise::perm")
 	int perm(int x);
+
+	@Name("ImprovedNoise::get_values")
+	void getValues(double[] xs, double[] ys, double[] zs, double[] result);
 }

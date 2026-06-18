@@ -38,7 +38,7 @@ public abstract class ImprovedNoiseMixin {
 	@Inject(method = "noise(DDD)D", at = @At("HEAD"), cancellable = true)
 	private void hwopt$noise(double _x, double _y, double _z, CallbackInfoReturnable<Double> cir) {
 		if (this.hwopt$nativePtr != null) {
-			cir.setReturnValue(hwopt$nativePtr.noise(_x, _y, _z, 0.0, 0.0));
+			cir.setReturnValue(hwopt$nativePtr.noise(_x, _y, _z));
 		}
 	}
 

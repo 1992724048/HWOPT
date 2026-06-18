@@ -53,6 +53,9 @@ final class NativeLibrary {
 					throw new IllegalStateException("Missing @Name on " + m);
 				}
 				MemorySegment symbol = lookupSymbol(name.value());
+				if (symbol == MemorySegment.NULL) {
+					throw new UnsatisfiedLinkError("Symbol not found: " + name.value());
+				}
 				handles[i] = FFMFactory.createDowncallHandle(symbol, m);
 			}
 		} catch (Throwable e) {

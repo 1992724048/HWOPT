@@ -48,4 +48,7 @@ public interface PerlinNoiseNative extends AutoCloseable {
 	
 	@Name("PerlinNoise::max_broken_value")
 	double max_broken_value(double y_scale);
+	
+	@Name("PerlinNoise::get_values")
+	void get_values(double[] xs, double[] ys, double[] zs, double[] result);
 }
