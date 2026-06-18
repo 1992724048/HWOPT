@@ -1,11 +1,15 @@
 ﻿// 2026-06-17 03:23:08
 
-#include "ImprovedNoise.h"
+#include "ImprovedNoise.hpp"
 #include <cmath>
 #include <random>
 
-#include "../../util.h"
-using namespace minecraft;
+#include "SimplexNoise.hpp"
+
+#include "../Math.hpp"
+#include "../../util.hpp"
+using namespace minecraft::noise;
+using namespace minecraft::math;
 
 static constexpr double SHIFT_UP_EPSILON = 1.0000000116860974E-7;
 
@@ -43,7 +47,7 @@ auto ImprovedNoise::noise(const double x, const double y, const double z, const 
 }
 
 auto ImprovedNoise::noise_with_derivative(const double x, const double y, const double z, double* derivative_out, const int derivative_out_size) const -> double {
-    std::span<double> derivative_span(derivative_out, derivative_out_size);
+    std::span derivative_span(derivative_out, derivative_out_size);
     const double x1 = x + this->xo;
     const double y1 = y + this->yo;
     const double z1 = z + this->zo;
@@ -104,7 +108,7 @@ inline auto ImprovedNoise::sample_and_lerperm(const int x, const int y, const in
     const double d101 = grad_dot(perm(xy10 + z + 1), xr - 1.0, yr, zr - 1.0);
     const double d011 = grad_dot(perm(xy01 + z + 1), xr, yr - 1.0, zr - 1.0);
     const double d111 = grad_dot(perm(xy11 + z + 1), xr - 1.0, yr - 1.0, zr - 1.0);
-    return lerp3(smoothstep(xr), smoothstep(yr_original), smoothstep(zr), d000, d100, d010, d110, d001, d101, d011, d111);
+    return Math::lerp3(Math::smoothstep(xr), Math::smoothstep(yr_original), Math::smoothstep(zr), d000, d100, d010, d110, d001, d101, d011, d111);
 }
 
 inline auto ImprovedNoise::sample_with_derivative(const int x,
@@ -140,69 +144,34 @@ inline auto ImprovedNoise::sample_with_derivative(const int x,
     const int* g011 = &GRADIENT[idx011];
     const int* g111 = &GRADIENT[idx111];
 
-    const double d000 = dot(g000, xr, yr, zr);
-    const double d100 = dot(g100, xr - 1.0, yr, zr);
-    const double d010 = dot(g010, xr, yr - 1.0, zr);
-    const double d110 = dot(g110, xr - 1.0, yr - 1.0, zr);
-    const double d001 = dot(g001, xr, yr, zr - 1.0);
-    const double d101 = dot(g101, xr - 1.0, yr, zr - 1.0);
-    const double d011 = dot(g011, xr, yr - 1.0, zr - 1.0);
-    const double d111 = dot(g111, xr - 1.0, yr - 1.0, zr - 1.0);
+    const double d000 = SimplexNoise::dot(g000, xr, yr, zr);
+    const double d100 = SimplexNoise::dot(g100, xr - 1.0, yr, zr);
+    const double d010 = SimplexNoise::dot(g010, xr, yr - 1.0, zr);
+    const double d110 = SimplexNoise::dot(g110, xr - 1.0, yr - 1.0, zr);
+    const double d001 = SimplexNoise::dot(g001, xr, yr, zr - 1.0);
+    const double d101 = SimplexNoise::dot(g101, xr - 1.0, yr, zr - 1.0);
+    const double d011 = SimplexNoise::dot(g011, xr, yr - 1.0, zr - 1.0);
+    const double d111 = SimplexNoise::dot(g111, xr - 1.0, yr - 1.0, zr - 1.0);
 
-    const double xAlpha = smoothstep(xr);
-    const double yAlpha = smoothstep(yr);
-    const double zAlpha = smoothstep(zr);
+    const double xAlpha = Math::smoothstep(xr);
+    const double yAlpha = Math::smoothstep(yr);
+    const double zAlpha = Math::smoothstep(zr);
 
-    const double d1x = lerp3(xAlpha, yAlpha, zAlpha, g000[0], g100[0], g010[0], g110[0], g001[0], g101[0], g011[0], g111[0]);
-    const double d1y = lerp3(xAlpha, yAlpha, zAlpha, g000[1], g100[1], g010[1], g110[1], g001[1], g101[1], g011[1], g111[1]);
-    const double d1z = lerp3(xAlpha, yAlpha, zAlpha, g000[2], g100[2], g010[2], g110[2], g001[2], g101[2], g011[2], g111[2]);
+    const double d1x = Math::lerp3(xAlpha, yAlpha, zAlpha, g000[0], g100[0], g010[0], g110[0], g001[0], g101[0], g011[0], g111[0]);
+    const double d1y = Math::lerp3(xAlpha, yAlpha, zAlpha, g000[1], g100[1], g010[1], g110[1], g001[1], g101[1], g011[1], g111[1]);
+    const double d1z = Math::lerp3(xAlpha, yAlpha, zAlpha, g000[2], g100[2], g010[2], g110[2], g001[2], g101[2], g011[2], g111[2]);
 
-    const double d2x = lerp2(yAlpha, zAlpha, d100 - d000, d110 - d010, d101 - d001, d111 - d011);
-    const double d2y = lerp2(zAlpha, xAlpha, d010 - d000, d011 - d001, d110 - d100, d111 - d101);
-    const double d2z = lerp2(xAlpha, yAlpha, d001 - d000, d101 - d100, d011 - d010, d111 - d110);
+    const double d2x = Math::lerp2(yAlpha, zAlpha, d100 - d000, d110 - d010, d101 - d001, d111 - d011);
+    const double d2y = Math::lerp2(zAlpha, xAlpha, d010 - d000, d011 - d001, d110 - d100, d111 - d101);
+    const double d2z = Math::lerp2(xAlpha, yAlpha, d001 - d000, d101 - d100, d011 - d010, d111 - d110);
 
-    const double xSD = smoothstep_derivative(xr);
-    const double ySD = smoothstep_derivative(yr);
-    const double zSD = smoothstep_derivative(zr);
+    const double xSD = Math::smoothstep_derivative(xr);
+    const double ySD = Math::smoothstep_derivative(yr);
+    const double zSD = Math::smoothstep_derivative(zr);
 
     derivative_out[0] += d1x + (xSD * d2x);
     derivative_out[1] += d1y + (ySD * d2y);
     derivative_out[2] += d1z + (zSD * d2z);
 
-    return lerp3(xAlpha, yAlpha, zAlpha, d000, d100, d010, d110, d001, d101, d011, d111);
-}
-
-inline auto ImprovedNoise::smoothstep(const double x) -> double {
-    return ((((x * 6.0) - 15.0) * x) + 10.0) * x * x * x;
-}
-
-inline auto ImprovedNoise::smoothstep_derivative(const double x) -> double {
-    const double t = x * (x - 1.0);
-    return 30.0 * t * t;
-}
-
-inline auto ImprovedNoise::lerp(const double alpha1, const double p0, const double p1) -> double {
-    return p0 + (alpha1 * (p1 - p0));
-}
-
-inline auto ImprovedNoise::lerp2(const double alpha1, const double alpha2, const double x00, const double x10, const double x01, const double x11) -> double {
-    return lerp(alpha2, lerp(alpha1, x00, x10), lerp(alpha1, x01, x11));
-}
-
-inline auto ImprovedNoise::lerp3(const double alpha1,
-                                 const double alpha2,
-                                 const double alpha3,
-                                 const double x000,
-                                 const double x100,
-                                 const double x010,
-                                 const double x110,
-                                 const double x001,
-                                 const double x101,
-                                 const double x011,
-                                 const double x111) -> double {
-    return lerp(alpha3, lerp2(alpha1, alpha2, x000, x100, x010, x110), lerp2(alpha1, alpha2, x001, x101, x011, x111));
-}
-
-inline auto ImprovedNoise::dot(const int* g, const double x, const double y, const double z) -> double {
-    return (g[0] * x) + (g[1] * y) + (g[2] * z);
+    return Math::lerp3(xAlpha, yAlpha, zAlpha, d000, d100, d010, d110, d001, d101, d011, d111);
 }

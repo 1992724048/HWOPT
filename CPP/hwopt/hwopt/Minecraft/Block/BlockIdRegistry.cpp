@@ -1,6 +1,6 @@
 ﻿// 2026-06-17 03:26:14
 
-#include "BlockIdRegistry.h"
+#include "BlockIdRegistry.hpp"
 
 using namespace minecraft::block;
 

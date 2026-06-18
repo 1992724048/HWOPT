@@ -165,20 +165,26 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="Minecraft\AABB.cpp" />
     <ClCompile Include="Minecraft\Block\BlockIdRegistry.cpp" />
+    <ClCompile Include="Minecraft\Math.cpp" />
+    <ClCompile Include="Minecraft\Noise\BlendedNoise.cpp" />
     <ClCompile Include="Minecraft\Noise\ImprovedNoise.cpp" />
     <ClCompile Include="Minecraft\Noise\NormalNoise.cpp" />
     <ClCompile Include="Minecraft\Noise\PerlinNoise.cpp" />
     <ClCompile Include="Minecraft\Noise\SimplexNoise.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Minecraft\Block\BlockIdRegistry.h" />
-    <ClInclude Include="Minecraft\Noise\ImprovedNoise.h" />
-    <ClInclude Include="JavaNative.h" />
-    <ClInclude Include="Minecraft\Noise\NormalNoise.h" />
-    <ClInclude Include="Minecraft\Noise\PerlinNoise.h" />
-    <ClInclude Include="Minecraft\Noise\SimplexNoise.h" />
-    <ClInclude Include="util.h" />
+    <ClInclude Include="Minecraft\AABB.hpp" />
+    <ClInclude Include="Minecraft\Block\BlockIdRegistry.hpp" />
+    <ClInclude Include="Minecraft\Math.hpp" />
+    <ClInclude Include="Minecraft\Noise\BlendedNoise.hpp" />
+    <ClInclude Include="Minecraft\Noise\ImprovedNoise.hpp" />
+    <ClInclude Include="JavaNative.hpp" />
+    <ClInclude Include="Minecraft\Noise\NormalNoise.hpp" />
+    <ClInclude Include="Minecraft\Noise\PerlinNoise.hpp" />
+    <ClInclude Include="Minecraft\Noise\SimplexNoise.hpp" />
+    <ClInclude Include="util.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\hwopt-sycl\hwopt-sycl.vcxproj">

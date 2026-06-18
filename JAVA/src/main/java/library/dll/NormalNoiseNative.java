@@ -28,18 +28,9 @@ public interface NormalNoiseNative extends AutoCloseable {
 	@Name("NormalNoise::max_value")
 	double maxValue();
 	
-	@Name("NormalNoise::set_first")
-	void setFirst(int firstOctave, double[] amplitudes, double lowest_freq_value_factor, double lowest_freq_input_factor, double max_value);
-	
-	@Name("NormalNoise::set_second")
-	void setSecond(int firstOctave, double[] amplitudes, double lowest_freq_value_factor, double lowest_freq_input_factor, double max_value);
-	
-	@Name("NormalNoise::add_noise_to_first")
-	void addNoiseToFirst(int index, double xo, double yo, double zo, byte[] array);
-	
-	@Name("NormalNoise::add_noise_to_second")
-	void addNoiseToSecond(int index, double xo, double yo, double zo, byte[] array);
-	
+	@Name("NormalNoise::set_perlin_noise")
+	void setPerlinNoise(PerlinNoiseNative first, PerlinNoiseNative second);
+
 	@Static
 	@Name("NormalNoise::expected_deviation")
 	double expected_deviation(int octave_span);

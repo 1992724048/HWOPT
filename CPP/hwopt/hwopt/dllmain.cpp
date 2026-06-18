@@ -13,7 +13,7 @@
 #include <magic_enum/magic_enum.hpp>
 #include <sycl-plugin.h>
 #include <stdpp/logger.h>
-#include "JavaNative.h"
+#include "JavaNative.hpp"
 
 using namespace std::chrono_literals;
 

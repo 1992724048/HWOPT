@@ -19,10 +19,11 @@ HWOPT (Hardware Optimization) 是一个 Minecraft 优化模组，使用 C++ 重�
 
 ### 噪声算法加速
 
-- **ImprovedNoise** — C++ 原生实现，替换原版三维噪声
-- **PerlinNoise** — C++ 原生实现，支持多八度
-- **SimplexNoise** — C++ 原生实现，支持 2D/3D
-- **NormalNoise** — C++ 原生实现
+- **ImprovedNoise** — Java -> C++
+- **PerlinNoise** — Java -> C++
+- **SimplexNoise** — Java -> C++
+- **NormalNoise** — Java -> C++
+- **BlendedNoise** — Java -> C++
 
 ### 游戏功能
 

@@ -1,6 +1,6 @@
 package com.hwpp.mod;
 
-import com.worldgen.util.BlockIdRegistry;
+import com.hwpp.util.BlockIdRegistry;
 import net.minecraft.client.Minecraft;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;

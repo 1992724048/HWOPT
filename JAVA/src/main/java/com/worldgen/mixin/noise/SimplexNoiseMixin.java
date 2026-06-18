@@ -1,4 +1,4 @@
-package com.worldgen.mixin;
+package com.worldgen.mixin.noise;
 
 import library.dll.SimplexNoiseNative;
 import nativecode.dll.FFMFactory;

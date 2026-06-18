@@ -30,10 +30,10 @@ public interface PerlinNoiseNative extends AutoCloseable {
 	
 	@Name("PerlinNoise::_destroy")
 	void destroy();
-	
+
 	@Name("PerlinNoise::add_noise")
-	double addNoise(int index, double xo, double yo, double zo, byte[] array);
-	
+	void addNoise(int index, ImprovedNoiseNative noise);
+
 	@Name("PerlinNoise::get_value3")
 	double getValue(double x, double y, double z);
 	
@@ -45,4 +45,7 @@ public interface PerlinNoiseNative extends AutoCloseable {
 	
 	@Name("PerlinNoise::_amplitudes")
 	double[] amplitudes();
+	
+	@Name("PerlinNoise::max_broken_value")
+	double max_broken_value(double y_scale);
 }

@@ -45,17 +45,10 @@ Enhance game performance using hardware features
 
 # The [[mixins]] block allows you to declare your mixin config to FML so that it gets loaded.
 [[mixins]]
-config="${mod_id}.world.gen.mixins.json"
-[[mixins]]
-config="${mod_id}.world.gen.accessor.mixins.json"
+config="${mod_id}.worldgen.mixins.json"
 
 [[mixins]]
-config="${mod_id}.server.world.mixins.json"
-[[mixins]]
-config="${mod_id}.server.entity.mixins.json"
-
-[[mixins]]
-config="${mod_id}.options.mixins.json"
+config="${mod_id}.server.mixins.json"
 
 # The [[accessTransformers]] block allows you to declare where your AT file is.
 # If this block is omitted, a fallback attempt will be made to load an AT from META-INF/accesstransformer.cfg

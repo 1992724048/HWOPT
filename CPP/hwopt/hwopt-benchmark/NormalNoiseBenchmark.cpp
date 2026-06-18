@@ -1,7 +1,7 @@
 ﻿#include <gtest/gtest.h>
 
 #include <print>
-#include "../hwopt/Minecraft/Noise/NormalNoise.h"
+#include "../hwopt/Minecraft/Noise/NormalNoise.hpp"
 
 static std::array amplitudes{1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0};
 static constexpr int FIRST_OCTAVE = -8;
@@ -13,8 +13,8 @@ protected:
 
     auto SetUp() -> void override {
         noise = minecraft::NormalNoise::_create(42, 1);
-        noise->set_first(FIRST_OCTAVE, amplitudes, 0, 0, 1);
-        noise->set_second(FIRST_OCTAVE, amplitudes, 0, 0, 1);
+        noise->set_first(FIRST_OCTAVE, amplitudes.data(), amplitudes.size(), 0, 0, 1);
+        noise->set_second(FIRST_OCTAVE, amplitudes.data(), amplitudes.size(), 0, 0, 1);
 
         int8_t p{0};
         std::array<int8_t, 256> prem{};
@@ -23,8 +23,8 @@ protected:
         }
 
         for (int i = 0; i < amplitudes.size(); ++i) {
-            noise->add_noise_to_first(i, 1, 1, 1, prem);
-            noise->add_noise_to_second(i, 1, 1, 1, prem);
+            noise->add_noise_to_first(i, 1, 1, 1, prem.data(), prem.size());
+            noise->add_noise_to_second(i, 1, 1, 1, prem.data(), prem.size());
         }
     }
 

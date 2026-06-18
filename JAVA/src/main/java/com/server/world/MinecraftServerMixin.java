@@ -1,4 +1,4 @@
-package com.server.world.mixin;
+package com.server.world;
 
 import com.hwpp.mod.Config;
 import net.minecraft.core.BlockPos;

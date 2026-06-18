@@ -1,10 +1,10 @@
 ﻿// 2026-06-17 03:23:58
 
-#include "PerlinNoise.h"
+#include "PerlinNoise.hpp"
 #include <cmath>
 
-#include "../../util.h"
-using namespace minecraft;
+#include "../../util.hpp"
+using namespace minecraft::noise;
 
 static constexpr double ROUND_OFF = 3.3554432E7;
 
@@ -25,6 +25,7 @@ auto PerlinNoise::add_methods() -> void {
     "PerlinNoise::get_value5"_jf.reg<&PerlinNoise::get_value5>();
     "PerlinNoise::edge_value"_jf.reg<&PerlinNoise::edge_value>();
     "PerlinNoise::_amplitudes"_jf.reg<&PerlinNoise::amplitudes>();
+    "PerlinNoise::max_broken_value"_jf.reg<&PerlinNoise::max_broken_value>();
     "PerlinNoise::add_noise"_jf.reg<&PerlinNoise::add_noise>();
 }
 
@@ -37,12 +38,8 @@ auto PerlinNoise::_destroy() const -> void {
     hwopt::util::mi_delete(this);
 }
 
-auto PerlinNoise::add_noise(const int index, const double xo, const double yo, const double zo, int8_t* array, const int array_size) -> void {
-    auto& noise = noise_levels_[index];
-    noise.xo = xo;
-    noise.yo = yo;
-    noise.zo = zo;
-    std::memcpy(noise.p.data(), array, array_size);
+auto PerlinNoise::add_noise(const int index, ImprovedNoise* noise) -> void {
+    noise_levels_[index] = noise;
 }
 
 auto PerlinNoise::get_value3(const double x, const double y, const double z) const -> double {
@@ -59,7 +56,7 @@ auto PerlinNoise::get_value5(const double x, const double y, const double z, con
     for (size_t i = 0; i < nl.size(); i++) {
         if (amp[i] != 0.0) {
             const double t = factor;
-            value += amp[i] * nl[i].noise(wrap(x * t), wrap(y * t), wrap(z * t), y_scale * t, y_fudge * t) * value_factor;
+            value += amp[i] * nl[i]->noise(wrap(x * t), wrap(y * t), wrap(z * t), y_scale * t, y_fudge * t) * value_factor;
         }
         factor *= 2.0;
         value_factor *= 0.5;
@@ -81,6 +78,14 @@ auto PerlinNoise::edge_value(const double noise_value) const -> double {
 
 auto PerlinNoise::amplitudes() -> std::span<double> {
     return this->amplitudes_;
+}
+
+auto PerlinNoise::max_broken_value(const double y_scale) const -> double {
+    return this->edge_value(y_scale + 2.0F);
+}
+
+auto PerlinNoise::get_octave_noise(const int i) const -> ImprovedNoise* {
+    return this->noise_levels_[this->noise_levels_.size() - 1 - i];
 }
 
 auto PerlinNoise::wrap(const double x) -> double {

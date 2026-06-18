@@ -1,14 +1,17 @@
 ﻿// 2026-06-17 03:23:49
 
-#include "NormalNoise.h"
+#include "NormalNoise.hpp"
 
-#include "../../util.h"
-using namespace minecraft;
+#include "../../util.hpp"
+using namespace minecraft::noise;
 
 static constexpr double INPUT_FACTOR = 1.0181268882175227;
 
-NormalNoise::NormalNoise(const double value_factor, const double max_value) {
+NormalNoise::NormalNoise() {
     JavaNative::touch();
+}
+
+NormalNoise::NormalNoise(const double value_factor, const double max_value) {
     this->value_factor = value_factor;
     this->max_value_field = max_value;
 }
@@ -19,10 +22,7 @@ auto NormalNoise::add_methods() -> void {
     "NormalNoise::get_value"_jf.reg<&NormalNoise::get_value>();
     "NormalNoise::max_value"_jf.reg<&NormalNoise::max_value>();
     "NormalNoise::expected_deviation"_jf.reg<&NormalNoise::expected_deviation>();
-    "NormalNoise::set_first"_jf.reg<&NormalNoise::set_first>();
-    "NormalNoise::set_second"_jf.reg<&NormalNoise::set_second>();
-    "NormalNoise::add_noise_to_first"_jf.reg<&NormalNoise::add_noise_to_first>();
-    "NormalNoise::add_noise_to_second"_jf.reg<&NormalNoise::add_noise_to_second>();
+    "NormalNoise::set_perlin_noise"_jf.reg<&NormalNoise::set_perlin_noise>();
 }
 
 auto NormalNoise::_create(double value_factor, double max_value) -> NormalNoise* {
@@ -33,57 +33,16 @@ auto NormalNoise::_destroy() const -> void {
     hwopt::util::mi_delete(this);
 }
 
-auto NormalNoise::set_first(const int first_octave,
-                            double* amplitudes,
-                            const int amplitudes_size,
-                            const double lowest_freq_value_factor,
-                            const double lowest_freq_input_factor,
-                            const double max_value) -> void {
-    std::span sp(amplitudes, amplitudes_size);
-    first.first_octave_ = first_octave;
-    first.amplitudes_.assign(sp.data(), sp.data() + sp.size());
-    first.noise_levels_.resize(sp.size());
-    first.lowest_freq_input_factor_ = lowest_freq_input_factor;
-    first.lowest_freq_value_factor_ = lowest_freq_value_factor;
-    first.max_value_ = max_value;
-}
-
-auto NormalNoise::set_second(const int first_octave,
-                             double* amplitudes,
-                             const int amplitudes_size,
-                             const double lowest_freq_value_factor,
-                             const double lowest_freq_input_factor,
-                             const double max_value) -> void {
-    std::span<double> sp(amplitudes, amplitudes_size);
-    second.first_octave_ = first_octave;
-    second.amplitudes_.assign(sp.data(), sp.data() + sp.size());
-    second.noise_levels_.resize(sp.size());
-    second.lowest_freq_input_factor_ = lowest_freq_input_factor;
-    second.lowest_freq_value_factor_ = lowest_freq_value_factor;
-    second.max_value_ = max_value;
-}
-
-auto NormalNoise::add_noise_to_first(const int index, const double xo, const double yo, const double zo, int8_t* array, const int array_size) -> void {
-    auto& noise = first.noise_levels_[index];
-    noise.xo = xo;
-    noise.yo = yo;
-    noise.zo = zo;
-    std::memcpy(noise.p.data(), array, array_size);
-}
-
-auto NormalNoise::add_noise_to_second(const int index, const double xo, const double yo, const double zo, int8_t* array, const int array_size) -> void {
-    auto& noise = second.noise_levels_[index];
-    noise.xo = xo;
-    noise.yo = yo;
-    noise.zo = zo;
-    std::memcpy(noise.p.data(), array, array_size);
+auto NormalNoise::set_perlin_noise(PerlinNoise* first, PerlinNoise* second) -> void {
+    this->first = first;
+    this->second = second;
 }
 
 auto NormalNoise::get_value(const double x, const double y, const double z) const -> double {
     const double x2 = x * INPUT_FACTOR;
     const double y2 = y * INPUT_FACTOR;
     const double z2 = z * INPUT_FACTOR;
-    return (this->first.get_value3(x, y, z) + this->second.get_value3(x2, y2, z2)) * this->value_factor;
+    return (this->first->get_value3(x, y, z) + this->second->get_value3(x2, y2, z2)) * this->value_factor;
 }
 
 auto NormalNoise::max_value() const -> double {

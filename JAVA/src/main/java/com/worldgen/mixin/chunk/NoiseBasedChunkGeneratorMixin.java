@@ -1,9 +1,9 @@
-package com.worldgen.mixin;
+package com.worldgen.mixin.chunk;
 
-import com.hwpp.mod.ChunkGenStats;
+import com.hwpp.util.ChunkGenStats;
 import com.hwpp.mod.Config;
 import com.worldgen.accessor.NoiseChunkAccessor;
-import com.worldgen.util.BlockIdRegistry;
+import com.hwpp.util.BlockIdRegistry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
@@ -25,7 +25,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
-import static com.worldgen.util.BlockIdRegistry.AIR_ID;
+import static com.hwpp.util.BlockIdRegistry.AIR_ID;
 
 @Mixin(NoiseBasedChunkGenerator.class)
 public abstract class NoiseBasedChunkGeneratorMixin {
@@ -63,7 +63,7 @@ public abstract class NoiseBasedChunkGeneratorMixin {
 			}
 			
 			try {
-				return hwopt$doFill(blender, structureManager, randomState, centerChunk, cellYMin, cellCountY);
+				return doFill(blender, structureManager, randomState, centerChunk, cellYMin, cellCountY);
 			} finally {
 				for (LevelChunkSection s : sections) {
 					s.release();
@@ -122,8 +122,8 @@ public abstract class NoiseBasedChunkGeneratorMixin {
 		return String.format("%.1f s", ms / 1000.0);
 	}
 	
-	@Unique
-	private ChunkAccess hwopt$doFill(final Blender blender, final StructureManager structureManager, final RandomState randomState, final ChunkAccess centerChunk, final int cellMinY, final int cellCountY) {
+	@Overwrite
+	private ChunkAccess doFill(final Blender blender, final StructureManager structureManager, final RandomState randomState, final ChunkAccess centerChunk, final int cellMinY, final int cellCountY) {
 		final NoiseChunk noiseChunk = centerChunk.getOrCreateNoiseChunk(chunk -> this.createNoiseChunk(chunk, structureManager, blender, randomState));
 		final NoiseChunkAccessor noiseAccessor = (NoiseChunkAccessor) noiseChunk;
 		final NoiseGeneratorSettings genSettings = this.settings.value();

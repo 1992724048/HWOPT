@@ -1,16 +1,14 @@
-package com.worldgen.mixin;
+package com.worldgen.mixin.noise;
 
 import com.mojang.datafixers.util.Pair;
 import it.unimi.dsi.fastutil.doubles.DoubleList;
+import library.dll.ImprovedNoiseNative;
 import library.dll.PerlinNoiseNative;
 import nativecode.dll.FFMFactory;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.levelgen.synth.ImprovedNoise;
 import net.minecraft.world.level.levelgen.synth.PerlinNoise;
-import org.spongepowered.asm.mixin.Final;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.Unique;
+import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -23,10 +21,13 @@ import java.lang.invoke.VarHandle;
 public abstract class PerlinNoiseMixin {
 	
 	private static final VarHandle HWOPT_P;
+	private static final VarHandle HWOPT_IMPROVED_NOISE_NATIVE;
 	
 	static {
 		try {
-			HWOPT_P = MethodHandles.privateLookupIn(ImprovedNoise.class, MethodHandles.lookup()).findVarHandle(ImprovedNoise.class, "p", byte[].class);
+			var improvedLookup = MethodHandles.privateLookupIn(ImprovedNoise.class, MethodHandles.lookup());
+			HWOPT_P = improvedLookup.findVarHandle(ImprovedNoise.class, "p", byte[].class);
+			HWOPT_IMPROVED_NOISE_NATIVE = improvedLookup.findVarHandle(ImprovedNoise.class, "hwopt$nativePtr", ImprovedNoiseNative.class);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -53,6 +54,10 @@ public abstract class PerlinNoiseMixin {
 	@Shadow
 	@Final
 	private double maxValue;
+	
+	@Shadow
+	protected abstract double edgeValue(double noiseValue);
+	
 	@Unique
 	private PerlinNoiseNative hwopt$nativePtr;
 	
@@ -62,7 +67,8 @@ public abstract class PerlinNoiseMixin {
 		int index = 0;
 		for (var noise : this.noiseLevels) {
 			if (noise != null) {
-				this.hwopt$nativePtr.addNoise(index, noise.xo, noise.yo, noise.zo, (byte[]) HWOPT_P.get(noise));
+				ImprovedNoiseNative noiseNative = (ImprovedNoiseNative) HWOPT_IMPROVED_NOISE_NATIVE.get(noise);
+				this.hwopt$nativePtr.addNoise(index, noiseNative);
 			}
 			index++;
 		}
@@ -101,6 +107,13 @@ public abstract class PerlinNoiseMixin {
 	private void hwopt$maxValue(final CallbackInfoReturnable<Double> cir) {
 		if (this.hwopt$nativePtr != null) {
 			cir.setReturnValue(this.hwopt$nativePtr.max_value());
+		}
+	}
+	
+	@Inject(method = "maxBrokenValue", at = @At("HEAD"), cancellable = true)
+	public void maxBrokenValue(double yScale, CallbackInfoReturnable<Double> cir) {
+		if (this.hwopt$nativePtr != null) {
+			cir.setReturnValue(this.hwopt$nativePtr.max_broken_value(yScale));
 		}
 	}
 	

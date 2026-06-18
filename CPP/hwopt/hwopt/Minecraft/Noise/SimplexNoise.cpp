@@ -1,9 +1,9 @@
 ﻿// 2026-06-17 03:26:03
 
-#include "SimplexNoise.h"
+#include "SimplexNoise.hpp"
 
-#include "../../util.h"
-using namespace minecraft;
+#include "../../util.hpp"
+using namespace minecraft::noise;
 
 SimplexNoise::SimplexNoise() {
     JavaNative::touch();

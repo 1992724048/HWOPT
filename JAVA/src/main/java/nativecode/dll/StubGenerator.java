@@ -29,6 +29,7 @@ enum StubGenerator {
 	
 	private static final String FFM_FACTORY = "nativecode/dll/FFMFactory";
 	private static final String MEMORY_SEGMENT = "java/lang/foreign/MemorySegment";
+	private static final String NATIVE_POINTER = "nativecode/dll/NativePointer";
 	
 	private static final Map<Class<?>, FieldTypeInfo> FIELD_TYPES = Map.of(int.class, new FieldTypeInfo("JAVA_INT", "Ljava/lang/foreign/ValueLayout$OfInt;", "(Ljava/lang/foreign/ValueLayout$OfInt;J)I", "(Ljava/lang/foreign/ValueLayout$OfInt;JI)V", IRETURN, ILOAD), long.class, new FieldTypeInfo("JAVA_LONG", "Ljava/lang/foreign/ValueLayout$OfLong;", "(Ljava/lang/foreign/ValueLayout$OfLong;J)J", "(Ljava/lang/foreign/ValueLayout$OfLong;JJ)V", LRETURN, LLOAD), double.class, new FieldTypeInfo("JAVA_DOUBLE", "Ljava/lang/foreign/ValueLayout$OfDouble;", "(Ljava/lang/foreign/ValueLayout$OfDouble;J)D", "(Ljava/lang/foreign/ValueLayout$OfDouble;JD)V", DRETURN, DLOAD), float.class, new FieldTypeInfo("JAVA_FLOAT", "Ljava/lang/foreign/ValueLayout$OfFloat;", "(Ljava/lang/foreign/ValueLayout$OfFloat;J)F", "(Ljava/lang/foreign/ValueLayout$OfFloat;JF)V", FRETURN, FLOAD), short.class, new FieldTypeInfo("JAVA_SHORT", "Ljava/lang/foreign/ValueLayout$OfShort;", "(Ljava/lang/foreign/ValueLayout$OfShort;J)S", "(Ljava/lang/foreign/ValueLayout$OfShort;JS)V", IRETURN, ILOAD), byte.class, new FieldTypeInfo("JAVA_BYTE", "Ljava/lang/foreign/ValueLayout$OfByte;", "(Ljava/lang/foreign/ValueLayout$OfByte;J)B", "(Ljava/lang/foreign/ValueLayout$OfByte;JB)V", IRETURN, ILOAD), boolean.class, new FieldTypeInfo("JAVA_BOOLEAN", "Ljava/lang/foreign/ValueLayout$OfBoolean;", "(Ljava/lang/foreign/ValueLayout$OfBoolean;J)Z", "(Ljava/lang/foreign/ValueLayout$OfBoolean;JZ)V", IRETURN, ILOAD));
 	
@@ -57,12 +58,13 @@ enum StubGenerator {
 			}
 		}
 		ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS);
-		cw.visit(V21, ACC_PUBLIC | ACC_FINAL, implName, null, "java/lang/Object", new String[]{apiName, "java/lang/AutoCloseable"});
+		cw.visit(V21, ACC_PUBLIC | ACC_FINAL, implName, null, "java/lang/Object", new String[]{apiName, "java/lang/AutoCloseable", NATIVE_POINTER});
 		emitFields(cw, implName, nativeMethods.size());
 		emitClinit(cw, implName, nativeMethods.size());
 		emitCtor(cw, implName);
 		emitDefaultCtor(cw, implName);
 		emitCloseMethod(cw, implName);
+		emitPtrGetter(cw, implName);
 		int nativeIndex = 0;
 		for (Method m : methods) {
 			if (m.isAnnotationPresent(Field.class)) {
@@ -143,6 +145,16 @@ enum StubGenerator {
 		mv.visitVarInsn(ALOAD, 0);
 		mv.visitMethodInsn(INVOKEVIRTUAL, implName, "destroy", "()V", false);
 		mv.visitInsn(RETURN);
+		mv.visitMaxs(1, 1);
+		mv.visitEnd();
+	}
+
+	private static void emitPtrGetter(ClassWriter cw, String implName) {
+		MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "$ptr", "()Ljava/lang/foreign/MemorySegment;", null, null);
+		mv.visitCode();
+		mv.visitVarInsn(ALOAD, 0);
+		mv.visitFieldInsn(GETFIELD, implName, "ptr", "Ljava/lang/foreign/MemorySegment;");
+		mv.visitInsn(ARETURN);
 		mv.visitMaxs(1, 1);
 		mv.visitEnd();
 	}
@@ -356,8 +368,8 @@ enum StubGenerator {
 				mv.visitVarInsn(ALOAD, slot);
 			} else if (p.isInterface()) {
 				mv.visitVarInsn(ALOAD, slot);
-				String implName = p.getName().replace('.', '/') + "$FFM";
-				mv.visitFieldInsn(GETFIELD, implName, "ptr", "Ljava/lang/foreign/MemorySegment;");
+				mv.visitTypeInsn(CHECKCAST, NATIVE_POINTER);
+				mv.visitMethodInsn(INVOKEINTERFACE, NATIVE_POINTER, "$ptr", "()Ljava/lang/foreign/MemorySegment;", true);
 			} else {
 				mv.visitVarInsn(ALOAD, slot);
 			}
