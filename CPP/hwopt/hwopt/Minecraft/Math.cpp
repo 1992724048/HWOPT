@@ -11,6 +11,7 @@ auto Math::add_methods() -> void {
     "Math::ray_intersects_aabb"_jf.reg<ray_intersects_aabb_wrapper>();
     "Math::atan2"_jf.reg<atan2>();
     "Math::clamped_lerp"_jf.reg<clamped_lerp>();
+    "Math::batch_trilerp"_jf.reg<batch_trilerp>();
 }
 
 auto Math::smoothstep(const double x) -> double {
@@ -87,6 +88,31 @@ auto Math::clamped_lerp(const double factor, const double min, const double max)
         return min;
     }
     return factor > static_cast<double>(1.0F) ? max : lerp(factor, min, max);
+}
+
+auto Math::batch_trilerp(const double n000,
+                         const double n100,
+                         const double n010,
+                         const double n110,
+                         const double n001,
+                         const double n101,
+                         const double n011,
+                         const double n111,
+                         const int cellWidth,
+                         const int cellHeight,
+                         double* output,
+                         const int outputLen) -> void {
+    int idx = 0;
+    for (int iy = cellHeight - 1; iy >= 0; iy--) {
+        const double dy = static_cast<double>(iy) / static_cast<double>(cellHeight);
+        for (int ix = 0; ix < cellWidth; ix++) {
+            const double dx = static_cast<double>(ix) / static_cast<double>(cellWidth);
+            for (int iz = 0; iz < cellWidth; iz++) {
+                const double dz = static_cast<double>(iz) / static_cast<double>(cellWidth);
+                output[idx++] = lerp3(dx, dy, dz, n000, n100, n010, n110, n001, n101, n011, n111);
+            }
+        }
+    }
 }
 
 auto Math::ray_intersects_aabb_wrapper(const double sx,

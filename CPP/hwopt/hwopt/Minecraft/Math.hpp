@@ -24,6 +24,18 @@ namespace minecraft::math {
         static auto ray_intersects_aabb(glm::vec3 ray_start, glm::vec3 ray_dir, const aabb::AABB& aabb) -> bool;
 
         static auto clamped_lerp(double factor, double min, double max) -> double;
+        static auto batch_trilerp(double n000,
+                                  double n100,
+                                  double n010,
+                                  double n110,
+                                  double n001,
+                                  double n101,
+                                  double n011,
+                                  double n111,
+                                  int cellWidth,
+                                  int cellHeight,
+                                  double* output,
+                                  int outputLen) -> void;
     private:
         static auto ray_intersects_aabb_wrapper(double sx, double sy, double sz, double dx, double dy, double dz, double minX, double minY, double minZ, double maxX, double maxY, double maxZ) -> bool;
     };

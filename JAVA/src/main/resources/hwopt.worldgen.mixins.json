@@ -4,7 +4,9 @@
   "compatibilityLevel": "JAVA_25",
   "mixins": [
     "accessor.NoiseChunkAccessor",
+    "accessor.NoiseInterpolatorAccessor",
     "mixin.chunk.NoiseBasedChunkGeneratorMixin",
+    "mixin.chunk.NoiseChunkMixin",
     "mixin.noise.BlendedNoiseMixin",
     "mixin.noise.ImprovedNoiseMixin",
     "mixin.noise.NormalNoiseMixin",
