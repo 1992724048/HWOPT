@@ -1,6 +1,6 @@
 ﻿#pragma once
-#include "AABB.hpp"
 #include "../JavaNative.hpp"
+#include "Entity/AABB.hpp"
 #include "glm/vec3.hpp"
 
 namespace minecraft::math {
@@ -32,10 +32,10 @@ namespace minecraft::math {
                                   double n101,
                                   double n011,
                                   double n111,
-                                  int cellWidth,
-                                  int cellHeight,
+                                  int cell_width,
+                                  int cell_height,
                                   double* output,
-                                  int outputLen) -> void;
+                                  int output_len) -> void;
     private:
         static auto ray_intersects_aabb_wrapper(double sx, double sy, double sz, double dx, double dy, double dz, double minX, double minY, double minZ, double maxX, double maxY, double maxZ) -> bool;
     };

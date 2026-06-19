@@ -1,7 +1,7 @@
 package com.hwpp.mod;
 
 import com.mojang.logging.LogUtils;
-import com.hwpp.util.ChunkGenStats;
+import com.server.world.util.ChunkGenStats;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.IEventBus;

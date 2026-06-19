@@ -1,12 +1,13 @@
 {
   "required": true,
-  "package": "com.server",
+  "package": "com.server.mixin",
   "compatibilityLevel": "JAVA_25",
   "mixins": [
-    "AABBMixin",
     "MthMixin",
-    "entity.EntityMixin",
-    "world.MinecraftServerMixin"
+    "world.MinecraftServerMixin",
+    "world.render.ViewDistanceMixin",
+    "world.render.DistanceManagerMixin",
+    "world.render.ChunkTaskPriorityQueueMixin"
   ],
   "injectors": {
     "defaultRequire": 1

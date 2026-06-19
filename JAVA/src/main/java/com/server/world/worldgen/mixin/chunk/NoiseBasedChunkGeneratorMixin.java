@@ -1,8 +1,8 @@
-package com.worldgen.mixin.chunk;
+package com.server.world.worldgen.mixin.chunk;
 
-import com.hwpp.util.ChunkGenStats;
+import com.server.world.util.ChunkGenStats;
 import com.hwpp.mod.Config;
-import com.worldgen.accessor.NoiseChunkAccessor;
+import com.server.world.worldgen.accessor.NoiseChunkAccessor;
 import com.hwpp.util.BlockIdRegistry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
@@ -35,7 +35,7 @@ public abstract class NoiseBasedChunkGeneratorMixin {
 	private Holder<NoiseGeneratorSettings> settings;
 	
 	@Unique
-	private static final Executor WORLDGEN_EXECUTOR = Executors.newFixedThreadPool(Math.max(2, Runtime.getRuntime().availableProcessors()), runnable -> new Thread(runnable, "hwopt-worldgen-thread"));
+	private static final Executor WORLDGEN_EXECUTOR = Executors.newFixedThreadPool(Math.max(4, Runtime.getRuntime().availableProcessors()), runnable -> new Thread(runnable, "hwopt-worldgen-thread"));
 	
 	@Overwrite
 	public CompletableFuture<ChunkAccess> fillFromNoise(final Blender blender, final RandomState randomState, final StructureManager structureManager, final ChunkAccess centerChunk) {
@@ -70,7 +70,7 @@ public abstract class NoiseBasedChunkGeneratorMixin {
 				}
 			}
 		}, WORLDGEN_EXECUTOR);
-		hwopt$attachStatsHook(future);
+		future.whenComplete((res, ex) -> hwopt$printStats());
 		return future;
 	}
 	
@@ -78,12 +78,11 @@ public abstract class NoiseBasedChunkGeneratorMixin {
 	protected abstract NoiseChunk createNoiseChunk(ChunkAccess chunk, StructureManager structureManager, Blender blender, RandomState randomState);
 	
 	@Unique
-	private void hwopt$attachStatsHook(CompletableFuture<ChunkAccess> future) {
+	private void hwopt$printStats() {
 		boolean logGen = Config.LOG_CHUNK_GEN.getAsBoolean();
 		int interval = Config.LOG_CHUNK_GEN_INTERVAL.getAsInt();
 		if (!logGen && interval <= 0) return;
-		
-		future.whenComplete((res, ex) -> hwopt$printStatsOnComplete(logGen, interval));
+		hwopt$printStatsOnComplete(logGen, interval);
 	}
 	
 	@Unique

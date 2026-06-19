@@ -1,4 +1,8 @@
 ﻿#include "Math.hpp"
+#include <array>
+#include <windows.h>
+
+#include "sycl-plugin.h"
 
 using namespace minecraft::math;
 
@@ -50,20 +54,20 @@ auto Math::atan2(const double y, const double x) -> double {
 }
 
 auto Math::ray_intersects_aabb(const glm::vec3 ray_start, const glm::vec3 ray_dir, const aabb::AABB& aabb) -> bool {
-    const double centerX = (aabb.minX + aabb.maxX) * static_cast<double>(0.5F);
-    const double boxExtentX = (aabb.maxX - aabb.minX) * static_cast<double>(0.5F);
+    const double centerX = (aabb.min_x + aabb.max_x) * static_cast<double>(0.5F);
+    const double boxExtentX = (aabb.max_x - aabb.min_x) * static_cast<double>(0.5F);
     const double diffX = ray_start.x - centerX;
     if (std::abs(diffX) > boxExtentX && diffX * ray_dir.x >= static_cast<double>(0.0F)) {
         return false;
     }
-    const double centerY = (aabb.minY + aabb.maxY) * static_cast<double>(0.5F);
-    const double boxExtentY = (aabb.maxY - aabb.minY) * static_cast<double>(0.5F);
+    const double centerY = (aabb.min_y + aabb.max_y) * static_cast<double>(0.5F);
+    const double boxExtentY = (aabb.max_y - aabb.min_y) * static_cast<double>(0.5F);
     const double diffY = ray_start.y - centerY;
     if (std::abs(diffY) > boxExtentY && diffY * ray_dir.y >= static_cast<double>(0.0F)) {
         return false;
     }
-    const double centerZ = (aabb.minZ + aabb.maxZ) * static_cast<double>(0.5F);
-    const double boxExtentZ = (aabb.maxZ - aabb.minZ) * static_cast<double>(0.5F);
+    const double centerZ = (aabb.min_z + aabb.max_z) * static_cast<double>(0.5F);
+    const double boxExtentZ = (aabb.max_z - aabb.min_z) * static_cast<double>(0.5F);
     const double diffZ = ray_start.z - centerZ;
     if (std::abs(diffZ) > boxExtentZ && diffZ * ray_dir.z >= static_cast<double>(0.0F)) {
         return false;
@@ -98,18 +102,37 @@ auto Math::batch_trilerp(const double n000,
                          const double n101,
                          const double n011,
                          const double n111,
-                         const int cellWidth,
-                         const int cellHeight,
+                         const int cell_width,
+                         const int cell_height,
                          double* output,
-                         const int outputLen) -> void {
+                         const int output_len) -> void {
     int idx = 0;
-    for (int iy = cellHeight - 1; iy >= 0; iy--) {
-        const double dy = static_cast<double>(iy) / static_cast<double>(cellHeight);
-        for (int ix = 0; ix < cellWidth; ix++) {
-            const double dx = static_cast<double>(ix) / static_cast<double>(cellWidth);
-            for (int iz = 0; iz < cellWidth; iz++) {
-                const double dz = static_cast<double>(iz) / static_cast<double>(cellWidth);
-                output[idx++] = lerp3(dx, dy, dz, n000, n100, n010, n110, n001, n101, n011, n111);
+    std::array<double, 16> x_fracs{};
+    std::array<double, 16> z_fracs{};
+    for (int i = 0; i < cell_width; ++i) {
+        const double f = static_cast<double>(i) / static_cast<double>(cell_width);
+        x_fracs[i] = f;
+        z_fracs[i] = f;
+    }
+
+    for (int iy = cell_height - 1; iy >= 0; --iy) {
+        const double dy = static_cast<double>(iy) / static_cast<double>(cell_height);
+        const double ly = 1.0 - dy;
+        const double hy = dy;
+        const double v00 = n000 * ly + n010 * hy;
+        const double v10 = n100 * ly + n110 * hy;
+        const double v01 = n001 * ly + n011 * hy;
+        const double v11 = n101 * ly + n111 * hy;
+
+        for (int ix = 0; ix < cell_width; ++ix) {
+            const double dx = x_fracs[ix];
+            const double lx = 1.0 - dx;
+            const double hx = dx;
+            const double z0 = v00 * lx + v10 * hx;
+            const double z1 = v01 * lx + v11 * hx;
+
+            for (int iz = 0; iz < cell_width; ++iz) {
+                output[idx++] = z0 + z_fracs[iz] * (z1 - z0);
             }
         }
     }
@@ -128,11 +151,11 @@ auto Math::ray_intersects_aabb_wrapper(const double sx,
                                        const double maxY,
                                        const double maxZ) -> bool {
     aabb::AABB box;
-    box.minX = minX;
-    box.minY = minY;
-    box.minZ = minZ;
-    box.maxX = maxX;
-    box.maxY = maxY;
-    box.maxZ = maxZ;
+    box.min_x = minX;
+    box.min_y = minY;
+    box.min_z = minZ;
+    box.max_x = maxX;
+    box.max_y = maxY;
+    box.max_z = maxZ;
     return ray_intersects_aabb(glm::vec3(sx, sy, sz), glm::vec3(dx, dy, dz), box);
 }

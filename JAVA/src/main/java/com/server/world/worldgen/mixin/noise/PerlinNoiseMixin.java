@@ -1,4 +1,4 @@
-package com.worldgen.mixin.noise;
+package com.server.world.worldgen.mixin.noise;
 
 import com.mojang.datafixers.util.Pair;
 import it.unimi.dsi.fastutil.doubles.DoubleList;

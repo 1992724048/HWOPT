@@ -19,6 +19,8 @@
 #include "sycl-plugin.h"
 #include "sycl-queue.h"
 
+#define API __declspec(dllexport)
+
 auto DllMain(HMODULE hModule, DWORD ul_reason_for_call, LPVOID lpReserved) -> BOOL {
     if (ul_reason_for_call == DLL_PROCESS_ATTACH) {
         mi_stats_reset();

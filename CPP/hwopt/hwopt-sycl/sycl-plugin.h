@@ -4,6 +4,7 @@
 #pragma once
 
 #include <expected>
+#include <memory>
 #include <optional>
 #include <string>
 #include <tuple>
@@ -43,9 +44,9 @@ namespace stdpp::sycl {
                 }
             }
 
-            friend Device;
-        private:
             uint64_t id{0};
+
+            friend Device;
         };
 
         static auto switch_device(const std::unique_ptr<Handle>& queue_id, const DeviceInfo& device_info) -> std::optional<std::string>;

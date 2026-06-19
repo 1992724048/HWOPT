@@ -1,4 +1,4 @@
-package com.worldgen.mixin.noise;
+package com.server.world.worldgen.mixin.noise;
 
 import library.dll.NormalNoiseNative;
 import library.dll.PerlinNoiseNative;

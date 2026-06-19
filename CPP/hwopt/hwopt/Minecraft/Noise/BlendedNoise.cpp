@@ -12,26 +12,26 @@ auto BlendedNoise::add_methods() -> void {
     "BlendedNoise::get_values"_jf.reg<&BlendedNoise::get_values>();
 }
 
-auto BlendedNoise::_create(PerlinNoise* minLimitNoise,
-                           PerlinNoise* maxLimitNoise,
-                           PerlinNoise* mainNoise,
-                           const double xzScale,
-                           const double yScale,
-                           const double xzFactor,
-                           const double yFactor,
-                           const double smearScaleMultiplier) -> BlendedNoise* {
+auto BlendedNoise::_create(PerlinNoise* min_limit_noise,
+                           PerlinNoise* max_limit_noise,
+                           PerlinNoise* main_noise,
+                           const double xz_scale,
+                           const double y_scale,
+                           const double xz_factor,
+                           const double y_factor,
+                           const double smear_scale_multiplier) -> BlendedNoise* {
     auto* noise = hwopt::util::mi_new<BlendedNoise>();
-    noise->minLimitNoise = minLimitNoise;
-    noise->maxLimitNoise = maxLimitNoise;
-    noise->mainNoise = mainNoise;
-    noise->xzScale = xzScale;
-    noise->yScale = yScale;
-    noise->xzFactor = xzFactor;
-    noise->yFactor = yFactor;
-    noise->smearScaleMultiplier = smearScaleMultiplier;
-    noise->xzMultiplier = 684.412 * noise->xzScale;
-    noise->yMultiplier = 684.412 * noise->yScale;
-    noise->maxValue = minLimitNoise->max_broken_value(noise->yMultiplier);
+    noise->min_limit_noise = min_limit_noise;
+    noise->max_limit_noise = max_limit_noise;
+    noise->main_noise = main_noise;
+    noise->xz_scale = xz_scale;
+    noise->y_scale = y_scale;
+    noise->xz_factor = xz_factor;
+    noise->y_factor = y_factor;
+    noise->smear_scale_multiplier = smear_scale_multiplier;
+    noise->xz_multiplier = 684.412 * noise->xz_scale;
+    noise->y_multiplier = 684.412 * noise->y_scale;
+    noise->max_value = min_limit_noise->max_broken_value(noise->y_multiplier);
     return noise;
 }
 
@@ -39,19 +39,19 @@ auto BlendedNoise::_destroy() const -> void {
     hwopt::util::mi_delete(this);
 }
 
-auto BlendedNoise::compute(const double limitX, const double limitY, const double limitZ) const -> double {
-    const double mainX = limitX / this->xzFactor;
-    const double mainY = limitY / this->yFactor;
-    const double mainZ = limitZ / this->xzFactor;
-    const double limitSmear = this->yMultiplier * this->smearScaleMultiplier;
-    const double mainSmear = limitSmear / this->yFactor;
+auto BlendedNoise::compute(const double limit_x, const double limit_y, const double limit_z) const -> double {
+    const double mainX = limit_x / this->xz_factor;
+    const double mainY = limit_y / this->y_factor;
+    const double mainZ = limit_z / this->xz_factor;
+    const double limitSmear = this->y_multiplier * this->smear_scale_multiplier;
+    const double mainSmear = limitSmear / this->y_factor;
     double blend_min = 0.0F;
     double blend_max = 0.0F;
     double main_noise_value = 0.0F;
     double pow = 1.0F;
 
     for (int i = 0; i < 8; ++i) {
-        if (const ImprovedNoise* noise = this->mainNoise->get_octave_noise(i)) {
+        if (const ImprovedNoise* noise = this->main_noise->get_octave_noise(i)) {
             main_noise_value += noise->noise(PerlinNoise::wrap(mainX * pow), PerlinNoise::wrap(mainY * pow), PerlinNoise::wrap(mainZ * pow), mainSmear * pow, mainY * pow) / pow;
         }
         pow *= 0.5F;
@@ -63,19 +63,19 @@ auto BlendedNoise::compute(const double limitX, const double limitY, const doubl
     pow = 1.0F;
 
     for (int i = 0; i < 16; ++i) {
-        const double wx = PerlinNoise::wrap(limitX * pow);
-        const double wy = PerlinNoise::wrap(limitY * pow);
-        const double wz = PerlinNoise::wrap(limitZ * pow);
+        const double wx = PerlinNoise::wrap(limit_x * pow);
+        const double wy = PerlinNoise::wrap(limit_y * pow);
+        const double wz = PerlinNoise::wrap(limit_z * pow);
         const double yScalePow = limitSmear * pow;
         if (!isMax) {
-            if (const ImprovedNoise* min_noise = this->minLimitNoise->get_octave_noise(i)) {
-                blend_min += min_noise->noise(wx, wy, wz, yScalePow, limitY * pow) / pow;
+            if (const ImprovedNoise* min_noise = this->min_limit_noise->get_octave_noise(i)) {
+                blend_min += min_noise->noise(wx, wy, wz, yScalePow, limit_y * pow) / pow;
             }
         }
 
         if (!isMin) {
-            if (const ImprovedNoise* max_noise = this->maxLimitNoise->get_octave_noise(i)) {
-                blend_max += max_noise->noise(wx, wy, wz, yScalePow, limitY * pow) / pow;
+            if (const ImprovedNoise* max_noise = this->max_limit_noise->get_octave_noise(i)) {
+                blend_max += max_noise->noise(wx, wy, wz, yScalePow, limit_y * pow) / pow;
             }
         }
         pow *= 0.5F;

@@ -166,7 +166,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
-    <ClCompile Include="Minecraft\AABB.cpp" />
+    <ClCompile Include="Minecraft\Entity\AABB.cpp" />
+    <ClCompile Include="Minecraft\Chunk\Beardifier.cpp" />
     <ClCompile Include="Minecraft\Block\BlockIdRegistry.cpp" />
     <ClCompile Include="Minecraft\Math.cpp" />
     <ClCompile Include="Minecraft\Noise\BlendedNoise.cpp" />
@@ -176,7 +177,8 @@
     <ClCompile Include="Minecraft\Noise\SimplexNoise.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Minecraft\AABB.hpp" />
+    <ClInclude Include="Minecraft\Entity\AABB.hpp" />
+    <ClInclude Include="Minecraft\Chunk\Beardifier.hpp" />
     <ClInclude Include="Minecraft\Block\BlockIdRegistry.hpp" />
     <ClInclude Include="Minecraft\Math.hpp" />
     <ClInclude Include="Minecraft\Noise\BlendedNoise.hpp" />

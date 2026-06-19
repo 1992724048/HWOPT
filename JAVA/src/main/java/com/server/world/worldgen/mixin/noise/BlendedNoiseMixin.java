@@ -1,4 +1,4 @@
-package com.worldgen.mixin.noise;
+package com.server.world.worldgen.mixin.noise;
 
 import com.google.common.annotations.VisibleForTesting;
 import library.dll.BlendedNoiseNative;

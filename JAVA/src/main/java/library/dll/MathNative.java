@@ -30,8 +30,12 @@ public interface MathNative extends AutoCloseable {
 	@Static
 	@Name("Math::clamped_lerp")
 	double clamped_lerp(double factor, double min, double max);
-
+	
 	@Static
 	@Name("Math::batch_trilerp")
 	void batch_trilerp(double n000, double n100, double n010, double n110, double n001, double n101, double n011, double n111, int cellWidth, int cellHeight, double[] output);
+	
+	@Static
+	@Name("Beardifier::batch_compute")
+	void batch_beardifier(int cellStartBlockX, int cellStartBlockY, int cellStartBlockZ, int cellWidth, int cellHeight, int[] piecesBox, int[] piecesMeta, int[] junctionsData, int affectedMinX, int affectedMinY, int affectedMinZ, int affectedMaxX, int affectedMaxY, int affectedMaxZ, double[] output);
 }

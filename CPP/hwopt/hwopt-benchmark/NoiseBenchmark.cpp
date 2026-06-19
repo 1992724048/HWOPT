@@ -427,13 +427,13 @@ protected:
 
 TEST_F(BlendedNoiseTest, CreateDestroy) {
     ASSERT_NE(blended, nullptr);
-    EXPECT_EQ(blended->minLimitNoise, minLimit);
-    EXPECT_EQ(blended->maxLimitNoise, maxLimit);
-    EXPECT_EQ(blended->mainNoise, mainNoise);
-    EXPECT_DOUBLE_EQ(blended->xzScale, 0.25);
-    EXPECT_DOUBLE_EQ(blended->yScale, 0.125);
-    EXPECT_DOUBLE_EQ(blended->xzMultiplier, 684.412 * 0.25);
-    EXPECT_DOUBLE_EQ(blended->yMultiplier, 684.412 * 0.125);
+    EXPECT_EQ(blended->min_limit_noise, minLimit);
+    EXPECT_EQ(blended->max_limit_noise, maxLimit);
+    EXPECT_EQ(blended->main_noise, mainNoise);
+    EXPECT_DOUBLE_EQ(blended->xz_scale, 0.25);
+    EXPECT_DOUBLE_EQ(blended->y_scale, 0.125);
+    EXPECT_DOUBLE_EQ(blended->xz_multiplier, 684.412 * 0.25);
+    EXPECT_DOUBLE_EQ(blended->y_multiplier, 684.412 * 0.125);
 }
 
 TEST_F(BlendedNoiseTest, ComputeNonZero) {

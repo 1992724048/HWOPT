@@ -36,10 +36,13 @@
     <ClCompile Include="Minecraft\Math.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Minecraft\AABB.cpp">
+    <ClCompile Include="Minecraft\Entity\AABB.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Minecraft\Noise\BlendedNoise.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Minecraft\Chunk\Beardifier.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
@@ -68,10 +71,13 @@
     <ClInclude Include="Minecraft\Math.hpp">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Minecraft\AABB.hpp">
+    <ClInclude Include="Minecraft\Entity\AABB.hpp">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Minecraft\Noise\BlendedNoise.hpp">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Minecraft\Chunk\Beardifier.hpp">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

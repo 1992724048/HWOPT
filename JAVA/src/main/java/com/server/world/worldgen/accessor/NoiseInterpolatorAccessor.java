@@ -1,4 +1,4 @@
-package com.worldgen.accessor;
+package com.server.world.worldgen.accessor;
 
 import net.minecraft.world.level.levelgen.NoiseChunk;
 import org.spongepowered.asm.mixin.Mixin;
