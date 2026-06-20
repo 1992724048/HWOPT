@@ -9,6 +9,7 @@
   <Project Path="../../../Library/parallel_hashmap/parallel_hashmap.vcxitems" Id="fb975bce-5eab-4257-92f9-8a19bf995845" />
   <Project Path="../../../Library/Proxy/Proxy.vcxitems" Id="905677dd-4820-42c2-b2e1-53fa07d75da4" />
   <Project Path="../../../Library/stdpp/stdpp.vcxitems" Id="83123dd2-7a7e-496b-9b5d-e426d0ee48e3" />
+  <Project Path="../../../Library/vulkan/vulkan.vcxitems" Id="177ffa04-01b8-49c2-84fa-8a33c9fabf0f" />
   <Project Path="../../Fortran/Fortran.vfproj" Type="6989167d-11e4-40fe-8c1a-2192a86a7e90" />
   <Project Path="hwopt-benchmark/hwopt-benchmark.vcxproj" Id="a1b2c3d4-e5f6-7890-abcd-ef1234567890" />
   <Project Path="hwopt-sycl/hwopt-sycl.vcxproj" Id="1573e81b-39c2-400a-8587-1462df388ac9" />

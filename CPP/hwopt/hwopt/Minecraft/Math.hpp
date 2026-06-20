@@ -4,7 +4,7 @@
 #include "glm/vec3.hpp"
 
 namespace minecraft::math {
-    class Math final : JavaNative<Math> {
+    class HWOPT_API Math final : JavaNative<Math> {
     public:
         Math();
         static auto add_methods() -> void;

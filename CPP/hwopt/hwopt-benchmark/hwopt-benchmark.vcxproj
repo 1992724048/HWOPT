@@ -35,6 +35,8 @@
   <ImportGroup Label="Shared">
     <Import Project="..\..\..\..\Library\gtest\gtest.vcxitems" Label="Shared" />
     <Import Project="..\..\..\..\Library\stdpp\stdpp.vcxitems" Label="Shared" />
+    <Import Project="..\..\..\..\Library\glm\glm.vcxitems" Label="Shared" />
+    <Import Project="..\..\..\..\Library\mimalloc\mimalloc.vcxitems" Label="Shared" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -68,12 +70,13 @@
       <Optimization>Disabled</Optimization>
       <FloatingPointModel>Precise</FloatingPointModel>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <AdditionalIncludeDirectories>..\hwopt-sycl;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)..\..\JAVA\src\main\resources\native\win64\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>hwopt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(OutDir);$(SolutionDir)..\..\JAVA\src\main\resources\native\win64\;C:\SDK\VulkanSDK\1.4.350.0\Lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>hwopt.lib;hwopt-sycl.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -98,19 +101,24 @@
       <EnableEnhancedInstructionSet>ARROWLAKE-S</EnableEnhancedInstructionSet>
       <GenerateAlternateCodePaths>None</GenerateAlternateCodePaths>
       <UseProcessorExtensions>None</UseProcessorExtensions>
+      <AdditionalIncludeDirectories>..\hwopt-sycl;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SetChecksum>true</SetChecksum>
-      <AdditionalLibraryDirectories>$(SolutionDir)..\..\JAVA\src\main\resources\native\win64\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>hwopt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(OutDir);$(SolutionDir)..\..\JAVA\src\main\resources\native\win64\;C:\SDK\VulkanSDK\1.4.350.0\Lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>hwopt-sycl.lib;hwopt.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="MathBenchmark.cpp" />
     <ClCompile Include="NoiseBenchmark.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\hwopt-sycl\hwopt-sycl.vcxproj">
+      <Project>{1573e81b-39c2-400a-8587-1462df388ac9}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\hwopt\hwopt.vcxproj">
       <Project>{8336a515-3f32-4610-bf87-3ccfb9350a8b}</Project>
     </ProjectReference>
@@ -118,5 +126,6 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <Target Name="CopyDll" AfterTargets="Build">
     <Copy SourceFiles="$(SolutionDir)..\..\JAVA\src\main\resources\native\win64\hwopt.dll" DestinationFolder="$(OutDir)" Condition="Exists('$(SolutionDir)..\..\JAVA\src\main\resources\native\win64\hwopt.dll')" />
+    <Copy SourceFiles="$(SolutionDir)..\..\JAVA\src\main\resources\native\win64\hwopt-sycl.dll" DestinationFolder="$(OutDir)" Condition="Exists('$(SolutionDir)..\..\JAVA\src\main\resources\native\win64\hwopt-sycl.dll')" />
   </Target>
 </Project>

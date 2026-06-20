@@ -65,6 +65,21 @@ HWOPT (Hardware Optimization) 是一个 Minecraft 优化模组，使用 C++ 重�
 
 - SYCL 是单源 C++ 编程模型，可直接在 C++ 代码中编写 GPU 核函数，无需学习 GLSL/HLSL 等着色器语言，代码复用和移植成本更低。Vulkan 计算着色器需要管理复杂的管线状态、内存屏障和描述符集，开发效率较低。SYCL 的 C++ 集成度和跨平台性显著优于 Vulkan。
 
+3. SYCL 相较于 Vulkan 有项目性能优势吗？
+
+- **是。** 同硬件基准测试中，SYCL + Level Zero 在 Intel iGPU 上的 f32 吞吐达 55,556 次/s，是 Vulkan f32 (10,183 次/s) 的 **5.4 倍**。
+- **测试环境：** Intel Core Ultra 9 285K (iGPU) + Intel oneAPI 2026.0 (SYCL) / Vulkan 1.4.350
+- **数据量：** 32³（32768 点）× 10000 次迭代
+
+  | 组合                  | 设备                    |  精度   |   内存   |   总耗时   |    每次     |      吞吐       |
+  | --------------------- | ----------------------- | :-----: | :------: | :--------: | :---------: | :-------------: |
+  | Vulkan                | Ultra 9 285K (iGPU)     |   f32   |   系统   |   982 ms   |   98.2 μs   |   10,183 次/s   |
+  | **SYCL + Level Zero** | **Ultra 9 285K (iGPU)** | **f32** | **系统** | **180 ms** | **18.0 μs** | **55,556 次/s** |
+  | SYCL + Level Zero     | Ultra 9 285K (iGPU)     |   f64   |   系统   |   695 ms   |   69.5 μs   |   14,388 次/s   |
+  | Vulkan                | AMD RX 6600             |   f32   |   系统   |   941 ms   |   94.1 μs   |   10,627 次/s   |
+
+- **复现：** 测试代码见 `CPP/hwopt/hwopt-benchmark/MathBenchmark.cpp`，具备对应硬件和工具链者可自行复测。
+
 ## 快速开始
 
 ### 前置要求

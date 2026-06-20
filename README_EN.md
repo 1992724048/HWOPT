@@ -65,6 +65,21 @@ HWOPT (Hardware Optimization) is a Minecraft optimization mod that rewrites vani
 
 - SYCL is a single-source C++ programming model that allows writing GPU kernels directly in C++ code, eliminating the need to learn shader languages like GLSL/HLSL, reducing code duplication and porting costs. Vulkan compute shaders require managing complex pipeline states, memory barriers, and descriptor sets, resulting in lower development efficiency. For a mod like Minecraft that involves heavy algorithm porting, SYCL's C++ integration and cross-platform support are significantly superior to Vulkan.
 
+3. Does SYCL have a performance advantage over Vulkan for this project?
+
+- **Yes.** On the same Intel iGPU, SYCL + Level Zero achieves 55,556 ops/s (f32) — **5.4×** the throughput of Vulkan f32 (10,183 ops/s).
+- **Test environment:** Intel Core Ultra 9 285K (iGPU) + Intel oneAPI 2026.0 (SYCL) / Vulkan 1.4.350
+- **Workload:** 32³ (32,768 points) × 10,000 iterations
+
+  | Combination | Device | Precision | Memory | Total | Per call | Throughput |
+  |-------------|--------|:---------:|:------:|:-----:|:--------:|:----------:|
+  | Vulkan | Ultra 9 285K (iGPU) | f32 | Host | 982 ms | 98.2 μs | 10,183 ops/s |
+  | **SYCL + Level Zero** | **Ultra 9 285K (iGPU)** | **f32** | **Host** | **180 ms** | **18.0 μs** | **55,556 ops/s** |
+  | SYCL + Level Zero | Ultra 9 285K (iGPU) | f64 | Host | 695 ms | 69.5 μs | 14,388 ops/s |
+  | Vulkan | AMD RX 6600 | f32 | Host | 941 ms | 94.1 μs | 10,627 ops/s |
+
+- **Reproduce:** Test code at `CPP/hwopt/hwopt-benchmark/MathBenchmark.cpp`, anyone with compatible hardware and toolchain can re-run the benchmarks.
+
 ## Quick Start
 
 ### Prerequisites

@@ -3,7 +3,7 @@
 #include "../../JavaNative.hpp"
 
 namespace minecraft::aabb {
-    class AABB final : JavaNative<AABB> {
+    class HWOPT_API AABB final : JavaNative<AABB> {
     public:
         double min_x;
         double min_y;

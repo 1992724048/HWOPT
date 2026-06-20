@@ -42,5 +42,6 @@ namespace sycl {
 
         static auto get_device() -> std::expected<std::vector<DeviceInfo>, std::string>;
         static auto get_default_device_info() -> std::optional<DeviceInfo>;
+        static auto log_devices() -> void;
     };
 } // namespace sycl

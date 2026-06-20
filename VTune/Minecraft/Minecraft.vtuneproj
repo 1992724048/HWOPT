@@ -30,8 +30,8 @@
        <result_directory.path>E:\CODE\HWOPT\VTune\Minecraft\r@@@{at}</result_directory.path>
        <use_app_dir_as_work_dir type="bool">true</use_app_dir_as_work_dir>
        <launch_app.app_to_launch>E:\CODE\HWOPT\CPP\hwopt\x64-Release\hwopt-benchmark.exe</launch_app.app_to_launch>
-       <launch_app.app_parameters></launch_app.app_parameters>
        <launch.userappworkdir></launch.userappworkdir>
+       <launch_app.app_parameters>--gtest_filter=MathBenchmark.BatchTrilerp_16</launch_app.app_parameters>
        <launch_app.working_folder>E:\CODE\HWOPT\CPP\hwopt\x64-Release</launch_app.working_folder>
        <context>
         <contextValue>

@@ -42,7 +42,7 @@ struct MethodThunk<Fn> {
     }
 };
 
-class JavaNativeBase {
+class HWOPT_API JavaNativeBase {
 protected:
     ~JavaNativeBase() = default;
 public:

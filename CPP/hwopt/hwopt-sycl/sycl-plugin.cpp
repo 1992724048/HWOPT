@@ -13,6 +13,7 @@
 #include <unordered_map>
 #include <utility>
 #include <vector>
+#include <magic_enum/magic_enum.hpp>
 
 #include "sycl-plugin.h"
 #include "sycl-memory.h"
@@ -276,4 +277,20 @@ auto Device::get_default_device_info() -> std::optional<DeviceInfo> {
     }
 
     return DeviceInfo{.type = type, .name = dev.get_info<::sycl::info::device::name>(), .platform = dev.get_platform().get_info<::sycl::info::platform::name>()};
+}
+
+auto Device::log_devices() -> void {
+    const auto exp = get_device();
+    if (!exp) {
+        return;
+    }
+
+    std::stringstream ss;
+    ss << "设备列表:";
+
+    for (const auto& [type, name, platform] : exp.value()) {
+        ss << "\n\t\t" << magic_enum::enum_name<DeviceType>(type) << ": " << name << " (" << platform << ")";
+    }
+
+    ILOG << ss.str();
 }

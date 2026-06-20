@@ -5,7 +5,7 @@
 #include "parallel_hashmap/phmap.h"
 
 namespace minecraft::block {
-    class BlockIdRegistry final : JavaNative<BlockIdRegistry> {
+    class HWOPT_API BlockIdRegistry final : JavaNative<BlockIdRegistry> {
     public:
         BlockIdRegistry();
 
