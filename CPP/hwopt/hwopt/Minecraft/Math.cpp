@@ -115,24 +115,26 @@ auto Math::batch_trilerp(const double n000,
         z_fracs[i] = f;
     }
 
+    #pragma omp simd
     for (int iy = cell_height - 1; iy >= 0; --iy) {
         const double dy = static_cast<double>(iy) / static_cast<double>(cell_height);
         const double ly = 1.0 - dy;
         const double hy = dy;
-        const double v00 = n000 * ly + n010 * hy;
-        const double v10 = n100 * ly + n110 * hy;
-        const double v01 = n001 * ly + n011 * hy;
-        const double v11 = n101 * ly + n111 * hy;
+        const double v00 = (n000 * ly) + (n010 * hy);
+        const double v10 = (n100 * ly) + (n110 * hy);
+        const double v01 = (n001 * ly) + (n011 * hy);
+        const double v11 = (n101 * ly) + (n111 * hy);
 
+        #pragma omp simd
         for (int ix = 0; ix < cell_width; ++ix) {
             const double dx = x_fracs[ix];
             const double lx = 1.0 - dx;
             const double hx = dx;
-            const double z0 = v00 * lx + v10 * hx;
-            const double z1 = v01 * lx + v11 * hx;
+            const double z0 = (v00 * lx) + (v10 * hx);
+            const double z1 = (v01 * lx) + (v11 * hx);
 
             for (int iz = 0; iz < cell_width; ++iz) {
-                output[idx++] = z0 + z_fracs[iz] * (z1 - z0);
+                output[idx++] = z0 + (z_fracs[iz] * (z1 - z0));
             }
         }
     }

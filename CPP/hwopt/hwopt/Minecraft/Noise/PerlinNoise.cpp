@@ -54,6 +54,7 @@ auto PerlinNoise::get_value(const double x, const double y, const double z, cons
     const auto& nl = this->noise_levels_;
     const auto& amp = this->amplitudes_;
 
+    #pragma omp simd
     for (size_t i = 0; i < nl.size(); i++) {
         if (amp[i] != 0.0) {
             const double t = factor;
@@ -74,6 +75,8 @@ auto PerlinNoise::get_values(const double* xs, int xs_len, const double* ys, int
 auto PerlinNoise::edge_value(const double noise_value) const -> double {
     double value = 0.0;
     double value_factor = this->lowest_freq_value_factor_;
+
+    #pragma omp simd
     for (const double i : this->amplitudes_) {
         if (i != 0.0) {
             value += i * noise_value * value_factor;
