@@ -71,13 +71,13 @@ static auto pick_device() -> std::optional<sycl::device> {
         const auto backend = d.get_platform().get_backend();
 
         if (backend == sycl::backend::ext_oneapi_level_zero) {
-            score += 100;
+            score += 50;
         } else if (backend == sycl::backend::ext_oneapi_cuda) {
             score += 90;
         } else if (backend == sycl::backend::ext_oneapi_hip) {
             score += 80;
         } else if (backend == sycl::backend::opencl) {
-            score += 50;
+            score += 100;
         }
 
         if (d.is_gpu()) {

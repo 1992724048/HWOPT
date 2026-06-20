@@ -27,7 +27,7 @@ protected:
     }
 };
 
-TEST_F(MathBenchmark, BatchTrilerp_16) {
+TEST_F(MathBenchmark, BatchTrilerp_32) {
     init_sycl_device();
     constexpr int CELL_W = 32;
     constexpr int CELL_H = 32;
