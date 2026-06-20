@@ -46,18 +46,24 @@ HWOPT (Hardware Optimization) is a Minecraft optimization mod that rewrites vani
 
 | Mod Version | Windows | Linux | Intel CPU | Intel iGPU | Intel dGPU | AMD CPU | AMD iGPU | AMD dGPU | NVIDIA dGPU |
 | ----------- | ------- | ----- | --------- | ---------- | ---------- | ------- | -------- | -------- | ----------- |
-| 26.1.x | ✓ | ✕ | ✓ | 11th Gen+ | ✓ | ✓ | ✕ | ✕ | CUDA 12.0+ |
+| 26.1.x | ≥10 19H1 | ✕ | AVX2 | 11th Gen+ | ✓ | AVX2 | ✕ | ✕ | CUDA 12.0+* |
 
 - `Intel 11th Gen and earlier`/`AMD`/`NVIDIA` — no hardware available for testing; table content is based on documentation references
 - Basic CPU functionality: any qualifying CPU works
-- SYCL/DPC++ (GPU acceleration): requires a qualifying GPU
+- SYCL/DPC++ (GPU acceleration): requires compatible hardware, drivers, and runtime — see [Intel oneAPI System Requirements](https://www.intel.com/content/www/us/en/developer/articles/system-requirements/intel-oneapi-base-toolkit-system-requirements.html) for details
 - Mod version format: `year/feature version/revision`
+- Pre-built binaries are Windows x64 only; self-compilation enables Linux support and other GPU backends
+- `*` NVIDIA/AMD GPU backends rely on Codeplay plugins, which have been discontinued — future updates may be affected
 
 #### FAQ
 
 1. Why is this more suitable for `iGPU` than `dGPU`?
 
-- This mod uniformly uses `host` memory. Compared to `device` or `shared` memory, this avoids the copy overhead to the `device`, making it better suited for `iGPU`s where system memory doubles as VRAM. Modern `iGPUs` are typically connected via the `Ring Bus` rather than PCIE, and come with large caches. `iGPUs` can directly access system memory through the `Ring Bus` (some models have L3/L4 caches) without copying. This approach is unsuitable for `dGPUs` connected via PCIE due to latency and frequent copy issues.
+- In the SYCL programming model, there are three memory types: `host` memory (system RAM), `device` memory (VRAM), and `shared` memory (automatically migrated by the driver, but still incurs implicit copies). Most GPU acceleration solutions use `device` memory, requiring repeated data copies between system RAM and VRAM at a high cost. `shared` memory simplifies programming but still relies on driver-level data migration and cannot fully eliminate copies. This mod uniformly uses `host` memory, completely avoiding such copy overhead, making it especially favorable for `iGPU`s where system memory doubles as VRAM. Modern `iGPUs` are typically connected via the `Ring Bus` rather than PCIE, and come with large caches, allowing direct access to system memory (some models even feature L3/L4 caches) without additional copying. In contrast, `dGPUs` connected via PCIE suffer from higher latency and mandatory frequent data transfers, making this approach unsuitable.
+
+2. Why choose SYCL over Vulkan compute shaders?
+
+- SYCL is a single-source C++ programming model that allows writing GPU kernels directly in C++ code, eliminating the need to learn shader languages like GLSL/HLSL, reducing code duplication and porting costs. Vulkan compute shaders require managing complex pipeline states, memory barriers, and descriptor sets, resulting in lower development efficiency. For a mod like Minecraft that involves heavy algorithm porting, SYCL's C++ integration and cross-platform support are significantly superior to Vulkan.
 
 ## Quick Start
 

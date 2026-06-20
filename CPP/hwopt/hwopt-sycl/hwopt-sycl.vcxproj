@@ -12,14 +12,15 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
-    <ClCompile Include="Minecraft\Noise\ImprovedNoise.cpp" />
-    <ClCompile Include="Minecraft\Noise\PerlinNoise.cpp" />
+    <ClCompile Include="Minecraft\Math.cpp" />
+    <ClCompile Include="sycl-memory.cpp" />
+    <ClCompile Include="sycl-plugin.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Minecraft\Noise\ImprovedNoise.h" />
-    <ClInclude Include="Minecraft\Noise\PerlinNoise.h" />
+    <ClInclude Include="Minecraft\Math.hpp" />
     <ClInclude Include="sycl-plugin.h" />
-    <ClInclude Include="sycl-queue.h" />
+    <ClInclude Include="sycl-memory.h" />
+    <ClInclude Include="sycl-state.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{1573e81b-39c2-400a-8587-1462df388ac9}</ProjectGuid>
@@ -117,6 +118,7 @@
       <SpecifySyclTargets>Default</SpecifySyclTargets>
       <SpecifySyclForceTarget>No</SpecifySyclForceTarget>
       <AdditionalIncludeDirectories>.\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <SYCLShowVerboseInformation>true</SYCLShowVerboseInformation>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -124,8 +126,9 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SpecifyCPUTargetForAOT>Default</SpecifyCPUTargetForAOT>
-      <SpecifySyclLink>false</SpecifySyclLink>
-      <ExposeExportedSymbols>false</ExposeExportedSymbols>
+      <SpecifySyclLink>
+      </SpecifySyclLink>
+      <ExposeExportedSymbols>true</ExposeExportedSymbols>
       <AdditionalDependencies>User32.lib;dbghelp.lib;ntdll.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SYCLShowVerboseInformation>true</SYCLShowVerboseInformation>
     </Link>

@@ -2,6 +2,8 @@ package nativecode.dll;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.foreign.*;
+import java.lang.invoke.MethodHandle;
 import java.net.JarURLConnection;
 import java.net.URL;
 import java.nio.file.*;

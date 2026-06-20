@@ -34,6 +34,8 @@ logs
 packages
 NativeDll
 net
+sycl-jit.dll
+common_clang64.dll
 
 repo
 *.tlog

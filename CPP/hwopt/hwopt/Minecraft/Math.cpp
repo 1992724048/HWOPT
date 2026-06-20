@@ -2,7 +2,10 @@
 #include <array>
 #include <windows.h>
 
+#include "Minecraft/Math.hpp"
 #include "sycl-plugin.h"
+
+#include "../Global.hpp"
 
 using namespace minecraft::math;
 
@@ -106,6 +109,13 @@ auto Math::batch_trilerp(const double n000,
                          const int cell_height,
                          double* output,
                          const int output_len) -> void {
+    if (hwopt::global::handle.id != 0) {
+        static const ::sycl::HostMemory<double> output_data(output_len, hwopt::global::handle);
+        sycl::Math::batch_trilerp(hwopt::global::handle, n000, n100, n010, n110, n001, n101, n011, n111, cell_width, cell_height, output_data);
+        std::memcpy(output, output_data.ptr, output_len * sizeof(double));
+        return;
+    }
+
     int idx = 0;
     std::array<double, 16> x_fracs{};
     std::array<double, 16> z_fracs{};

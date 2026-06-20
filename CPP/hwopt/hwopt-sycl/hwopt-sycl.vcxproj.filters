@@ -18,10 +18,13 @@
     <ClCompile Include="dllmain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Minecraft\Noise\PerlinNoise.cpp">
+    <ClCompile Include="sycl-plugin.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Minecraft\Noise\ImprovedNoise.cpp">
+    <ClCompile Include="sycl-memory.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Minecraft\Math.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -29,13 +32,13 @@
     <ClInclude Include="sycl-plugin.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="sycl-queue.h">
+    <ClInclude Include="sycl-memory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Minecraft\Noise\PerlinNoise.h">
+    <ClInclude Include="sycl-state.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Minecraft\Noise\ImprovedNoise.h">
+    <ClInclude Include="Minecraft\Math.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

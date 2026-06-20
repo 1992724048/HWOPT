@@ -44,20 +44,26 @@ HWOPT (Hardware Optimization) 是一个 Minecraft 优化模组，使用 C++ 重�
 
 #### 操作系统、硬件支持情况
 
-| MOD版本 | Windows | Linux | Intel CPU | Intel iGPU | Intel dGPU | AMD CPU | AMD iGPU | AMD dGPU | NVIDIA dGPU     |
-| ------- | ------- | ----- | --------- | ---------- | ---------- | ------- | -------- | -------- | --------------- |
-| 26.1.x  | ✓       | ✕     | ✓         | 11代及以上 | ✓          | ✓       | ✕        | ✕        | CUDA 12.0及以上 |
+| MOD版本 | Windows  | Linux | Intel CPU | Intel iGPU | Intel dGPU | AMD CPU | AMD iGPU | AMD dGPU | NVIDIA dGPU  |
+| ------- | -------- | ----- | --------- | ---------- | ---------- | ------- | -------- | -------- | ------------ |
+| 26.1.x  | ≥10 19H1 | ✕     | AVX2      | 11th Gen+  | ✓          | AVX2    | ✕        | ✕        | CUDA 12.0+\* |
 
 - `Intel 11代及更早`/`AMD`/`NVIDIA` 无硬件平台进行测试，表格内容仅为相关文档资料参考
 - 基础功能 CPU 满足任意条件即可
-- SYCL/DPC++ (GPU加速) 需要 GPU 满足任意条件
+- SYCL/DPC++ (GPU加速) 需要硬件、驱动、运行时支持，详情参见 [Intel oneAPI 系统要求](https://www.intel.com/content/www/us/en/developer/articles/system-requirements/intel-oneapi-base-toolkit-system-requirements.html)
 - MOD版本号为 `年份/功能版本/修订版本`
+- 预编译二进制仅提供 Windows x64；自行编译可支持 Linux 及其他 GPU 后端
+- `*` NVIDIA/AMD GPU 后端基于 Codeplay 插件，该插件已停止分发，后续更新可能受影响
 
 #### 常见问题
 
 1. 为什么更适合 `iGPU` 而不是 `dGPU`？
 
-- 本模组统一使用 `host` 内存。相较于 `device` 或 `shared` 内存，省去了向设备拷贝数据的开销，因此对"内存即显存"的 `iGPU` 更为友好。现代 `iGPU` 通常通过 `Ring Bus` 总线（而非 `PCIE`）连接，并配备大容量缓存，可直接访问系统内存（部分型号还带有 `L3`/`L4` 缓存），无需额外拷贝。而 `dGPU` 通过 `PCIE` 连接和传输数据，延迟较高且需频繁拷贝，该方案并不适合。
+- 在 SYCL 编程模型中，内存模型分为三类：`host` 内存（即系统内存）、`device` 内存（即显存/VRAM）和 `shared` 内存（由驱动自动迁移，但仍存在隐式拷贝）。多数 GPU 加速方案使用 `device` 内存，需要反复在系统内存与显存之间拷贝数据，开销较大；`shared` 内存虽简化了编程，但底层仍依赖驱动进行数据迁移，无法彻底消除拷贝。本模组统一使用 `host` 内存，彻底省去了这部分拷贝开销，因此对"内存即显存"的 `iGPU`（核显）尤为友好。现代 `iGPU` 通常通过 `Ring Bus` 总线（而非 `PCIE`）与 CPU 相连，并配备大容量缓存，可直接访问系统内存（部分型号还带有 `L3`/`L4` 缓存），无需额外拷贝。而 `dGPU`（独显）通过 `PCIE` 连接，延迟较高且必须频繁拷贝数据，该方案并不适合。
+
+2. 为什么选择 SYCL 而不是 Vulkan 计算着色器？
+
+- SYCL 是单源 C++ 编程模型，可直接在 C++ 代码中编写 GPU 核函数，无需学习 GLSL/HLSL 等着色器语言，代码复用和移植成本更低。Vulkan 计算着色器需要管理复杂的管线状态、内存屏障和描述符集，开发效率较低。SYCL 的 C++ 集成度和跨平台性显著优于 Vulkan。
 
 ## 快速开始
 

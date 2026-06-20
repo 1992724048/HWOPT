@@ -96,13 +96,13 @@
       <IntrinsicFunctions>false</IntrinsicFunctions>
       <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
       <StringPooling>false</StringPooling>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <FunctionLevelLinking>false</FunctionLevelLinking>
       <FloatingPointModel>Precise</FloatingPointModel>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <AdditionalIncludeDirectories>..\hwopt-sycl\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <FloatingPointExceptions>true</FloatingPointExceptions>
-      <GuardEHContMetadata>true</GuardEHContMetadata>
-      <ControlFlowGuard>Guard</ControlFlowGuard>
+      <FloatingPointExceptions>false</FloatingPointExceptions>
+      <GuardEHContMetadata>false</GuardEHContMetadata>
+      <ControlFlowGuard>false</ControlFlowGuard>
       <EnableAddressSanitizer>false</EnableAddressSanitizer>
       <EnableUndefinedBehaviorSanitizer>false</EnableUndefinedBehaviorSanitizer>
       <OpenMPOffloading>None</OpenMPOffloading>
@@ -177,6 +177,7 @@
     <ClCompile Include="Minecraft\Noise\SimplexNoise.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Global.hpp" />
     <ClInclude Include="Minecraft\Entity\AABB.hpp" />
     <ClInclude Include="Minecraft\Chunk\Beardifier.hpp" />
     <ClInclude Include="Minecraft\Block\BlockIdRegistry.hpp" />

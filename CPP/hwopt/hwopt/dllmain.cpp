@@ -9,10 +9,14 @@
 #include <ostream>
 #include <sstream>
 #include <expected>
+#include <utility>
 
 #include <magic_enum/magic_enum.hpp>
 #include <sycl-plugin.h>
 #include <stdpp/logger.h>
+#include <format>
+
+#include "Global.hpp"
 #include "JavaNative.hpp"
 
 using namespace std::chrono_literals;
@@ -39,7 +43,7 @@ auto APIENTRY DllMain(HMODULE hModule, const DWORD ul_reason_for_call, LPVOID lp
 }
 
 auto init_sycl_device() -> void {
-    auto exp = stdpp::sycl::Device::get_device();
+    auto exp = sycl::Device::get_device();
     if (!exp) {
         return;
     }
@@ -48,10 +52,16 @@ auto init_sycl_device() -> void {
     ss << "设备列表:";
 
     for (const auto& [type, name, platform] : exp.value()) {
-        ss << "\n\t\t" << magic_enum::enum_name<stdpp::sycl::DeviceType>(type) << ": " << name << " (" << platform << ")";
+        ss << "\n\t\t" << magic_enum::enum_name<sycl::DeviceType>(type) << ": " << name << " (" << platform << ")";
     }
 
     ILOG << ss.str();
+
+    if (auto dev = sycl::Device::create_device()) {
+        hwopt::global::handle = std::move(dev.value());
+    } else {
+        CMSG(CLOG) << dev.error();
+    }
 }
 
 extern "C" API auto JAVA_ResolveFunction(const char* name) -> void* {
