@@ -51,6 +51,8 @@ auto BlendedNoise::compute(const double limit_x, const double limit_y, const dou
     double pow = 1.0F;
 
     #pragma omp simd
+    #pragma unroll
+    #pragma loop_count(8)
     for (int i = 0; i < 8; ++i) {
         if (const ImprovedNoise* noise = this->main_noise->get_octave_noise(i)) {
             main_noise_value += noise->noise(PerlinNoise::wrap(mainX * pow), PerlinNoise::wrap(mainY * pow), PerlinNoise::wrap(mainZ * pow), mainSmear * pow, mainY * pow) / pow;
@@ -64,6 +66,8 @@ auto BlendedNoise::compute(const double limit_x, const double limit_y, const dou
     pow = 1.0F;
 
     #pragma omp simd
+    #pragma unroll
+    #pragma loop_count(16)
     for (int i = 0; i < 16; ++i) {
         const double wx = PerlinNoise::wrap(limit_x * pow);
         const double wy = PerlinNoise::wrap(limit_y * pow);

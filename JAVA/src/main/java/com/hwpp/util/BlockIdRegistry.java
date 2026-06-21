@@ -1,5 +1,7 @@
 package com.hwpp.util;
 
+import it.unimi.dsi.fastutil.objects.Object2ShortOpenHashMap;
+import it.unimi.dsi.fastutil.shorts.Short2ObjectOpenHashMap;
 import library.dll.BlockIdRegistryNative;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.level.block.Block;
@@ -9,11 +11,15 @@ import net.minecraft.world.level.block.state.BlockState;
 import java.util.*;
 
 public class BlockIdRegistry {
-	public static final Map<Short, Block> idToBlock = new HashMap<>();
-	public static final Map<Block, Short> blockToId = new HashMap<>();
+	public static final Short2ObjectOpenHashMap<Block> idToBlock = new Short2ObjectOpenHashMap<>();
+	public static final Object2ShortOpenHashMap<Block> blockToId = new Object2ShortOpenHashMap<>();
 	public static BlockState[] blockStates;
 	public static Block[] blocks_;
 	public static short AIR_ID = 0;
+	
+	static {
+		blockToId.defaultReturnValue((short) 0);
+	}
 	
 	public static <ResourceLocation> void init() {
 		List<Block> blocks = new ArrayList<>();
@@ -55,6 +61,6 @@ public class BlockIdRegistry {
 	}
 	
 	public static short getId(Block block) {
-		return blockToId.get(block);
+		return blockToId.getShort(block);
 	}
 }

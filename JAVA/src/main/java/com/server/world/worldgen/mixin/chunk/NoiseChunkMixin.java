@@ -13,6 +13,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.lang.reflect.Method;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Mixin(NoiseChunk.class)
 public abstract class NoiseChunkMixin {
@@ -29,15 +31,23 @@ public abstract class NoiseChunkMixin {
 	private int arrayIndex;
 
 	@Unique
-	private static boolean hwopt$hasInputAndTransform(DensityFunction fn) {
-		try {
-			Method inputM = fn.getClass().getMethod("input");
-			Method xformM = fn.getClass().getMethod("transform", double.class);
-			return inputM.getReturnType() == DensityFunction.class
-				&& xformM.getReturnType() == double.class;
-		} catch (NoSuchMethodException e) {
-			return false;
-		}
+	private static final Map<Class<?>, Method[]> IO_METHOD_CACHE = new ConcurrentHashMap<>();
+
+	@Unique
+	private static Method[] hwopt$getInputTransformMethods(DensityFunction fn) {
+		Class<?> clazz = fn.getClass();
+		return IO_METHOD_CACHE.computeIfAbsent(clazz, c -> {
+			try {
+				Method input = c.getMethod("input");
+				Method transform = c.getMethod("transform", double.class);
+				if (input.getReturnType() == DensityFunction.class
+					&& transform.getReturnType() == double.class) {
+					return new Method[]{input, transform};
+				}
+			} catch (NoSuchMethodException _) {
+			}
+			return null;
+		});
 	}
 
 	@Inject(method = "fillAllDirectly", at = @At("HEAD"), cancellable = true)
@@ -54,13 +64,13 @@ public abstract class NoiseChunkMixin {
 			return;
 		}
 
-		if (hwopt$hasInputAndTransform(function)) {
+		Method[] iom = hwopt$getInputTransformMethods(function);
+		if (iom != null) {
 			try {
-				DensityFunction inputFn = (DensityFunction) function.getClass().getMethod("input").invoke(function);
+				DensityFunction inputFn = (DensityFunction) iom[0].invoke(function);
 				inputFn.fillArray(output, (DensityFunction.ContextProvider) this);
-				Method xformM = function.getClass().getMethod("transform", double.class);
 				for (int i = 0; i < output.length; i++) {
-					output[i] = (double) xformM.invoke(function, output[i]);
+					output[i] = (double) iom[1].invoke(function, output[i]);
 				}
 				this.arrayIndex = output.length;
 				ci.cancel();

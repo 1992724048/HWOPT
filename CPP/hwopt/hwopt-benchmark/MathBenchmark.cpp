@@ -11,24 +11,14 @@
 
 #include "../hwopt-sycl/sycl-plugin.h"
 
-#include "Minecraft/Math.hpp"
-
 class MathBenchmark : public testing::Test {
 protected:
     std::vector<double> output;
 
-    auto SetUp() -> void override {
-        if (hwopt::global::handle.id == 0) {
-            auto dev = sycl::Device::create_device();
-            if (dev.has_value()) {
-                hwopt::global::handle = std::move(*dev);
-            }
-        }
-    }
+    auto SetUp() -> void override {}
 };
 
 TEST_F(MathBenchmark, BatchTrilerp_32) {
-    init_sycl_device();
     constexpr int CELL_W = 32;
     constexpr int CELL_H = 32;
     constexpr int ITERATIONS = 10000;

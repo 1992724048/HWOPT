@@ -4,6 +4,8 @@
 
 #include "ImprovedNoise.hpp"
 
+#include "mimalloc/mimalloc.h"
+
 namespace minecraft::noise {
     class HWOPT_API PerlinNoise final : JavaNative<PerlinNoise> {
     public:
@@ -12,8 +14,8 @@ namespace minecraft::noise {
         double lowest_freq_value_factor_ = 0.0;
         double lowest_freq_input_factor_ = 0.0;
 
-        std::vector<double> amplitudes_;
-        std::vector<ImprovedNoise*> noise_levels_;
+        std::vector<double, mi_stl_allocator<double>> amplitudes_;
+        std::vector<ImprovedNoise*, mi_stl_allocator<ImprovedNoise*>> noise_levels_;
 
         PerlinNoise() = default;
         PerlinNoise(int first_octave, std::span<double> amplitudes, double lowest_freq_value_factor, double lowest_freq_input_factor, double max_value);

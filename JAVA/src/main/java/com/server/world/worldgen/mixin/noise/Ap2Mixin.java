@@ -18,7 +18,10 @@ public abstract class Ap2Mixin {
 	private static final Field ARG2_FIELD;
 	@Unique
 	private static final Field TYPE_FIELD;
-	
+
+	@Unique
+	private static final ThreadLocal<double[]> V2_CACHE = new ThreadLocal<>();
+
 	static {
 		Field a1 = null, a2 = null, t = null;
 		try {
@@ -44,7 +47,11 @@ public abstract class Ap2Mixin {
 			
 			arg1.fillArray(output, contextProvider);
 			
-			double[] v2 = new double[output.length];
+			double[] v2 = V2_CACHE.get();
+			if (v2 == null || v2.length != output.length || v2 == output) {
+				v2 = new double[output.length];
+				V2_CACHE.set(v2);
+			}
 			arg2.fillArray(v2, contextProvider);
 			
 			switch (ordinal) {

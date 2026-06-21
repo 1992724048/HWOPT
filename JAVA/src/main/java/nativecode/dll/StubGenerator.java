@@ -32,6 +32,16 @@ enum StubGenerator {
 	private static final String NATIVE_POINTER = "nativecode/dll/NativePointer";
 	
 	private static final Map<Class<?>, FieldTypeInfo> FIELD_TYPES = Map.of(int.class, new FieldTypeInfo("JAVA_INT", "Ljava/lang/foreign/ValueLayout$OfInt;", "(Ljava/lang/foreign/ValueLayout$OfInt;J)I", "(Ljava/lang/foreign/ValueLayout$OfInt;JI)V", IRETURN, ILOAD), long.class, new FieldTypeInfo("JAVA_LONG", "Ljava/lang/foreign/ValueLayout$OfLong;", "(Ljava/lang/foreign/ValueLayout$OfLong;J)J", "(Ljava/lang/foreign/ValueLayout$OfLong;JJ)V", LRETURN, LLOAD), double.class, new FieldTypeInfo("JAVA_DOUBLE", "Ljava/lang/foreign/ValueLayout$OfDouble;", "(Ljava/lang/foreign/ValueLayout$OfDouble;J)D", "(Ljava/lang/foreign/ValueLayout$OfDouble;JD)V", DRETURN, DLOAD), float.class, new FieldTypeInfo("JAVA_FLOAT", "Ljava/lang/foreign/ValueLayout$OfFloat;", "(Ljava/lang/foreign/ValueLayout$OfFloat;J)F", "(Ljava/lang/foreign/ValueLayout$OfFloat;JF)V", FRETURN, FLOAD), short.class, new FieldTypeInfo("JAVA_SHORT", "Ljava/lang/foreign/ValueLayout$OfShort;", "(Ljava/lang/foreign/ValueLayout$OfShort;J)S", "(Ljava/lang/foreign/ValueLayout$OfShort;JS)V", IRETURN, ILOAD), byte.class, new FieldTypeInfo("JAVA_BYTE", "Ljava/lang/foreign/ValueLayout$OfByte;", "(Ljava/lang/foreign/ValueLayout$OfByte;J)B", "(Ljava/lang/foreign/ValueLayout$OfByte;JB)V", IRETURN, ILOAD), boolean.class, new FieldTypeInfo("JAVA_BOOLEAN", "Ljava/lang/foreign/ValueLayout$OfBoolean;", "(Ljava/lang/foreign/ValueLayout$OfBoolean;J)Z", "(Ljava/lang/foreign/ValueLayout$OfBoolean;JZ)V", IRETURN, ILOAD));
+
+	private record ArrayTypeInfo(int elemSize, String ofArrayDesc, int newArrayOpcode, String fromSpanMethod, String fromSpanDesc) {}
+
+	private static final Map<Class<?>, ArrayTypeInfo> ARRAY_TYPES = Map.of(
+		double.class, new ArrayTypeInfo(8, "([D)Ljava/lang/foreign/MemorySegment;", T_DOUBLE, "fromSpanDouble", "(Ljava/lang/foreign/MemorySegment;)[D"),
+		float.class,  new ArrayTypeInfo(4, "([F)Ljava/lang/foreign/MemorySegment;", T_FLOAT,  "fromSpanFloat",  "(Ljava/lang/foreign/MemorySegment;)[F"),
+		int.class,    new ArrayTypeInfo(4, "([I)Ljava/lang/foreign/MemorySegment;", T_INT,    "fromSpanInt",    "(Ljava/lang/foreign/MemorySegment;)[I"),
+		long.class,   new ArrayTypeInfo(8, "([J)Ljava/lang/foreign/MemorySegment;", T_LONG,   "fromSpanLong",   "(Ljava/lang/foreign/MemorySegment;)[J"),
+		short.class,  new ArrayTypeInfo(2, "([S)Ljava/lang/foreign/MemorySegment;", T_SHORT,  "fromSpanShort",  "(Ljava/lang/foreign/MemorySegment;)[S"),
+		byte.class,   new ArrayTypeInfo(1, "([B)Ljava/lang/foreign/MemorySegment;", T_BYTE,   "fromSpanByte",   "(Ljava/lang/foreign/MemorySegment;)[B"));
 	
 	/**
 	 * 生成接口实现类的字节码。
@@ -220,47 +230,31 @@ enum StubGenerator {
 	private static void emitFieldArrayMethod(ClassWriter cw, String implName, Method m, FieldArray fa) {
 		Class<?> rt = m.getReturnType();
 		boolean getter = m.getParameterCount() == 0;
-		if (getter && !rt.isArray()) {
+		if (getter && !rt.isArray())
 			throw new IllegalStateException("@FieldArray getter must return array");
-		}
-		if (!getter && rt != void.class) {
+		if (!getter && rt != void.class)
 			throw new IllegalStateException("@FieldArray setter must return void");
-		}
 		Class<?> ct = getter ? rt.getComponentType() : m.getParameterTypes()[0];
+		ArrayTypeInfo info = ARRAY_TYPES.get(ct);
+		if (info == null)
+			throw new IllegalStateException("Unsupported @FieldArray type: " + ct);
 		long offset = fa.offset();
 		int len = fa.length();
-		int elemSize;
-		String ofArrayDesc;
-		if (ct == double.class) {
-			elemSize = 8;
-			ofArrayDesc = "([D)Ljava/lang/foreign/MemorySegment;";
-		} else if (ct == int.class) {
-			elemSize = 4;
-			ofArrayDesc = "([I)Ljava/lang/foreign/MemorySegment;";
-		} else if (ct == byte.class) {
-			elemSize = 1;
-			ofArrayDesc = "([B)Ljava/lang/foreign/MemorySegment;";
-		} else {
-			throw new IllegalStateException("Unsupported @FieldArray type: " + ct);
-		}
 		MethodType mt = MethodType.methodType(rt, getter ? new Class<?>[0] : new Class<?>[]{ct.arrayType()});
 		MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, m.getName(), mt.toMethodDescriptorString(), null, null);
 		mv.visitCode();
-		
-		// slot 0: this, slot 1: slice, slot 2: arr, slot 3: arrSeg
 		if (getter) {
 			mv.visitVarInsn(ALOAD, 0);
 			mv.visitFieldInsn(GETFIELD, implName, "ptr", "Ljava/lang/foreign/MemorySegment;");
 			mv.visitLdcInsn(offset);
-			mv.visitLdcInsn((long) len * elemSize);
+			mv.visitLdcInsn((long) len * info.elemSize());
 			mv.visitMethodInsn(INVOKEINTERFACE, MEMORY_SEGMENT, "asSlice", "(JJ)Ljava/lang/foreign/MemorySegment;", true);
 			mv.visitVarInsn(ASTORE, 1);
 			mv.visitIntInsn(SIPUSH, len);
-			int newType = ct == double.class ? T_DOUBLE : ct == byte.class ? T_BYTE : T_INT;
-			mv.visitIntInsn(NEWARRAY, newType);
+			mv.visitIntInsn(NEWARRAY, info.newArrayOpcode());
 			mv.visitVarInsn(ASTORE, 2);
 			mv.visitVarInsn(ALOAD, 2);
-			mv.visitMethodInsn(INVOKESTATIC, MEMORY_SEGMENT, "ofArray", ofArrayDesc, true);
+			mv.visitMethodInsn(INVOKESTATIC, MEMORY_SEGMENT, "ofArray", info.ofArrayDesc(), true);
 			mv.visitVarInsn(ASTORE, 3);
 			mv.visitVarInsn(ALOAD, 3);
 			mv.visitVarInsn(ALOAD, 1);
@@ -268,15 +262,14 @@ enum StubGenerator {
 			mv.visitVarInsn(ALOAD, 2);
 			mv.visitInsn(ARETURN);
 		} else {
-			// slot 0: this, slot 1: array param, slot 2: slice, slot 3: arrSeg
 			mv.visitVarInsn(ALOAD, 0);
 			mv.visitFieldInsn(GETFIELD, implName, "ptr", "Ljava/lang/foreign/MemorySegment;");
 			mv.visitLdcInsn(offset);
-			mv.visitLdcInsn((long) len * elemSize);
+			mv.visitLdcInsn((long) len * info.elemSize());
 			mv.visitMethodInsn(INVOKEINTERFACE, MEMORY_SEGMENT, "asSlice", "(JJ)Ljava/lang/foreign/MemorySegment;", true);
 			mv.visitVarInsn(ASTORE, 2);
 			mv.visitVarInsn(ALOAD, 1);
-			mv.visitMethodInsn(INVOKESTATIC, MEMORY_SEGMENT, "ofArray", ofArrayDesc, true);
+			mv.visitMethodInsn(INVOKESTATIC, MEMORY_SEGMENT, "ofArray", info.ofArrayDesc(), true);
 			mv.visitVarInsn(ASTORE, 3);
 			mv.visitVarInsn(ALOAD, 2);
 			mv.visitVarInsn(ALOAD, 3);
@@ -417,30 +410,10 @@ enum StubGenerator {
 	 */
 	private static void emitSpanReturn(MethodVisitor mv, Class<?> returnType) {
 		Class<?> ct = returnType.getComponentType();
-		String fromSpanMethod;
-		String fromSpanDesc;
-		if (ct == double.class) {
-			fromSpanMethod = "fromSpanDouble";
-			fromSpanDesc = "(Ljava/lang/foreign/MemorySegment;)[D";
-		} else if (ct == int.class) {
-			fromSpanMethod = "fromSpanInt";
-			fromSpanDesc = "(Ljava/lang/foreign/MemorySegment;)[I";
-		} else if (ct == float.class) {
-			fromSpanMethod = "fromSpanFloat";
-			fromSpanDesc = "(Ljava/lang/foreign/MemorySegment;)[F";
-		} else if (ct == long.class) {
-			fromSpanMethod = "fromSpanLong";
-			fromSpanDesc = "(Ljava/lang/foreign/MemorySegment;)[J";
-		} else if (ct == short.class) {
-			fromSpanMethod = "fromSpanShort";
-			fromSpanDesc = "(Ljava/lang/foreign/MemorySegment;)[S";
-		} else if (ct == byte.class) {
-			fromSpanMethod = "fromSpanByte";
-			fromSpanDesc = "(Ljava/lang/foreign/MemorySegment;)[B";
-		} else {
+		ArrayTypeInfo info = ARRAY_TYPES.get(ct);
+		if (info == null)
 			throw new IllegalStateException("Unsupported span element type: " + ct);
-		}
-		mv.visitMethodInsn(INVOKESTATIC, FFM_FACTORY, fromSpanMethod, fromSpanDesc, false);
+		mv.visitMethodInsn(INVOKESTATIC, FFM_FACTORY, info.fromSpanMethod(), info.fromSpanDesc(), false);
 		mv.visitInsn(ARETURN);
 	}
 	

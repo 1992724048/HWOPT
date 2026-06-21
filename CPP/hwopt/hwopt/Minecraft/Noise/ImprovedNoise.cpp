@@ -92,56 +92,59 @@ auto ImprovedNoise::_destroy() const -> void {
     hwopt::util::mi_delete(this);
 }
 
-inline auto ImprovedNoise::grad_dot(const int hash, const double x, const double y, const double z) -> double {
+auto ImprovedNoise::grad_dot(const int hash, const double x, const double y, const double z) -> double {
     const int idx = (hash & 15) * 3;
     return (GRADIENT[idx] * x) + (GRADIENT[idx + 1] * y) + (GRADIENT[idx + 2] * z);
 }
 
-inline auto ImprovedNoise::perm(const int x) const -> int {
+auto ImprovedNoise::perm(const int x) const -> int {
     return this->p[x & 0xFF] & 0xFF;
 }
 
-inline auto ImprovedNoise::sample_and_lerperm(const int x, const int y, const int z, const double xr, const double yr, const double zr, const double yr_original) const -> double {
-    const int x0 = perm(x);
-    const int x1 = perm(x + 1);
-    const int xy00 = perm(x0 + y);
-    const int xy01 = perm(x0 + y + 1);
-    const int xy10 = perm(x1 + y);
-    const int xy11 = perm(x1 + y + 1);
-    const double d000 = grad_dot(perm(xy00 + z), xr, yr, zr);
-    const double d100 = grad_dot(perm(xy10 + z), xr - 1.0, yr, zr);
-    const double d010 = grad_dot(perm(xy01 + z), xr, yr - 1.0, zr);
-    const double d110 = grad_dot(perm(xy11 + z), xr - 1.0, yr - 1.0, zr);
-    const double d001 = grad_dot(perm(xy00 + z + 1), xr, yr, zr - 1.0);
-    const double d101 = grad_dot(perm(xy10 + z + 1), xr - 1.0, yr, zr - 1.0);
-    const double d011 = grad_dot(perm(xy01 + z + 1), xr, yr - 1.0, zr - 1.0);
-    const double d111 = grad_dot(perm(xy11 + z + 1), xr - 1.0, yr - 1.0, zr - 1.0);
+auto ImprovedNoise::sample_and_lerperm(const int x, const int y, const int z, const double xr, const double yr, const double zr, const double yr_original) const -> double {
+    const int x0 = perm(x) + y;
+    const int x1 = perm(x + 1) + y;
+    const int xy00 = perm(x0) + z;
+    const int xy01 = perm(x0 + 1) + z;
+    const int xy10 = perm(x1) + z;
+    const int xy11 = perm(x1 + 1) + z;
+    const double xr_sub = xr - 1.0;
+    const double yr_sub = yr - 1.0;
+    const double zr_sub = zr - 1.0;
+    const double d000 = grad_dot(perm(xy00), xr, yr, zr);
+    const double d100 = grad_dot(perm(xy10), xr_sub, yr, zr);
+    const double d010 = grad_dot(perm(xy01), xr, yr_sub, zr);
+    const double d110 = grad_dot(perm(xy11), xr_sub, yr_sub, zr);
+    const double d001 = grad_dot(perm(xy00 + 1), xr, yr, zr_sub);
+    const double d101 = grad_dot(perm(xy10 + 1), xr_sub, yr, zr_sub);
+    const double d011 = grad_dot(perm(xy01 + 1), xr, yr_sub, zr_sub);
+    const double d111 = grad_dot(perm(xy11 + 1), xr_sub, yr_sub, zr_sub);
     return Math::lerp3(Math::smoothstep(xr), Math::smoothstep(yr_original), Math::smoothstep(zr), d000, d100, d010, d110, d001, d101, d011, d111);
 }
 
-inline auto ImprovedNoise::sample_with_derivative(const int x,
-                                                  const int y,
-                                                  const int z,
-                                                  const double xr,
-                                                  const double yr,
-                                                  const double zr,
-                                                  double* derivative_out,
-                                                  const int derivative_out_size) const -> double {
-    const int x0 = perm(x);
-    const int x1 = perm(x + 1);
-    const int xy00 = perm(x0 + y);
-    const int xy01 = perm(x0 + y + 1);
-    const int xy10 = perm(x1 + y);
-    const int xy11 = perm(x1 + y + 1);
+auto ImprovedNoise::sample_with_derivative(const int x,
+                                           const int y,
+                                           const int z,
+                                           const double xr,
+                                           const double yr,
+                                           const double zr,
+                                           double* derivative_out,
+                                           const int derivative_out_size) const -> double {
+    const int x0 = perm(x) + y;
+    const int x1 = perm(x + 1) + y;
+    const int xy00 = perm(x0) + z;
+    const int xy01 = perm(x0 + 1) + z;
+    const int xy10 = perm(x1) + z;
+    const int xy11 = perm(x1 + 1) + z;
 
-    const int idx000 = (perm(xy00 + z) & 15) * 3;
-    const int idx100 = (perm(xy10 + z) & 15) * 3;
-    const int idx010 = (perm(xy01 + z) & 15) * 3;
-    const int idx110 = (perm(xy11 + z) & 15) * 3;
-    const int idx001 = (perm(xy00 + z + 1) & 15) * 3;
-    const int idx101 = (perm(xy10 + z + 1) & 15) * 3;
-    const int idx011 = (perm(xy01 + z + 1) & 15) * 3;
-    const int idx111 = (perm(xy11 + z + 1) & 15) * 3;
+    const int idx000 = (perm(xy00) & 15) * 3;
+    const int idx100 = (perm(xy10) & 15) * 3;
+    const int idx010 = (perm(xy01) & 15) * 3;
+    const int idx110 = (perm(xy11) & 15) * 3;
+    const int idx001 = (perm(xy00 + 1) & 15) * 3;
+    const int idx101 = (perm(xy10 + 1) & 15) * 3;
+    const int idx011 = (perm(xy01 + 1) & 15) * 3;
+    const int idx111 = (perm(xy11 + 1) & 15) * 3;
 
     const double* g000 = &GRADIENT[idx000];
     const double* g100 = &GRADIENT[idx100];
@@ -152,14 +155,18 @@ inline auto ImprovedNoise::sample_with_derivative(const int x,
     const double* g011 = &GRADIENT[idx011];
     const double* g111 = &GRADIENT[idx111];
 
+    const double xr_sub = xr - 1.0;
+    const double yr_sub = yr - 1.0;
+    const double zr_sub = zr - 1.0;
+
     const double d000 = SimplexNoise::dot(g000, xr, yr, zr);
-    const double d100 = SimplexNoise::dot(g100, xr - 1.0, yr, zr);
-    const double d010 = SimplexNoise::dot(g010, xr, yr - 1.0, zr);
-    const double d110 = SimplexNoise::dot(g110, xr - 1.0, yr - 1.0, zr);
-    const double d001 = SimplexNoise::dot(g001, xr, yr, zr - 1.0);
-    const double d101 = SimplexNoise::dot(g101, xr - 1.0, yr, zr - 1.0);
-    const double d011 = SimplexNoise::dot(g011, xr, yr - 1.0, zr - 1.0);
-    const double d111 = SimplexNoise::dot(g111, xr - 1.0, yr - 1.0, zr - 1.0);
+    const double d100 = SimplexNoise::dot(g100, xr_sub, yr, zr);
+    const double d010 = SimplexNoise::dot(g010, xr, yr_sub, zr);
+    const double d110 = SimplexNoise::dot(g110, xr_sub, yr_sub, zr);
+    const double d001 = SimplexNoise::dot(g001, xr, yr, zr_sub);
+    const double d101 = SimplexNoise::dot(g101, xr_sub, yr, zr_sub);
+    const double d011 = SimplexNoise::dot(g011, xr, yr_sub, zr_sub);
+    const double d111 = SimplexNoise::dot(g111, xr_sub, yr_sub, zr_sub);
 
     const double xAlpha = Math::smoothstep(xr);
     const double yAlpha = Math::smoothstep(yr);
@@ -173,13 +180,9 @@ inline auto ImprovedNoise::sample_with_derivative(const int x,
     const double d2y = Math::lerp2(zAlpha, xAlpha, d010 - d000, d011 - d001, d110 - d100, d111 - d101);
     const double d2z = Math::lerp2(xAlpha, yAlpha, d001 - d000, d101 - d100, d011 - d010, d111 - d110);
 
-    const double xSD = Math::smoothstep_derivative(xr);
-    const double ySD = Math::smoothstep_derivative(yr);
-    const double zSD = Math::smoothstep_derivative(zr);
-
-    derivative_out[0] += d1x + (xSD * d2x);
-    derivative_out[1] += d1y + (ySD * d2y);
-    derivative_out[2] += d1z + (zSD * d2z);
+    derivative_out[0] += d1x + (Math::smoothstep_derivative(xr) * d2x);
+    derivative_out[1] += d1y + (Math::smoothstep_derivative(yr) * d2y);
+    derivative_out[2] += d1z + (Math::smoothstep_derivative(zr) * d2z);
 
     return Math::lerp3(xAlpha, yAlpha, zAlpha, d000, d100, d010, d110, d001, d101, d011, d111);
 }

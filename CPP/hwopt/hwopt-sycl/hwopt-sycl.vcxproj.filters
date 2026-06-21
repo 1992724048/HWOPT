@@ -24,9 +24,6 @@
     <ClCompile Include="sycl-memory.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Minecraft\Math.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="sycl-plugin.h">
@@ -36,9 +33,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="sycl-state.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Minecraft\Math.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

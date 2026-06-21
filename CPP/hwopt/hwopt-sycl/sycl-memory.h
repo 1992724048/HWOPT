@@ -4,6 +4,8 @@
 #include <cstdint>
 #include "sycl-plugin.h"
 
+// 优先考虑 sycl::buffer 而不是自己分配内存
+
 namespace sycl {
     class DLL_API MemoryOps {
     public:

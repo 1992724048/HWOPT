@@ -6,6 +6,7 @@
 #include <sycl-plugin.h>
 #include <utility>
 #include <stdpp/logger.h>
+#include <stdpp/exception.h>
 
 #include "Global.hpp"
 #include "JavaNative.hpp"
@@ -20,16 +21,15 @@ auto init_sycl_device() -> void {
     if (auto dev = sycl::Device::create_device()) {
         hwopt::global::handle = std::move(dev.value());
     } else {
-        const auto& err = dev.error();
-        CMSG(CLOG) << err;
+        CMSG(CLOG) << dev.error();
     }
 }
 
 auto APIENTRY DllMain(HMODULE hModule, const DWORD ul_reason_for_call, LPVOID lpReserved) -> BOOL {
     switch (ul_reason_for_call) {
         case DLL_PROCESS_ATTACH:
+            stdpp::exception::Crash::set_callback(nullptr);
             stdpp::log::Logger::set_level(stdpp::log::Level::Trace, stdpp::log::LoggerType::ConsoleLogger);
-            // stdpp::log::Logger::open_console();
             mi_stats_reset();
             JavaNativeBase::init_all();
             break;

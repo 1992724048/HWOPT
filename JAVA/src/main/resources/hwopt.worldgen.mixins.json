@@ -11,6 +11,7 @@
     "mixin.chunk.BeardifierMixin",
     "mixin.chunk.NoiseInterpolatorMixin",
     "mixin.chunk.AquiferBarrierMixin",
+    "mixin.chunk.AquiferStatusCacheMixin",
     "mixin.noise.Ap2Mixin",
     "mixin.noise.SplineMixin",
     "mixin.noise.BlendedNoiseMixin",

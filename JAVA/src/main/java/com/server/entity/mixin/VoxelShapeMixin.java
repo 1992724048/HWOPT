@@ -1,6 +1,6 @@
 package com.server.entity.mixin;
 
-import com.server.entity.util.VoxelShapeAccess;
+import com.server.entity.access.VoxelShapeAccess;
 import net.minecraft.core.Direction;
 import net.minecraft.world.phys.shapes.DiscreteVoxelShape;
 import net.minecraft.world.phys.shapes.VoxelShape;

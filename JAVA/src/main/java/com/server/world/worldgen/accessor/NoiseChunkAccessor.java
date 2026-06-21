@@ -14,7 +14,7 @@ public interface NoiseChunkAccessor {
     
     @Invoker("cellHeight")
     int invokeCellHeight();
-    
+
     @Invoker("getInterpolatedState")
     BlockState invokeGetInterpolatedState();
 

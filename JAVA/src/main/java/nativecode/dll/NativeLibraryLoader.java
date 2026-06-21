@@ -18,7 +18,7 @@ import java.util.*;
  *
  * <p>加载策略：
  * <ol>
- *   <li>将所有文件提取到 {@code {user.dir}/NativeDll/}</li>
+ *   <li>将所有文件提取到 {@code {user.dir}/hwopt/native/}</li>
  *   <li>对每个 DLL 文件尝试 {@code System.load()}，最多 3 轮</li>
  *   <li>后续轮次中，先前因依赖未加载而失败的 DLL 可能成功</li>
  * </ol>
@@ -26,7 +26,7 @@ import java.util.*;
 final class NativeLibraryLoader {
     private static final String NATIVE_DIR = "/native/win64";
     private static final String KNOWN_FILE = "hwopt.dll";
-    private static final Path DLL_DIR = Paths.get(System.getProperty("user.dir"), "NativeDll");
+    private static final Path DLL_DIR = Paths.get(System.getProperty("user.dir"), "hwopt", "native");
     private static volatile boolean extracted = false;
 
     private NativeLibraryLoader() {}
@@ -67,49 +67,60 @@ final class NativeLibraryLoader {
     private static void extractAllFiles() throws IOException {
         Files.createDirectories(DLL_DIR);
 
+        java.util.HashSet<String> extracted = new java.util.HashSet<>();
+
         URL fileUrl = FFMFactory.class.getResource(NATIVE_DIR + "/" + KNOWN_FILE);
         if (fileUrl == null) {
-            extractFromDevDir();
-            return;
-        }
-
-        if ("file".equals(fileUrl.getProtocol())) {
+            extractFromDevDir(extracted);
+        } else if ("file".equals(fileUrl.getProtocol())) {
             try {
                 Path nativeDir = Paths.get(fileUrl.toURI()).getParent();
-                extractFromDirectory(nativeDir);
+                extractFromDirectory(nativeDir, extracted);
             } catch (java.net.URISyntaxException e) {
                 throw new RuntimeException("Invalid native resource URL: " + fileUrl, e);
             }
         } else if ("jar".equals(fileUrl.getProtocol())) {
             URL dirUrl = new URL(fileUrl.getProtocol(), fileUrl.getHost(), fileUrl.getPort(),
                     fileUrl.getFile().substring(0, fileUrl.getFile().length() - KNOWN_FILE.length() - 1));
-            extractFromJar(dirUrl);
+            extractFromJar(dirUrl, extracted);
         } else {
             throw new RuntimeException("Unsupported protocol: " + fileUrl.getProtocol());
+        }
+
+        // Cleanup stale files not in the current extraction set
+        try (var stream = Files.walk(DLL_DIR)) {
+            stream.filter(Files::isRegularFile).forEach(path -> {
+                String name = path.getFileName().toString();
+                if (!extracted.contains(name)) {
+                    try {
+                        Files.delete(path);
+                    } catch (IOException ignored) {
+                    }
+                }
+            });
         }
     }
 
     /**
      * 从开发目录提取文件（非打包环境的回退方案）。
      */
-    private static void extractFromDevDir() throws IOException {
+    private static void extractFromDevDir(java.util.HashSet<String> extracted) throws IOException {
         Path devDir = Paths.get(System.getProperty("user.dir"),
                 "../src/main/resources/native/win64").normalize();
         if (!Files.exists(devDir)) {
             throw new RuntimeException("Native resource not found in classpath or dev dir: "
                     + NATIVE_DIR + " / " + devDir);
         }
-        extractFromDirectory(devDir);
+        extractFromDirectory(devDir, extracted);
     }
 
-    /**
-     * 从本地目录提取所有文件（开发环境，非 JAR）。
-     */
-    private static void extractFromDirectory(Path sourceDir) throws IOException {
+    private static void extractFromDirectory(Path sourceDir, java.util.HashSet<String> extracted) throws IOException {
         try (var stream = Files.walk(sourceDir)) {
             stream.filter(Files::isRegularFile).forEach(source -> {
                 try {
-                    copyIfDifferent(source.getFileName().toString(), Files.readAllBytes(source));
+                    String name = source.getFileName().toString();
+                    extracted.add(name);
+                    copyIfDifferent(name, Files.readAllBytes(source));
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
@@ -117,10 +128,7 @@ final class NativeLibraryLoader {
         }
     }
 
-    /**
-     * 从 JAR 文件中提取本地资源。
-     */
-    private static void extractFromJar(URL url) throws IOException {
+    private static void extractFromJar(URL url, java.util.HashSet<String> extracted) throws IOException {
         var conn = (JarURLConnection) url.openConnection();
         var jar = conn.getJarFile();
         String prefix = conn.getEntryName();
@@ -131,6 +139,7 @@ final class NativeLibraryLoader {
             String name = entry.getName();
             if (!name.startsWith(prefix)) continue;
             String fileName = name.substring(prefix.length() + 1);
+            extracted.add(fileName);
             try (InputStream in = jar.getInputStream(entry)) {
                 copyIfDifferent(fileName, in.readAllBytes());
             }

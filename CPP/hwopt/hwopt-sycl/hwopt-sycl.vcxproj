@@ -12,12 +12,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
-    <ClCompile Include="Minecraft\Math.cpp" />
     <ClCompile Include="sycl-memory.cpp" />
     <ClCompile Include="sycl-plugin.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Minecraft\Math.hpp" />
     <ClInclude Include="sycl-plugin.h" />
     <ClInclude Include="sycl-memory.h" />
     <ClInclude Include="sycl-state.h" />

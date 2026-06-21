@@ -57,8 +57,7 @@ auto PerlinNoise::get_value(const double x, const double y, const double z, cons
     #pragma omp simd
     for (size_t i = 0; i < nl.size(); i++) {
         if (amp[i] != 0.0) {
-            const double t = factor;
-            value += amp[i] * nl[i]->noise(wrap(x * t), wrap(y * t), wrap(z * t), y_scale * t, y_fudge * t) * value_factor;
+            value += amp[i] * nl[i]->noise(wrap(x * factor), wrap(y * factor), wrap(z * factor), y_scale * factor, y_fudge * factor) * value_factor;
         }
         factor *= 2.0;
         value_factor *= 0.5;

@@ -14,24 +14,24 @@ namespace minecraft::noise {
         ImprovedNoise() = default;
         ImprovedNoise(double xo, double yo, double zo, std::span<int8_t> perm);
 
-        [[nodiscard]] inline auto noise(double x, double y, double z) const -> double;
+        [[nodiscard]] auto noise(double x, double y, double z) const -> double;
 
         [[nodiscard]] auto noise(double x, double y, double z, double y_scale, double y_fudge) const -> double;
 
-        [[nodiscard]] inline auto noise_with_derivative(double x, double y, double z, double* derivative_out, int derivative_out_size) const -> double;
+        [[nodiscard]] auto noise_with_derivative(double x, double y, double z, double* derivative_out, int derivative_out_size) const -> double;
         auto get_values(const double* xs, int xs_len, const double* ys, int ys_len, const double* zs, int zs_len, double* result, int result_len) const -> void;
 
         static auto add_methods() -> void;
         static auto _create(double xo, double yo, double zo, const int8_t* array, int array_size) -> ImprovedNoise*;
         auto _destroy() const -> void;
     private:
-        inline static auto grad_dot(int hash, double x, double y, double z) -> double;
+        static auto grad_dot(int hash, double x, double y, double z) -> double;
 
-        [[nodiscard]] inline auto perm(int x) const -> int;
+        [[nodiscard]] auto perm(int x) const -> int;
 
-        [[nodiscard]] inline auto sample_and_lerperm(int x, int y, int z, double xr, double yr, double zr, double yr_original) const -> double;
+        [[nodiscard]] auto sample_and_lerperm(int x, int y, int z, double xr, double yr, double zr, double yr_original) const -> double;
 
-        [[nodiscard]] inline auto sample_with_derivative(int x, int y, int z, double xr, double yr, double zr, double* derivative_out, int derivative_out_size) const -> double;
+        [[nodiscard]] auto sample_with_derivative(int x, int y, int z, double xr, double yr, double zr, double* derivative_out, int derivative_out_size) const -> double;
 
         static constexpr std::array<double, 48> GRADIENT{
             1.0,

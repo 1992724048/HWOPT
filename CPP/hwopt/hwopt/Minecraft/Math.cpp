@@ -1,12 +1,6 @@
 ﻿#include "Math.hpp"
 #include <array>
 #include <windows.h>
-
-#include "Minecraft/Math.hpp"
-#include "sycl-plugin.h"
-
-#include "../Global.hpp"
-
 using namespace minecraft::math;
 
 Math::Math() {
@@ -107,18 +101,18 @@ auto Math::batch_trilerp(const double n000,
                          const double n111,
                          const int cell_width,
                          const int cell_height,
-                         double* output,
+                         double* __restrict output,
                          const int output_len) -> void {
-    if (hwopt::global::handle.id != 0 && output_len >= std::numeric_limits<short>::max()) {
-        const ::sycl::HostMemory<double> output_data(output_len, hwopt::global::handle);
-        sycl::Math::batch_trilerp(hwopt::global::handle, n000, n100, n010, n110, n001, n101, n011, n111, cell_width, cell_height, output_data);
-        std::memcpy(output, output_data.ptr, output_len * sizeof(float));
-        return;
-    }
-
     int idx = 0;
     std::array<double, 16> x_fracs{};
     std::array<double, 16> z_fracs{};
+
+    [[assume(cell_width > 0 && cell_width <= 16)]];
+    [[assume(cell_height > 0 && cell_height <= 16)]];
+
+    #pragma omp simd
+    #pragma unroll
+    #pragma loop_count max(16)
     for (int i = 0; i < cell_width; ++i) {
         const double f = static_cast<double>(i) / static_cast<double>(cell_width);
         x_fracs[i] = f;
@@ -126,6 +120,8 @@ auto Math::batch_trilerp(const double n000,
     }
 
     #pragma omp simd
+    #pragma unroll
+    #pragma loop_count max(16)
     for (int iy = cell_height - 1; iy >= 0; --iy) {
         const double dy = static_cast<double>(iy) / static_cast<double>(cell_height);
         const double ly = 1.0 - dy;
@@ -136,6 +132,8 @@ auto Math::batch_trilerp(const double n000,
         const double v11 = (n101 * ly) + (n111 * hy);
 
         #pragma omp simd
+        #pragma unroll
+
         for (int ix = 0; ix < cell_width; ++ix) {
             const double dx = x_fracs[ix];
             const double lx = 1.0 - dx;
@@ -143,6 +141,9 @@ auto Math::batch_trilerp(const double n000,
             const double z0 = (v00 * lx) + (v10 * hx);
             const double z1 = (v01 * lx) + (v11 * hx);
 
+            #pragma omp simd
+            #pragma unroll
+            #pragma loop_count max(16)
             for (int iz = 0; iz < cell_width; ++iz) {
                 output[idx++] = z0 + (z_fracs[iz] * (z1 - z0));
             }

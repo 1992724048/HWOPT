@@ -1,7 +1,7 @@
 package com.server.world.worldgen.mixin.chunk;
 
 import com.server.world.worldgen.accessor.NoiseChunkAccessor;
-import library.dll.MathNative;
+import library.dll.BeardifierNative;
 import net.minecraft.world.level.levelgen.Beardifier;
 import net.minecraft.world.level.levelgen.DensityFunction;
 import net.minecraft.world.level.levelgen.NoiseChunk;
@@ -80,8 +80,8 @@ public abstract class BeardifierMixin {
 			junctionsData[i * 4 + 2] = j.getSourceZ();
 			junctionsData[i * 4 + 3] = j.getSourceGroundY();
 		}
-
-		MathNative.instance().batch_beardifier(
+		
+		BeardifierNative.instance().batch_beardifier(
 			cellSX, cellSY, cellSZ, cellW, cellH,
 			piecesBox, piecesMeta, junctionsData,
 			bMinX, bMinY, bMinZ, bMaxX, bMaxY, bMaxZ,

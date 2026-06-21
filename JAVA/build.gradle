@@ -49,6 +49,7 @@ neoForge {
             // Comma-separated list of namespaces to load gametests from. Empty = all namespaces.
             systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
             jvmArgument("--enable-native-access=hwopt")
+            // jvmArgument("-agentpath:C:\\Program Files (x86)\\Intel\\oneAPI\\vtune\\2026.0\\bin64\\pinjitprofiling.dll")
         }
 
         server {

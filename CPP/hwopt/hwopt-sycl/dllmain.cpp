@@ -1,5 +1,8 @@
-﻿#include <windows.h>
+﻿#pragma comment(lib, "ntdll.lib")
+// ReSharper disable CppUnusedIncludeDirective
+// ReSharper disable CppWrongIncludesOrder
 #include <mimalloc/mimalloc.h>
+#include <windows.h>
 
 #include "stdpp/logger.h"
 

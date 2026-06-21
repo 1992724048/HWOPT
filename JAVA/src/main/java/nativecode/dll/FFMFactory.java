@@ -9,18 +9,18 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public final class FFMFactory {
 	
 	static final Arena ARENA = Arena.global();
 	static final Linker LINKER = Linker.nativeLinker();
 	
-	private static final Map<String, NativeLibrary> LIBRARY_CACHE = new HashMap<>();
-	private static final Map<Class<?>, byte[]> BYTECODE_CACHE = new HashMap<>();
-	private static NativeLibrary currentLibrary;
+	private static final Map<String, NativeLibrary> LIBRARY_CACHE = new ConcurrentHashMap<>();
+	private static final Map<Class<?>, byte[]> BYTECODE_CACHE = new ConcurrentHashMap<>();
+	private static final ThreadLocal<NativeLibrary> currentLibrary = new ThreadLocal<>();
 	private static final Cleaner CLEANER = Cleaner.create();
 	
 	private FFMFactory() {
@@ -45,7 +45,7 @@ public final class FFMFactory {
 		List<Method> nativeMethods = Downcalls.filterNativeMethods(allMethods);
 		nativeLib.bind(nativeMethods);
 		try {
-			currentLibrary = nativeLib;
+			currentLibrary.set(nativeLib);
 			byte[] bytecode = BYTECODE_CACHE.computeIfAbsent(api, key -> StubGenerator.generate(key, allMethods));
 			var lookup = MethodHandles.privateLookupIn(api, MethodHandles.lookup());
 			Class<?> impl = lookup.defineHiddenClass(bytecode, true).lookupClass();
@@ -53,7 +53,7 @@ public final class FFMFactory {
 		} catch (Throwable e) {
 			throw new RuntimeException("Failed to generate implementation for " + api, e);
 		} finally {
-			currentLibrary = null;
+			currentLibrary.remove();
 		}
 	}
 	
@@ -61,7 +61,7 @@ public final class FFMFactory {
 	 * 由生成的字节码在 {@code <clinit>} 中调用，获取指定索引的本地方法句柄。
 	 */
 	public static MethodHandle getHandle(int index) {
-		NativeLibrary lib = currentLibrary;
+		NativeLibrary lib = currentLibrary.get();
 		if (lib == null) {
 			throw new IllegalStateException("No active native library");
 		}
@@ -121,26 +121,35 @@ public final class FFMFactory {
 	 */
 	static final class BumpAllocators {
 		private static final int TEMP_BUF_SIZE = 16384;
-		private static final ThreadLocal<MemorySegment> TEMP_BUF = ThreadLocal.withInitial(() -> ARENA.allocate(TEMP_BUF_SIZE));
-		private static final ThreadLocal<int[]> TEMP_POS = ThreadLocal.withInitial(() -> new int[]{0});
-		
-		static void endDowncall() {
-			TEMP_POS.get()[0] = 0;
+
+		static final class BufState {
+			MemorySegment buf;
+			int pos;
+			byte[] asciiBuf = new byte[256];
+			BufState() { buf = ARENA.allocate(TEMP_BUF_SIZE); }
 		}
-		
+
+		private static final ThreadLocal<BufState> TL_STATE = ThreadLocal.withInitial(BufState::new);
+
+		static void endDowncall() {
+			TL_STATE.get().pos = 0;
+		}
+
 		static MemorySegment tempAlloc(long size) {
-			int[] pos = TEMP_POS.get();
-			int offset = pos[0];
+			return tempAlloc(TL_STATE.get(), size);
+		}
+
+		static MemorySegment tempAlloc(BufState s, long size) {
+			MemorySegment buf = s.buf;
+			int offset = s.pos;
 			long needed = offset + size;
-			MemorySegment buf = TEMP_BUF.get();
 			if (needed > buf.byteSize()) {
 				long newSize = Math.max(buf.byteSize() * 2, size);
-				MemorySegment newBuf = ARENA.allocate(newSize);
-				TEMP_BUF.set(newBuf);
-				pos[0] = 0;
-				return newBuf.asSlice(0, size);
+				s.buf = ARENA.allocate(newSize);
+				s.pos = 0;
+				return s.buf.asSlice(0, size);
 			}
-			pos[0] = (int) needed;
+			s.pos = (int) needed;
 			return buf.asSlice(offset, size);
 		}
 	}
@@ -155,25 +164,26 @@ public final class FFMFactory {
 		
 		static MemorySegment toCStringTemp(String s) {
 			int len = s.length();
-			boolean ascii = true;
+			BumpAllocators.BufState state = BumpAllocators.TL_STATE.get();
+			byte[] ab = state.asciiBuf;
+			if (ab.length <= len) {
+				ab = new byte[len + 64];
+				state.asciiBuf = ab;
+			}
 			for (int i = 0; i < len; i++) {
-				if (s.charAt(i) > 127) {
-					ascii = false;
-					break;
+				char c = s.charAt(i);
+				if (c > 127) {
+					byte[] bytes = s.getBytes(StandardCharsets.UTF_8);
+					MemorySegment seg = BumpAllocators.tempAlloc(bytes.length + 1);
+					MemorySegment.copy(bytes, 0, seg, ValueLayout.JAVA_BYTE, 0, bytes.length);
+					seg.set(ValueLayout.JAVA_BYTE, bytes.length, (byte) 0);
+					return seg;
 				}
+				ab[i] = (byte) c;
 			}
-			if (ascii) {
-				MemorySegment seg = BumpAllocators.tempAlloc(len + 1);
-				for (int i = 0; i < len; i++) {
-					seg.set(ValueLayout.JAVA_BYTE, i, (byte) s.charAt(i));
-				}
-				seg.set(ValueLayout.JAVA_BYTE, len, (byte) 0);
-				return seg;
-			}
-			byte[] bytes = s.getBytes(StandardCharsets.UTF_8);
-			MemorySegment seg = BumpAllocators.tempAlloc(bytes.length + 1);
-			MemorySegment.copy(bytes, 0, seg, ValueLayout.JAVA_BYTE, 0, bytes.length);
-			seg.set(ValueLayout.JAVA_BYTE, bytes.length, (byte) 0);
+			ab[len] = 0;
+			MemorySegment seg = BumpAllocators.tempAlloc(state, len + 1);
+			MemorySegment.copy(ab, 0, seg, ValueLayout.JAVA_BYTE, 0, len + 1);
 			return seg;
 		}
 	}
@@ -182,61 +192,68 @@ public final class FFMFactory {
 	 * 从 C++ 返回的 {@code std::span} 中读取数据到 Java 数组。
 	 */
 	static final class SpanSupport {
+		private static final double[] EMPTY_DOUBLE = new double[0];
+		private static final int[] EMPTY_INT = new int[0];
+		private static final float[] EMPTY_FLOAT = new float[0];
+		private static final long[] EMPTY_LONG = new long[0];
+		private static final short[] EMPTY_SHORT = new short[0];
+		private static final byte[] EMPTY_BYTE = new byte[0];
+
 		static double[] fromSpanDouble(MemorySegment spanPtr) {
-			if (spanPtr == MemorySegment.NULL) return new double[0];
+			if (spanPtr == MemorySegment.NULL) return EMPTY_DOUBLE;
 			MemorySegment data = spanPtr.get(ValueLayout.ADDRESS, 0);
 			long size = spanPtr.get(ValueLayout.JAVA_LONG, 8);
-			if (size == 0) return new double[0];
+			if (size == 0) return EMPTY_DOUBLE;
 			double[] result = new double[(int) size];
 			MemorySegment.ofArray(result).copyFrom(data.asSlice(0, size * 8));
 			return result;
 		}
-		
+
 		static int[] fromSpanInt(MemorySegment spanPtr) {
-			if (spanPtr == MemorySegment.NULL) return new int[0];
+			if (spanPtr == MemorySegment.NULL) return EMPTY_INT;
 			MemorySegment data = spanPtr.get(ValueLayout.ADDRESS, 0);
 			long size = spanPtr.get(ValueLayout.JAVA_LONG, 8);
-			if (size == 0) return new int[0];
+			if (size == 0) return EMPTY_INT;
 			int[] result = new int[(int) size];
 			MemorySegment.ofArray(result).copyFrom(data.asSlice(0, size * 4));
 			return result;
 		}
-		
+
 		static float[] fromSpanFloat(MemorySegment spanPtr) {
-			if (spanPtr == MemorySegment.NULL) return new float[0];
+			if (spanPtr == MemorySegment.NULL) return EMPTY_FLOAT;
 			MemorySegment data = spanPtr.get(ValueLayout.ADDRESS, 0);
 			long size = spanPtr.get(ValueLayout.JAVA_LONG, 8);
-			if (size == 0) return new float[0];
+			if (size == 0) return EMPTY_FLOAT;
 			float[] result = new float[(int) size];
 			MemorySegment.ofArray(result).copyFrom(data.asSlice(0, size * 4));
 			return result;
 		}
-		
+
 		static long[] fromSpanLong(MemorySegment spanPtr) {
-			if (spanPtr == MemorySegment.NULL) return new long[0];
+			if (spanPtr == MemorySegment.NULL) return EMPTY_LONG;
 			MemorySegment data = spanPtr.get(ValueLayout.ADDRESS, 0);
 			long size = spanPtr.get(ValueLayout.JAVA_LONG, 8);
-			if (size == 0) return new long[0];
+			if (size == 0) return EMPTY_LONG;
 			long[] result = new long[(int) size];
 			MemorySegment.ofArray(result).copyFrom(data.asSlice(0, size * 8));
 			return result;
 		}
-		
+
 		static short[] fromSpanShort(MemorySegment spanPtr) {
-			if (spanPtr == MemorySegment.NULL) return new short[0];
+			if (spanPtr == MemorySegment.NULL) return EMPTY_SHORT;
 			MemorySegment data = spanPtr.get(ValueLayout.ADDRESS, 0);
 			long size = spanPtr.get(ValueLayout.JAVA_LONG, 8);
-			if (size == 0) return new short[0];
+			if (size == 0) return EMPTY_SHORT;
 			short[] result = new short[(int) size];
 			MemorySegment.ofArray(result).copyFrom(data.asSlice(0, size * 2));
 			return result;
 		}
-		
+
 		static byte[] fromSpanByte(MemorySegment spanPtr) {
-			if (spanPtr == MemorySegment.NULL) return new byte[0];
+			if (spanPtr == MemorySegment.NULL) return EMPTY_BYTE;
 			MemorySegment data = spanPtr.get(ValueLayout.ADDRESS, 0);
 			long size = spanPtr.get(ValueLayout.JAVA_LONG, 8);
-			if (size == 0) return new byte[0];
+			if (size == 0) return EMPTY_BYTE;
 			byte[] result = new byte[(int) size];
 			MemorySegment.ofArray(result).copyFrom(data.asSlice(0, size));
 			return result;
