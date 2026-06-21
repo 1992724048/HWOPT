@@ -10,6 +10,7 @@
     "mixin.chunk.NoiseChunkForIndexMixin",
     "mixin.chunk.BeardifierMixin",
     "mixin.chunk.NoiseInterpolatorMixin",
+    "mixin.chunk.SliceFillingContextMixin",
     "mixin.chunk.AquiferBarrierMixin",
     "mixin.chunk.AquiferStatusCacheMixin",
     "mixin.noise.Ap2Mixin",

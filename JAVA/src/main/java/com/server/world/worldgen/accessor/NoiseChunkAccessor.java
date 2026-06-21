@@ -44,4 +44,7 @@ public interface NoiseChunkAccessor {
 
     @Accessor("interpolating")
     boolean interpolating();
+
+    @Accessor("cellNoiseMinY")
+    int cellNoiseMinY();
 }
