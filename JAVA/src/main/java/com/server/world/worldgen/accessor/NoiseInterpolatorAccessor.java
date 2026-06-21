@@ -1,5 +1,6 @@
 package com.server.world.worldgen.accessor;
 
+import net.minecraft.world.level.levelgen.DensityFunction;
 import net.minecraft.world.level.levelgen.NoiseChunk;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
@@ -30,4 +31,13 @@ public interface NoiseInterpolatorAccessor {
 
 	@Accessor("noise111")
 	double noise111();
+
+	@Accessor("slice0")
+	double[][] slice0();
+
+	@Accessor("slice1")
+	double[][] slice1();
+
+	@Accessor("noiseFiller")
+	DensityFunction noiseFiller();
 }

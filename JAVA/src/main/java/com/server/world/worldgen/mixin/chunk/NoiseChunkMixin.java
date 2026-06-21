@@ -1,5 +1,6 @@
 package com.server.world.worldgen.mixin.chunk;
 
+import com.server.world.worldgen.accessor.NoiseChunkAccessor;
 import com.server.world.worldgen.accessor.NoiseInterpolatorAccessor;
 import library.dll.MathNative;
 import net.minecraft.world.level.levelgen.DensityFunction;
@@ -13,6 +14,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.lang.reflect.Method;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -30,8 +32,20 @@ public abstract class NoiseChunkMixin {
 	@Shadow
 	private int arrayIndex;
 
+	@Shadow
+	@Final
+	private List<NoiseChunk.NoiseInterpolator> interpolators;
+
 	@Unique
 	private static final Map<Class<?>, Method[]> IO_METHOD_CACHE = new ConcurrentHashMap<>();
+
+	@Unique
+	private static double[] hwopt$precomputedCache;
+
+	@Unique
+	public static void hwopt$setPrecomputedCache(double[] data) {
+		hwopt$precomputedCache = data;
+	}
 
 	@Unique
 	private static Method[] hwopt$getInputTransformMethods(DensityFunction fn) {
@@ -77,5 +91,22 @@ public abstract class NoiseChunkMixin {
 			} catch (Exception ignored) {
 			}
 		}
+	}
+
+	@Inject(method = "fillSlice", at = @At("HEAD"), cancellable = true)
+	private void hwopt$skipFillSlice(boolean useSlice0, int cellX, CallbackInfo ci) {
+		if (hwopt$precomputedCache == null) return;
+		NoiseChunkAccessor acc = (NoiseChunkAccessor) this;
+		NoiseInterpolatorAccessor nia = (NoiseInterpolatorAccessor) this.interpolators.get(0);
+		double[][] slice = useSlice0 ? nia.slice0() : nia.slice1();
+		int numZ = acc.cellCountXZ() + 1;
+		int numY = acc.cellCountY() + 1;
+		int cx = cellX - acc.firstCellX();
+		if (cx < 0) return;
+		int base = cx * numZ * numY;
+		for (int cz = 0; cz < numZ; cz++) {
+			System.arraycopy(hwopt$precomputedCache, base + cz * numY, slice[cz], 0, numY);
+		}
+		ci.cancel();
 	}
 }

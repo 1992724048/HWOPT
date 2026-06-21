@@ -47,4 +47,19 @@ public interface NoiseChunkAccessor {
 
     @Accessor("cellNoiseMinY")
     int cellNoiseMinY();
+
+    @Accessor("firstCellX")
+    int firstCellX();
+
+    @Accessor("firstCellZ")
+    int firstCellZ();
+
+    @Accessor("cellCountXZ")
+    int cellCountXZ();
+
+    @Accessor("cellCountY")
+    int cellCountY();
+
+    @Accessor("interpolators")
+    java.util.List<?> invokeInterpolators();
 }
