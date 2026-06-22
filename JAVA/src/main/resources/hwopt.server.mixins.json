@@ -10,7 +10,8 @@
     "world.render.ChunkTaskPriorityQueueMixin",
     "ConnectionMixin",
     "CompressionDecoderMixin",
-    "CompressionEncoderMixin"
+    "CompressionEncoderMixin",
+    "CustomPacketPayloadCodecMixin"
   ],
   "injectors": {
     "defaultRequire": 1
