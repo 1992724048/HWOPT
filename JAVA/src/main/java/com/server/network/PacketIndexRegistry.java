@@ -18,36 +18,26 @@ public class PacketIndexRegistry {
 	private final AtomicBoolean initialized = new AtomicBoolean(false);
 	private final Object lock = new Object();
 	
-	// mod namespace -> mod index
-	private final Map<String, Integer> modToIndex = new HashMap<>();
-	// mod index -> mod namespace
-	private final List<String> indexToMod = new ArrayList<>();
-	// per-mod: packet path -> packet index
-	private final List<Map<String, Integer>> modPackets = new ArrayList<>();
-	// per-mod: packet index -> packet path
-	private final List<List<String>> modPacketsReverse = new ArrayList<>();
-	
-	// packed identifier -> Identifier (reverse lookup)
+	// mod namespace -> mod index (read-only after init)
+	private volatile Map<String, Integer> modToIndex = Collections.emptyMap();
+	// per-mod: packet path -> packet index (read-only after init)
+	private volatile List<Map<String, Integer>> modPackets = Collections.emptyList();
+	// packed -> Identifier (read-only after init)
 	private volatile Map<Integer, Identifier> packedToId = Collections.emptyMap();
 	
 	public int getIndex(Identifier id) {
-		ensureInitialized();
-		String namespace = id.getNamespace();
-		String path = id.getPath();
-		Integer modIdx;
-		Integer pktIdx;
-		synchronized (lock) {
-			modIdx = modToIndex.get(namespace);
-			if (modIdx == null) return -1;
-			Map<String, Integer> packets = modPackets.get(modIdx);
-			pktIdx = packets.get(path);
-			if (pktIdx == null) return -1;
-		}
+		initOnce();
+		int modIdx = modToIndex.getOrDefault(id.getNamespace(), -1);
+		if (modIdx < 0) return -1;
+		Map<String, Integer> pktMap = modPackets.get(modIdx);
+		if (pktMap == null) return -1;
+		int pktIdx = pktMap.getOrDefault(id.getPath(), -1);
+		if (pktIdx < 0) return -1;
 		return (modIdx << 16) | pktIdx;
 	}
 	
 	public Identifier getIdentifier(int packed) {
-		ensureInitialized();
+		initOnce();
 		return packedToId.get(packed);
 	}
 	
@@ -63,85 +53,120 @@ public class PacketIndexRegistry {
 		return (modIdx << 16) | pktIdx;
 	}
 	
-	public void ensureInitialized() {
-		if (!initialized.get()) {
-			synchronized (lock) {
-				if (!initialized.get()) {
-					initializeFromNetworkRegistry();
+	public void initOnce() {
+		if (initialized.get()) return;
+		synchronized (lock) {
+			if (initialized.get()) return;
+			initializeFromNetworkRegistry();
+		}
+	}
+	
+	/**
+	 * Called from within $1's @Redirect handlers to also register vanilla
+	 * payload types captured in the anonymous class's val$idToType field.
+	 */
+	public void captureVanillaPayloads(Object $this) {
+		if (initialized.get()) return;
+		synchronized (lock) {
+			if (initialized.get()) return;
+			try {
+				Field f = $this.getClass().getDeclaredField("val$idToType");
+				f.setAccessible(true);
+				Map<?, ?> idToType = (Map<?, ?>) f.get($this);
+				Set<Identifier> ids = new HashSet<>();
+				for (Object key : idToType.keySet()) {
+					if (key instanceof Identifier id) ids.add(id);
 				}
+				if (!ids.isEmpty()) {
+					initializeFromNetworkRegistry();
+					// If already initialized above (by another thread), skip.
+					// Otherwise, merge vanilla + NeoForge payloads.
+					if (initialized.get()) return;
+					initializeFromBoth(ids);
+				}
+			} catch (Exception e) {
+				LOGGER.error("Failed to capture vanilla payloads from $1", e);
 			}
 		}
 	}
 	
 	@SuppressWarnings("unchecked")
 	private void initializeFromNetworkRegistry() {
-		if (initialized.get()) return;
 		try {
-			Class<?> networkRegistry = Class.forName("net.neoforged.neoforge.network.registration.NetworkRegistry");
-			Field regField = networkRegistry.getDeclaredField("PAYLOAD_REGISTRATIONS");
+			Class<?> nr = Class.forName("net.neoforged.neoforge.network.registration.NetworkRegistry");
+			
+			Field regField = nr.getDeclaredField("PAYLOAD_REGISTRATIONS");
 			regField.setAccessible(true);
 			Map<ConnectionProtocol, Map<Identifier, ?>> regs = (Map<ConnectionProtocol, Map<Identifier, ?>>) regField.get(null);
 			
 			Set<Identifier> allIds = new LinkedHashSet<>();
-			for (Map<Identifier, ?> map : regs.values()) {
-				allIds.addAll(map.keySet());
-			}
+			for (Map<Identifier, ?> map : regs.values()) allIds.addAll(map.keySet());
 			
-			// Also include builtin payloads
-			Field builtinField = networkRegistry.getDeclaredField("BUILTIN_PAYLOADS");
+			Field builtinField = nr.getDeclaredField("BUILTIN_PAYLOADS");
 			builtinField.setAccessible(true);
 			Map<Identifier, ?> builtins = (Map<Identifier, ?>) builtinField.get(null);
 			allIds.addAll(builtins.keySet());
 			
 			buildIndex(allIds);
 		} catch (Exception e) {
-			LOGGER.error("Failed to initialize PacketIndexRegistry from NetworkRegistry", e);
+			LOGGER.error("Failed to init PacketIndexRegistry", e);
 		}
 	}
 	
+	private void initializeFromBoth(Set<Identifier> vanillaIds) {
+		Set<Identifier> merged = new LinkedHashSet<>();
+		merged.addAll(vanillaIds);
+		// Also try to include NeoForge payloads
+		try {
+			Class<?> nr = Class.forName("net.neoforged.neoforge.network.registration.NetworkRegistry");
+			Field regField = nr.getDeclaredField("PAYLOAD_REGISTRATIONS");
+			regField.setAccessible(true);
+			Map<ConnectionProtocol, Map<Identifier, ?>> regs = (Map<ConnectionProtocol, Map<Identifier, ?>>) regField.get(null);
+			for (Map<Identifier, ?> map : regs.values()) merged.addAll(map.keySet());
+			
+			Field builtinField = nr.getDeclaredField("BUILTIN_PAYLOADS");
+			builtinField.setAccessible(true);
+			Map<Identifier, ?> builtins = (Map<Identifier, ?>) builtinField.get(null);
+			merged.addAll(builtins.keySet());
+		} catch (Exception e) {
+			LOGGER.warn("Could not add NeoForge payloads alongside vanilla", e);
+		}
+		buildIndex(merged);
+	}
+	
 	private void buildIndex(Set<Identifier> allIds) {
-		// Group by namespace (mod id)
 		Map<String, Set<String>> byMod = new TreeMap<>();
 		for (Identifier id : allIds) {
 			byMod.computeIfAbsent(id.getNamespace(), k -> new TreeSet<>()).add(id.getPath());
 		}
 		
+		Map<String, Integer> modIdxMap = new HashMap<>();
+		List<Map<String, Integer>> pktMaps = new ArrayList<>();
 		Map<Integer, Identifier> packedMap = new HashMap<>();
 		
 		int modIdx = 0;
 		for (Map.Entry<String, Set<String>> entry : byMod.entrySet()) {
-			if (modIdx >= MAX_MODS) {
-				LOGGER.warn("Too many mods (> {}) for packet index registry, truncating", MAX_MODS);
-				break;
-			}
+			if (modIdx >= MAX_MODS) break;
 			String mod = entry.getKey();
-			modToIndex.put(mod, modIdx);
-			indexToMod.add(mod);
+			modIdxMap.put(mod, modIdx);
 			
 			Map<String, Integer> pktMap = new HashMap<>();
-			List<String> pktRev = new ArrayList<>();
 			int pktIdx = 0;
 			for (String path : entry.getValue()) {
-				if (pktIdx >= MAX_PACKETS_PER_MOD) {
-					LOGGER.warn("Too many packets for mod {} (> {}), truncating", mod, MAX_PACKETS_PER_MOD);
-					break;
-				}
+				if (pktIdx >= MAX_PACKETS_PER_MOD) break;
 				pktMap.put(path, pktIdx);
-				pktRev.add(path);
-				int packed = pack(modIdx, pktIdx);
-				Identifier id = Identifier.fromNamespaceAndPath(mod, path);
-				packedMap.put(packed, id);
+				packedMap.put(pack(modIdx, pktIdx), Identifier.fromNamespaceAndPath(mod, path));
 				pktIdx++;
 			}
-			
-			modPackets.add(pktMap);
-			modPacketsReverse.add(pktRev);
+			pktMaps.add(pktMap);
 			modIdx++;
 		}
 		
+		this.modToIndex = Collections.unmodifiableMap(modIdxMap);
+		this.modPackets = Collections.unmodifiableList(pktMaps);
 		this.packedToId = Collections.unmodifiableMap(packedMap);
 		initialized.set(true);
 		
-		LOGGER.info("PacketIndexRegistry initialized with {} mods, {} total payloads ({} packed)", modToIndex.size(), allIds.size(), packedMap.size());
+		LOGGER.info("PacketIndexRegistry: {} mods, {} payloads", modToIndex.size(), packedMap.size());
 	}
 }
