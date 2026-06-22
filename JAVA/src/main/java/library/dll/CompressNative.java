@@ -5,15 +5,15 @@ import nativecode.dll.LibraryImport;
 import nativecode.dll.Name;
 import nativecode.dll.Static;
 
-@LibraryImport(dll = "hwopt.dll", structSize = 0)
+@LibraryImport(dll = "hwopt.dll", structSize = 1)
 public interface CompressNative {
     CompressNative INSTANCE = FFMFactory.load(CompressNative.class);
 
     @Static
     @Name("Compress::compress")
-    int compress(byte[] input, int inputLen, byte[] output, int outputLen);
+    int compress(byte[] input, byte[] output);
 
     @Static
     @Name("Compress::decompress")
-    int decompress(byte[] input, int inputLen, byte[] output, int outputLen);
+    int decompress(byte[] input, byte[] output);
 }

@@ -19,7 +19,6 @@ import org.slf4j.Logger;
 public class HWOPT {
     public static final String MODID = "hwopt";
     public static final Logger LOGGER = LogUtils.getLogger();
-    public static long seed;
 
     public HWOPT(final IEventBus modEventBus, final ModContainer modContainer) {
         modEventBus.addListener(this::commonSetup);
@@ -37,7 +36,6 @@ public class HWOPT {
     @SubscribeEvent
     public void onWorldLoad(LevelEvent.Load event) {
         if (event.getLevel() instanceof ServerLevel level) {
-            seed = level.getSeed();
             if (level.dimension() == Level.OVERWORLD) {
                 ChunkGenStats.reset();
             }

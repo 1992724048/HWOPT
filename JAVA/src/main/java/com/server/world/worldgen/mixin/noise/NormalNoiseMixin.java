@@ -47,6 +47,7 @@ public abstract class NormalNoiseMixin {
 	
 	@Inject(method = "<init>", at = @At("RETURN"))
 	private void hwopt$init(CallbackInfo ci) {
+		if (first == null || second == null) return;
 		hwopt$nativePtr = FFMFactory.trackCleaner(this, NormalNoiseNative.instance().create(valueFactor, maxValue));
 		PerlinNoiseNative firstNative = (PerlinNoiseNative) HWOPT_PERLIN_NATIVE.get(first);
 		PerlinNoiseNative secondNative = (PerlinNoiseNative) HWOPT_PERLIN_NATIVE.get(second);

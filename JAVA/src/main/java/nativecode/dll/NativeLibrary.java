@@ -5,6 +5,9 @@ import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Method;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import com.hwpp.mod.HWOPT;
 
 /**
  * 封装单个本地 DLL 的加载状态。
@@ -30,7 +33,16 @@ final class NativeLibrary {
      * @throws UnsatisfiedLinkError 如果 DLL 加载失败或 {@code JAVA_ResolveFunction} 符号不存在
      */
     NativeLibrary(Path dllPath) {
-		this.lookup = SymbolLookup.libraryLookup(dllPath, FFMFactory.ARENA);
+		try {
+			this.lookup = SymbolLookup.libraryLookup(dllPath, FFMFactory.ARENA);
+		} catch (Exception e) {
+			String msg = e.getMessage();
+			if (msg != null && msg.contains("native access")) {
+				throw new RuntimeException(
+					"Missing --enable-native-access=hwopt JVM argument. Add it to your launcher's JVM arguments.", e);
+			}
+			throw new RuntimeException("Failed to load native library: " + dllPath, e);
+		}
 		this.resolver = resolveResolver();
 	}
 	
@@ -43,7 +55,7 @@ final class NativeLibrary {
      * @param methods 需要绑定的本地方法列表（已排除 {@code @Field} 和 {@code @FieldArray}）
      * @throws RuntimeException 如果绑定过程中发生错误
      */
-    void bind(List<Method> methods) {
+    synchronized void bind(List<Method> methods) {
 		this.handles = new MethodHandle[methods.size()];
 		try {
 			for (int i = 0; i < methods.size(); i++) {
@@ -59,6 +71,11 @@ final class NativeLibrary {
 				handles[i] = FFMFactory.createDowncallHandle(symbol, m);
 			}
 		} catch (Throwable e) {
+			HWOPT.LOGGER.error("NativeLibrary.bind FAILED for {}: {}", methods.stream().map(m -> {
+				Name n = m.getAnnotation(Name.class);
+				return n != null ? n.value() : m.getName();
+			}).collect(Collectors.toList()), e.getMessage());
+			HWOPT.LOGGER.error("Bind error", e);
 			throw new RuntimeException("Failed to bind native methods", e);
 		}
 	}
@@ -69,7 +86,7 @@ final class NativeLibrary {
      * @param index 方法句柄索引
      * @return 对应的 {@link MethodHandle}
      */
-    MethodHandle getHandle(int index) {
+    synchronized MethodHandle getHandle(int index) {
 		return handles[index];
 	}
 	

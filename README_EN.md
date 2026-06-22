@@ -25,14 +25,14 @@ HWOPT (Hardware Optimization) is a Minecraft optimization mod that rewrites vani
 
 #### Feature List
 
-| Name | Category | Status | Module Version | Notes |
-| ---- | -------- | ------ | -------------- | ----- |
-| Terrain Generation Optimization | Optimization | In Development | 26.1 | |
-| Entity Collision Optimization | Optimization | In Development | 26.1 | |
-| Entity Rendering Optimization | Optimization | In Development | 26.1 | |
-| Entity AI Optimization | Optimization | In Development | 26.1 | |
-| Village Spawn | Utility | Completed | 26.1 | Works outside testing as well |
-| 125-Chunk Render Distance | Utility | Completed | 26.1 | Heavy on performance |
+| Name                            | Category     | Status         | Module Version | Notes                         |
+| ------------------------------- | ------------ | -------------- | -------------- | ----------------------------- |
+| Terrain Generation Optimization | Optimization | In Development | 26.1           |                               |
+| Entity Collision Optimization   | Optimization | In Development | 26.1           |                               |
+| Entity Rendering Optimization   | Optimization | In Development | 26.1           |                               |
+| Entity AI Optimization          | Optimization | In Development | 26.1           |                               |
+| Village Spawn                   | Utility      | Completed      | 26.1           | Works outside testing as well |
+| 125-Chunk Render Distance       | Utility      | Completed      | 26.1           | Heavy on performance          |
 
 - Module version format: `year/revision`
 
@@ -40,13 +40,13 @@ HWOPT (Hardware Optimization) is a Minecraft optimization mod that rewrites vani
 
 | Game Version | Mod Version | NeoForge | Forge | Fabric |
 | ------------ | ----------- | -------- | ----- | ------ |
-| 26.2 | 26.1.x | ✓ | ✕ | ✕ |
+| 26.2         | 26.1.x      | ✓        | ✕     | ✕      |
 
 #### OS & Hardware Support
 
-| Mod Version | Windows | Linux | Intel CPU | Intel iGPU | Intel dGPU | AMD CPU | AMD iGPU | AMD dGPU | NVIDIA dGPU |
-| ----------- | ------- | ----- | --------- | ---------- | ---------- | ------- | -------- | -------- | ----------- |
-| 26.1.x | ≥10 19H1 | ✕ | AVX2 | 11th Gen+ | ✓ | AVX2 | ✕ | ✕ | CUDA 12.0+* |
+| Mod Version | Windows  | Linux | Intel CPU | Intel iGPU | Intel dGPU | AMD CPU | AMD iGPU | AMD dGPU | NVIDIA dGPU  |
+| ----------- | -------- | ----- | --------- | ---------- | ---------- | ------- | -------- | -------- | ------------ |
+| 26.1.x      | ≥10 19H1 | ✕     | AVX2      | 11th Gen+  | ✓          | AVX2    | ✕        | ✕        | CUDA 12.0+\* |
 
 - `Intel 11th Gen and earlier`/`AMD`/`NVIDIA` — no hardware available for testing; table content is based on documentation references
 - Basic CPU functionality: any qualifying CPU works
@@ -65,18 +65,22 @@ HWOPT (Hardware Optimization) is a Minecraft optimization mod that rewrites vani
 
 - SYCL is a single-source C++ programming model that allows writing GPU kernels directly in C++ code, eliminating the need to learn shader languages like GLSL/HLSL, reducing code duplication and porting costs. Vulkan compute shaders require managing complex pipeline states, memory barriers, and descriptor sets, resulting in lower development efficiency. For a mod like Minecraft that involves heavy algorithm porting, SYCL's C++ integration and cross-platform support are significantly superior to Vulkan.
 
-3. Does SYCL have a performance advantage over Vulkan for this project?
+3. What advantage does the Intel C++ compiler have over MSVC for compiling native DLLs?
+
+- Across multiple benchmarks against Clang, GCC, MSVC, and other compilers, the Intel C++ compiler (ICX) consistently delivers excellent performance, especially on Intel hardware where it better exploits SIMD instruction sets. Furthermore, the mod's native layer heavily depends on the Intel oneAPI ecosystem (DPC++, oneTBB, etc.). Using ICX ensures ABI consistency across components and avoids cross-compiler linking compatibility issues.
+
+4. Does SYCL have a performance advantage over Vulkan for this project?
 
 - **Yes.** On the same Intel iGPU, SYCL + Level Zero achieves 55,556 ops/s (f32) — **5.4×** the throughput of Vulkan f32 (10,183 ops/s).
 - **Test environment:** Intel Core Ultra 9 285K (iGPU) + Intel oneAPI 2026.0 (SYCL) / Vulkan 1.4.350
 - **Workload:** 32³ (32,768 points) × 10,000 iterations
 
-  | Combination | Device | Precision | Memory | Total | Per call | Throughput |
-  |-------------|--------|:---------:|:------:|:-----:|:--------:|:----------:|
-  | Vulkan | Ultra 9 285K (iGPU) | f32 | Host | 982 ms | 98.2 μs | 10,183 ops/s |
-  | **SYCL + Level Zero** | **Ultra 9 285K (iGPU)** | **f32** | **Host** | **180 ms** | **18.0 μs** | **55,556 ops/s** |
-  | SYCL + Level Zero | Ultra 9 285K (iGPU) | f64 | Host | 695 ms | 69.5 μs | 14,388 ops/s |
-  | Vulkan | AMD RX 6600 | f32 | Host | 941 ms | 94.1 μs | 10,627 ops/s |
+  | Combination           | Device                  | Precision |  Memory  |   Total    |  Per call   |    Throughput    |
+  | --------------------- | ----------------------- | :-------: | :------: | :--------: | :---------: | :--------------: |
+  | Vulkan                | Ultra 9 285K (iGPU)     |    f32    |   Host   |   982 ms   |   98.2 μs   |   10,183 ops/s   |
+  | **SYCL + Level Zero** | **Ultra 9 285K (iGPU)** |  **f32**  | **Host** | **180 ms** | **18.0 μs** | **55,556 ops/s** |
+  | SYCL + Level Zero     | Ultra 9 285K (iGPU)     |    f64    |   Host   |   695 ms   |   69.5 μs   |   14,388 ops/s   |
+  | Vulkan                | AMD RX 6600             |    f32    |   Host   |   941 ms   |   94.1 μs   |   10,627 ops/s   |
 
 - **Reproduce:** Test code at `CPP/hwopt/hwopt-benchmark/MathBenchmark.cpp`, anyone with compatible hardware and toolchain can re-run the benchmarks.
 

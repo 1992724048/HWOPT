@@ -6,6 +6,8 @@ import library.dll.DensityFunctionTree;
 import net.minecraft.world.level.levelgen.DensityFunction;
 import net.minecraft.world.level.levelgen.NoiseChunk;
 
+import com.hwpp.mod.HWOPT;
+
 public class DensityPrecomputer {
 	
 	public static void precompute(NoiseChunk noiseChunk) {
@@ -31,6 +33,7 @@ public class DensityPrecomputer {
 			DensityFunctionTree.instance().compute_densities_batch(tree.nodes(), tree.bnPtrs(), tree.noisePtrs(), minX, minY, minZ, sizeX, sizeY, sizeZ, densities);
 			PrecomputedDensity.set(densities, minY, sizeX, sizeY, sizeZ);
 		} catch (Exception e) {
+			HWOPT.LOGGER.error("DensityPrecomputer.precompute failed", e);
 		}
 	}
 }

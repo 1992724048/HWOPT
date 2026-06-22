@@ -8,6 +8,7 @@
     "world.render.ViewDistanceMixin",
     "world.render.DistanceManagerMixin",
     "world.render.ChunkTaskPriorityQueueMixin",
+    "ConnectionMixin",
     "CompressionDecoderMixin",
     "CompressionEncoderMixin"
   ],

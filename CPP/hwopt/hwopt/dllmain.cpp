@@ -33,7 +33,8 @@ auto APIENTRY DllMain(HMODULE hModule, const DWORD ul_reason_for_call, LPVOID lp
     switch (ul_reason_for_call) {
         case DLL_PROCESS_ATTACH:
             stdpp::exception::Crash::set_callback(nullptr);
-            stdpp::log::Logger::set_level(stdpp::log::Level::Trace, stdpp::log::LoggerType::ConsoleLogger);
+            stdpp::log::Logger::prepare_file_logging("logs");
+            stdpp::log::Logger::set_level(stdpp::log::Level::Debug, stdpp::log::LoggerType::Any);
             mi_stats_reset();
             JavaNativeBase::init_all();
             break;

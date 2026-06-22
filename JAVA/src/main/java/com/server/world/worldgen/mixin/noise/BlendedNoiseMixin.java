@@ -34,22 +34,46 @@ public abstract class BlendedNoiseMixin {
 		}
 	}
 	
-	@Shadow @Final private double xzScale;
-	@Shadow @Final private double yScale;
-	@Shadow @Final private double xzFactor;
-	@Shadow @Final private double yFactor;
-	@Shadow @Final private double smearScaleMultiplier;
-	@Shadow @Final private double xzMultiplier;
-	@Shadow @Final private double yMultiplier;
-	@Shadow @Final private PerlinNoise mainNoise;
-	@Shadow @Final private PerlinNoise minLimitNoise;
-	@Shadow @Final private PerlinNoise maxLimitNoise;
-	@Shadow @Final private double maxValue;
-	@Shadow @Final public static KeyDispatchDataCodec<BlendedNoise> CODEC;
-
+	@Shadow
+	@Final
+	private double xzScale;
+	@Shadow
+	@Final
+	private double yScale;
+	@Shadow
+	@Final
+	private double xzFactor;
+	@Shadow
+	@Final
+	private double yFactor;
+	@Shadow
+	@Final
+	private double smearScaleMultiplier;
+	@Shadow
+	@Final
+	private double xzMultiplier;
+	@Shadow
+	@Final
+	private double yMultiplier;
+	@Shadow
+	@Final
+	private PerlinNoise mainNoise;
+	@Shadow
+	@Final
+	private PerlinNoise minLimitNoise;
+	@Shadow
+	@Final
+	private PerlinNoise maxLimitNoise;
+	@Shadow
+	@Final
+	private double maxValue;
+	@Shadow
+	@Final
+	public static KeyDispatchDataCodec<BlendedNoise> CODEC;
+	
 	@Unique
 	private BlendedNoiseNative hwopt$nativePtr;
-
+	
 	@Overwrite
 	public static BlendedNoise createUnseeded(double xzScale, double yScale, double xzFactor, double yFactor, double smearScaleMultiplier) {
 		return new BlendedNoise(new XoroshiroRandomSource(0L), xzScale, yScale, xzFactor, yFactor, smearScaleMultiplier);
@@ -62,7 +86,15 @@ public abstract class BlendedNoiseMixin {
 	
 	@Inject(method = "<init>(Lnet/minecraft/world/level/levelgen/synth/PerlinNoise;Lnet/minecraft/world/level/levelgen/synth/PerlinNoise;Lnet/minecraft/world/level/levelgen/synth/PerlinNoise;DDDDD)V", at = @At("RETURN"))
 	private void hwopt$init(PerlinNoise minLimitNoise, PerlinNoise maxLimitNoise, PerlinNoise mainNoise, double xzScale, double yScale, double xzFactor, double yFactor, double smearScaleMultiplier, CallbackInfo ci) {
-		this.hwopt$nativePtr = FFMFactory.trackCleaner(this, BlendedNoiseNative.instance().create((PerlinNoiseNative) HWOPT_PERLIN_NATIVE.get(minLimitNoise), (PerlinNoiseNative) HWOPT_PERLIN_NATIVE.get(maxLimitNoise), (PerlinNoiseNative) HWOPT_PERLIN_NATIVE.get(mainNoise), xzScale, yScale, xzFactor, yFactor, smearScaleMultiplier));
+		if (minLimitNoise == null || maxLimitNoise == null || mainNoise == null) return;
+		try {
+			PerlinNoiseNative first = (PerlinNoiseNative) HWOPT_PERLIN_NATIVE.get(minLimitNoise);
+			PerlinNoiseNative second = (PerlinNoiseNative) HWOPT_PERLIN_NATIVE.get(maxLimitNoise);
+			PerlinNoiseNative third = (PerlinNoiseNative) HWOPT_PERLIN_NATIVE.get(mainNoise);
+			if (first == null || second == null || third == null) return;
+			this.hwopt$nativePtr = FFMFactory.trackCleaner(this, BlendedNoiseNative.instance().create(first, second, third, xzScale, yScale, xzFactor, yFactor, smearScaleMultiplier));
+		} catch (Exception e) {
+		}
 	}
 	
 	@Inject(method = "compute", at = @At("HEAD"), cancellable = true)

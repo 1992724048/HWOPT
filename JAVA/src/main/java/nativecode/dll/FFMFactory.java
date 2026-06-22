@@ -43,17 +43,19 @@ public final class FFMFactory {
 		});
 		List<Method> allMethods = Downcalls.getAbstractMethods(api);
 		List<Method> nativeMethods = Downcalls.filterNativeMethods(allMethods);
-		nativeLib.bind(nativeMethods);
-		try {
-			currentLibrary.set(nativeLib);
-			byte[] bytecode = BYTECODE_CACHE.computeIfAbsent(api, key -> StubGenerator.generate(key, allMethods));
-			var lookup = MethodHandles.privateLookupIn(api, MethodHandles.lookup());
-			Class<?> impl = lookup.defineHiddenClass(bytecode, true).lookupClass();
-			return (T) impl.getConstructor().newInstance();
-		} catch (Throwable e) {
-			throw new RuntimeException("Failed to generate implementation for " + api, e);
-		} finally {
-			currentLibrary.remove();
+		synchronized (nativeLib) {
+			nativeLib.bind(nativeMethods);
+			try {
+				currentLibrary.set(nativeLib);
+				byte[] bytecode = BYTECODE_CACHE.computeIfAbsent(api, key -> StubGenerator.generate(key, allMethods));
+				var lookup = MethodHandles.privateLookupIn(api, MethodHandles.lookup());
+				Class<?> impl = lookup.defineHiddenClass(bytecode, true).lookupClass();
+				return (T) impl.getConstructor().newInstance();
+			} catch (Throwable e) {
+				throw new RuntimeException("Failed to generate implementation for " + api, e);
+			} finally {
+				currentLibrary.remove();
+			}
 		}
 	}
 	
@@ -121,24 +123,27 @@ public final class FFMFactory {
 	 */
 	static final class BumpAllocators {
 		private static final int TEMP_BUF_SIZE = 16384;
-
+		
 		static final class BufState {
 			MemorySegment buf;
 			int pos;
 			byte[] asciiBuf = new byte[256];
-			BufState() { buf = ARENA.allocate(TEMP_BUF_SIZE); }
+			
+			BufState() {
+				buf = ARENA.allocate(TEMP_BUF_SIZE);
+			}
 		}
-
+		
 		private static final ThreadLocal<BufState> TL_STATE = ThreadLocal.withInitial(BufState::new);
-
+		
 		static void endDowncall() {
 			TL_STATE.get().pos = 0;
 		}
-
+		
 		static MemorySegment tempAlloc(long size) {
 			return tempAlloc(TL_STATE.get(), size);
 		}
-
+		
 		static MemorySegment tempAlloc(BufState s, long size) {
 			MemorySegment buf = s.buf;
 			int offset = s.pos;
@@ -198,7 +203,7 @@ public final class FFMFactory {
 		private static final long[] EMPTY_LONG = new long[0];
 		private static final short[] EMPTY_SHORT = new short[0];
 		private static final byte[] EMPTY_BYTE = new byte[0];
-
+		
 		static double[] fromSpanDouble(MemorySegment spanPtr) {
 			if (spanPtr == MemorySegment.NULL) return EMPTY_DOUBLE;
 			MemorySegment data = spanPtr.get(ValueLayout.ADDRESS, 0);
@@ -208,7 +213,7 @@ public final class FFMFactory {
 			MemorySegment.ofArray(result).copyFrom(data.asSlice(0, size * 8));
 			return result;
 		}
-
+		
 		static int[] fromSpanInt(MemorySegment spanPtr) {
 			if (spanPtr == MemorySegment.NULL) return EMPTY_INT;
 			MemorySegment data = spanPtr.get(ValueLayout.ADDRESS, 0);
@@ -218,7 +223,7 @@ public final class FFMFactory {
 			MemorySegment.ofArray(result).copyFrom(data.asSlice(0, size * 4));
 			return result;
 		}
-
+		
 		static float[] fromSpanFloat(MemorySegment spanPtr) {
 			if (spanPtr == MemorySegment.NULL) return EMPTY_FLOAT;
 			MemorySegment data = spanPtr.get(ValueLayout.ADDRESS, 0);
@@ -228,7 +233,7 @@ public final class FFMFactory {
 			MemorySegment.ofArray(result).copyFrom(data.asSlice(0, size * 4));
 			return result;
 		}
-
+		
 		static long[] fromSpanLong(MemorySegment spanPtr) {
 			if (spanPtr == MemorySegment.NULL) return EMPTY_LONG;
 			MemorySegment data = spanPtr.get(ValueLayout.ADDRESS, 0);
@@ -238,7 +243,7 @@ public final class FFMFactory {
 			MemorySegment.ofArray(result).copyFrom(data.asSlice(0, size * 8));
 			return result;
 		}
-
+		
 		static short[] fromSpanShort(MemorySegment spanPtr) {
 			if (spanPtr == MemorySegment.NULL) return EMPTY_SHORT;
 			MemorySegment data = spanPtr.get(ValueLayout.ADDRESS, 0);
@@ -248,7 +253,7 @@ public final class FFMFactory {
 			MemorySegment.ofArray(result).copyFrom(data.asSlice(0, size * 2));
 			return result;
 		}
-
+		
 		static byte[] fromSpanByte(MemorySegment spanPtr) {
 			if (spanPtr == MemorySegment.NULL) return EMPTY_BYTE;
 			MemorySegment data = spanPtr.get(ValueLayout.ADDRESS, 0);

@@ -59,6 +59,8 @@
     <Import Project="..\..\..\..\Library\parallel_hashmap\parallel_hashmap.vcxitems" Label="Shared" />
     <Import Project="..\..\..\..\Library\glm\glm.vcxitems" Label="Shared" />
     <Import Project="..\..\..\..\Library\Proxy\Proxy.vcxitems" Label="Shared" />
+    <Import Project="..\..\..\..\Library\zlib\zlib.vcxitems" Label="Shared" />
+    <Import Project="..\..\..\..\Library\zstd\zstd.vcxitems" Label="Shared" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -114,7 +116,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
       <AdditionalLibraryDirectories>$(SolutionDir)..\..\JAVA\src\main\resources\native\win64\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>Fortran.lib;hwopt-sycl.lib;cabinet.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Fortran.lib;hwopt-sycl.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -159,7 +161,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>Fortran.lib;hwopt-sycl.lib;cabinet.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Fortran.lib;hwopt-sycl.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)..\..\JAVA\src\main\resources\native\win64\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <SetChecksum>true</SetChecksum>
     </Link>
