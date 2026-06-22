@@ -66,7 +66,7 @@ public abstract class AABBMixin {
 	
 	@Overwrite
 	public static AABB of(BoundingBox box) {
-		return new AABB((double) box.minX(), (double) box.minY(), (double) box.minZ(), (double) (box.maxX() + 1), (double) (box.maxY() + 1), (double) (box.maxZ() + 1));
+		return new AABB(box.minX(), box.minY(), box.minZ(), box.maxX() + 1, box.maxY() + 1, box.maxZ() + 1);
 	}
 	
 	@Overwrite
@@ -76,7 +76,7 @@ public abstract class AABBMixin {
 	
 	@Overwrite
 	public static AABB encapsulatingFullBlocks(BlockPos pos0, BlockPos pos1) {
-		return new AABB((double) Math.min(pos0.getX(), pos1.getX()), (double) Math.min(pos0.getY(), pos1.getY()), (double) Math.min(pos0.getZ(), pos1.getZ()), (double) (Math.max(pos0.getX(), pos1.getX()) + 1), (double) (Math.max(pos0.getY(), pos1.getY()) + 1), (double) (Math.max(pos0.getZ(), pos1.getZ()) + 1));
+		return new AABB(Math.min(pos0.getX(), pos1.getX()), Math.min(pos0.getY(), pos1.getY()), Math.min(pos0.getZ(), pos1.getZ()), Math.max(pos0.getX(), pos1.getX()) + 1, Math.max(pos0.getY(), pos1.getY()) + 1, Math.max(pos0.getZ(), pos1.getZ()) + 1);
 	}
 	
 	@Overwrite
@@ -268,7 +268,7 @@ public abstract class AABBMixin {
 	
 	@Overwrite
 	public AABB move(Vector3f pos) {
-		return this.move((double) pos.x, (double) pos.y, (double) pos.z);
+		return this.move(pos.x, pos.y, pos.z);
 	}
 	
 	@Overwrite
@@ -288,7 +288,7 @@ public abstract class AABBMixin {
 	
 	@Overwrite
 	public boolean intersects(BlockPos pos) {
-		return this.intersects((double) pos.getX(), (double) pos.getY(), (double) pos.getZ(), (double) (pos.getX() + 1), (double) (pos.getY() + 1), (double) (pos.getZ() + 1));
+		return this.intersects(pos.getX(), pos.getY(), pos.getZ(), pos.getX() + 1, pos.getY() + 1, pos.getZ() + 1);
 	}
 	
 	@Overwrite
@@ -345,7 +345,7 @@ public abstract class AABBMixin {
 		double dx = to.x - from.x;
 		double dy = to.y - from.y;
 		double dz = to.z - from.z;
-		Direction direction = getDirection(minX, minY, minZ, maxX, maxY, maxZ, from, scaleReference, (Direction) null, dx, dy, dz);
+		Direction direction = getDirection(minX, minY, minZ, maxX, maxY, maxZ, from, scaleReference, null, dx, dy, dz);
 		if (direction == null) {
 			return Optional.empty();
 		} else {
@@ -416,17 +416,17 @@ public abstract class AABBMixin {
 	
 	@Overwrite
 	public double distanceToSqr(Vec3 point) {
-		double dx = Math.max(Math.max(this.minX - point.x, point.x - this.maxX), (double) 0.0F);
-		double dy = Math.max(Math.max(this.minY - point.y, point.y - this.maxY), (double) 0.0F);
-		double dz = Math.max(Math.max(this.minZ - point.z, point.z - this.maxZ), (double) 0.0F);
+		double dx = Math.max(Math.max(this.minX - point.x, point.x - this.maxX), 0.0F);
+		double dy = Math.max(Math.max(this.minY - point.y, point.y - this.maxY), 0.0F);
+		double dz = Math.max(Math.max(this.minZ - point.z, point.z - this.maxZ), 0.0F);
 		return Mth.lengthSquared(dx, dy, dz);
 	}
 	
 	@Overwrite
 	public double distanceToSqr(AABB boundingBox) {
-		double dx = Math.max(Math.max(this.minX - boundingBox.maxX, boundingBox.minX - this.maxX), (double) 0.0F);
-		double dy = Math.max(Math.max(this.minY - boundingBox.maxY, boundingBox.minY - this.maxY), (double) 0.0F);
-		double dz = Math.max(Math.max(this.minZ - boundingBox.maxZ, boundingBox.minZ - this.maxZ), (double) 0.0F);
+		double dx = Math.max(Math.max(this.minX - boundingBox.maxX, boundingBox.minX - this.maxX), 0.0F);
+		double dy = Math.max(Math.max(this.minY - boundingBox.maxY, boundingBox.minY - this.maxY), 0.0F);
+		double dz = Math.max(Math.max(this.minZ - boundingBox.maxZ, boundingBox.minZ - this.maxZ), 0.0F);
 		return Mth.lengthSquared(dx, dy, dz);
 	}
 	
@@ -442,12 +442,12 @@ public abstract class AABBMixin {
 	
 	@Overwrite
 	public Vec3 getCenter() {
-		return new Vec3(Mth.lerp((double) 0.5F, this.minX, this.maxX), Mth.lerp((double) 0.5F, this.minY, this.maxY), Mth.lerp((double) 0.5F, this.minZ, this.maxZ));
+		return new Vec3(Mth.lerp(0.5F, this.minX, this.maxX), Mth.lerp(0.5F, this.minY, this.maxY), Mth.lerp(0.5F, this.minZ, this.maxZ));
 	}
 	
 	@Overwrite
 	public Vec3 getBottomCenter() {
-		return new Vec3(Mth.lerp((double) 0.5F, this.minX, this.maxX), this.minY, Mth.lerp((double) 0.5F, this.minZ, this.maxZ));
+		return new Vec3(Mth.lerp(0.5F, this.minX, this.maxX), this.minY, Mth.lerp(0.5F, this.minZ, this.maxZ));
 	}
 	
 	@Overwrite

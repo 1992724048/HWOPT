@@ -1,6 +1,10 @@
 ﻿#pragma once
+#include <cstdint>
 #include "../JavaNative.hpp"
 #include "Entity/AABB.hpp"
+
+#include "Chunk/Noise/BlendedNoise.hpp"
+
 #include "glm/vec3.hpp"
 
 namespace minecraft::math {

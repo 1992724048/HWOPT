@@ -24,20 +24,38 @@ public interface NoiseChunkAccessor {
     @Accessor("cellStartBlockX")
     int cellStartBlockX();
 
+    @Accessor("cellStartBlockX")
+    void cellStartBlockX(int v);
+
     @Accessor("cellStartBlockY")
     int cellStartBlockY();
+
+    @Accessor("cellStartBlockY")
+    void cellStartBlockY(int v);
 
     @Accessor("cellStartBlockZ")
     int cellStartBlockZ();
 
+    @Accessor("cellStartBlockZ")
+    void cellStartBlockZ(int v);
+
     @Accessor("inCellX")
     int inCellX();
+
+    @Accessor("inCellX")
+    void inCellX(int v);
 
     @Accessor("inCellY")
     int inCellY();
 
+    @Accessor("inCellY")
+    void inCellY(int v);
+
     @Accessor("inCellZ")
     int inCellZ();
+
+    @Accessor("inCellZ")
+    void inCellZ(int v);
 
     @Accessor("fillingCell")
     boolean fillingCell();

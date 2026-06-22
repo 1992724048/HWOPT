@@ -6,8 +6,8 @@
 
 #include "SimplexNoise.hpp"
 
-#include "../Math.hpp"
-#include "../../util.hpp"
+#include "../../Math.hpp"
+#include "../../../util.hpp"
 using namespace minecraft::noise;
 using namespace minecraft::math;
 
@@ -60,7 +60,7 @@ auto ImprovedNoise::noise_with_derivative(const double x, const double y, const 
     return sample_with_derivative(xf, yf, zf, xr, yr, zr, derivative_span.data(), derivative_span.size());
 }
 
-auto ImprovedNoise::get_values(const double* xs, int xs_len, const double* ys, int ys_len, const double* zs, int zs_len, double* result, int result_len) const -> void {
+auto ImprovedNoise::get_values(const double* xs, int xs_len, const double* ys, int ys_len, const double* zs, int zs_len, double* result, const int result_len) const -> void {
     for (int i = 0; i < result_len; i++) {
         result[i] = noise(xs[i], ys[i], zs[i]);
     }

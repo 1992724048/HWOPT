@@ -1,6 +1,10 @@
 ﻿#include "Math.hpp"
 #include <array>
 #include <windows.h>
+#include <tbb/parallel_for.h>
+
+#include "Chunk/DensityFunctionTree.hpp"
+#include "Chunk/Noise/NormalNoise.hpp"
 using namespace minecraft::math;
 
 Math::Math() {

@@ -37,7 +37,7 @@ public abstract class AquiferBarrierMixin {
 		if (hwopt$barrierCache == null || hwopt$barrierCache.length != size) {
 			hwopt$barrierCache = new double[size];
 		}
-		this.barrierNoise.fillArray(hwopt$barrierCache, (DensityFunction.ContextProvider) this.noiseChunk);
+		this.barrierNoise.fillArray(hwopt$barrierCache, this.noiseChunk);
 	}
 	
 	@Inject(method = "calculatePressure(Lnet/minecraft/world/level/levelgen/DensityFunction$FunctionContext;Lorg/apache/commons/lang3/mutable/MutableDouble;Lnet/minecraft/world/level/levelgen/Aquifer$FluidStatus;Lnet/minecraft/world/level/levelgen/Aquifer$FluidStatus;)D", at = @At("HEAD"), cancellable = true)

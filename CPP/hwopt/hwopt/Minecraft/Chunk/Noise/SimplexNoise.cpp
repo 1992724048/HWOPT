@@ -2,7 +2,7 @@
 
 #include "SimplexNoise.hpp"
 
-#include "../../util.hpp"
+#include "../../../util.hpp"
 using namespace minecraft::noise;
 
 SimplexNoise::SimplexNoise() {

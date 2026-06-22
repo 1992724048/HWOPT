@@ -1,5 +1,6 @@
 package com.server.world.worldgen.mixin.chunk;
 
+import com.server.world.misc.PrecomputedDensity;
 import com.server.world.worldgen.accessor.NoiseChunkAccessor;
 import com.server.world.worldgen.accessor.NoiseInterpolatorAccessor;
 import library.dll.MathNative;
@@ -12,40 +13,28 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.lang.reflect.Method;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Mixin(NoiseChunk.class)
 public abstract class NoiseChunkMixin {
 
-	@Shadow
-	@Final
-	private int cellWidth;
-
-	@Shadow
-	@Final
-	private int cellHeight;
-
-	@Shadow
-	private int arrayIndex;
-
-	@Shadow
-	@Final
-	private List<NoiseChunk.NoiseInterpolator> interpolators;
+	@Shadow @Final private int cellWidth;
+	@Shadow @Final private int cellHeight;
+	@Shadow private int arrayIndex;
+	@Shadow private int cellStartBlockX;
+	@Shadow private int cellStartBlockY;
+	@Shadow private int cellStartBlockZ;
+	@Shadow private int inCellX;
+	@Shadow private int inCellY;
+	@Shadow private int inCellZ;
+	@Shadow private long interpolationCounter;
 
 	@Unique
 	private static final Map<Class<?>, Method[]> IO_METHOD_CACHE = new ConcurrentHashMap<>();
-
-	@Unique
-	private static double[] hwopt$precomputedCache;
-
-	@Unique
-	public static void hwopt$setPrecomputedCache(double[] data) {
-		hwopt$precomputedCache = data;
-	}
 
 	@Unique
 	private static Method[] hwopt$getInputTransformMethods(DensityFunction fn) {
@@ -93,20 +82,38 @@ public abstract class NoiseChunkMixin {
 		}
 	}
 
-	@Inject(method = "fillSlice", at = @At("HEAD"), cancellable = true)
-	private void hwopt$skipFillSlice(boolean useSlice0, int cellX, CallbackInfo ci) {
-		if (hwopt$precomputedCache == null) return;
+	@Inject(method = "getInterpolatedDensity", at = @At("HEAD"), cancellable = true)
+	private void hwopt$getInterpolatedDensity(CallbackInfoReturnable<Double> cir) {
+		if (!PrecomputedDensity.isActive()) return;
 		NoiseChunkAccessor acc = (NoiseChunkAccessor) this;
-		NoiseInterpolatorAccessor nia = (NoiseInterpolatorAccessor) this.interpolators.get(0);
-		double[][] slice = useSlice0 ? nia.slice0() : nia.slice1();
-		int numZ = acc.cellCountXZ() + 1;
-		int numY = acc.cellCountY() + 1;
-		int cx = cellX - acc.firstCellX();
-		if (cx < 0) return;
-		int base = cx * numZ * numY;
-		for (int cz = 0; cz < numZ; cz++) {
-			System.arraycopy(hwopt$precomputedCache, base + cz * numY, slice[cz], 0, numY);
-		}
+		double d = PrecomputedDensity.get(
+			acc.cellStartBlockX() + acc.inCellX(),
+			acc.cellStartBlockY() + acc.inCellY(),
+			acc.cellStartBlockZ() + acc.inCellZ());
+		if (!Double.isNaN(d)) cir.setReturnValue(d);
+	}
+
+	@Inject(method = "updateForY", at = @At("HEAD"), cancellable = true)
+	private void hwopt$skipUpdateForY(int y, double frac, CallbackInfo ci) {
+		if (!PrecomputedDensity.isActive()) return;
+		this.inCellY = y - this.cellStartBlockY;
+		this.interpolationCounter++;
+		ci.cancel();
+	}
+
+	@Inject(method = "updateForX", at = @At("HEAD"), cancellable = true)
+	private void hwopt$skipUpdateForX(int x, double frac, CallbackInfo ci) {
+		if (!PrecomputedDensity.isActive()) return;
+		this.inCellX = x - this.cellStartBlockX;
+		this.interpolationCounter++;
+		ci.cancel();
+	}
+
+	@Inject(method = "updateForZ", at = @At("HEAD"), cancellable = true)
+	private void hwopt$skipUpdateForZ(int z, double frac, CallbackInfo ci) {
+		if (!PrecomputedDensity.isActive()) return;
+		this.inCellZ = z - this.cellStartBlockZ;
+		this.interpolationCounter++;
 		ci.cancel();
 	}
 }

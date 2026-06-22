@@ -3,7 +3,7 @@
 #include "PerlinNoise.hpp"
 #include <cmath>
 
-#include "../../util.hpp"
+#include "../../../util.hpp"
 using namespace minecraft::noise;
 
 static constexpr double ROUND_OFF = 3.3554432E7;
@@ -65,7 +65,7 @@ auto PerlinNoise::get_value(const double x, const double y, const double z, cons
     return value;
 }
 
-auto PerlinNoise::get_values(const double* xs, int xs_len, const double* ys, int ys_len, const double* zs, int zs_len, double* result, int result_len) const -> void {
+auto PerlinNoise::get_values(const double* xs, int xs_len, const double* ys, int ys_len, const double* zs, int zs_len, double* result, const int result_len) const -> void {
     for (int i = 0; i < result_len; i++) {
         result[i] = get_value(xs[i], ys[i], zs[i]);
     }

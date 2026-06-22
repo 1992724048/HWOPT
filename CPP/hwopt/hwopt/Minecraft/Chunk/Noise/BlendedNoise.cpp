@@ -1,8 +1,8 @@
 ﻿#include "BlendedNoise.hpp"
 
-#include "../Math.hpp"
+#include "../../Math.hpp"
 
-#include "../../util.hpp"
+#include "../../../util.hpp"
 using namespace minecraft::noise;
 
 auto BlendedNoise::add_methods() -> void {
@@ -90,7 +90,7 @@ auto BlendedNoise::compute(const double limit_x, const double limit_y, const dou
     return math::Math::clamped_lerp(factor, blend_min / static_cast<double>(512.0F), blend_max / static_cast<double>(512.0F)) / static_cast<double>(128.0F);
 }
 
-auto BlendedNoise::get_values(const double* xs, int xs_len, const double* ys, int ys_len, const double* zs, int zs_len, double* result, int result_len) const -> void {
+auto BlendedNoise::get_values(const double* xs, int xs_len, const double* ys, int ys_len, const double* zs, int zs_len, double* result, const int result_len) const -> void {
     for (int i = 0; i < result_len; i++) {
         result[i] = compute(xs[i], ys[i], zs[i]);
     }

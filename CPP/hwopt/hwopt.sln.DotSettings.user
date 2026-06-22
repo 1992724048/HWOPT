@@ -3,6 +3,9 @@
 	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=e47c8df7_002D96f6_002D4d5c_002Dbea3_002D0557fd49c53a/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="NormalNoiseBenchmark" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
   &lt;Project Location="E:\CODE\HWOPT\CPP\hwopt\hwopt-benchmark" Presentation="&amp;lt;hwopt-benchmark&amp;gt;" /&gt;&#xD;
 &lt;/SessionState&gt;</s:String>
+	<s:Boolean x:Key="/Default/Housekeeping/CodeStructure/ShowPreprocessorDirectives/@EntryValue">True</s:Boolean>
+	<s:Boolean x:Key="/Default/Housekeeping/CodeStructure/SynchronizeCaretToView/@EntryValue">True</s:Boolean>
+	<s:Boolean x:Key="/Default/Housekeeping/CodeStructure/SynchronizeViewToCaret/@EntryValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/Monitoring/DiagnosticsToolPanelSuppressed/@EntryValue">True</s:Boolean>
 	
 	

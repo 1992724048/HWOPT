@@ -7,11 +7,11 @@
 #include <span>
 #include <vector>
 
-#include "../hwopt/Minecraft/Noise/BlendedNoise.hpp"
-#include "../hwopt/Minecraft/Noise/ImprovedNoise.hpp"
-#include "../hwopt/Minecraft/Noise/NormalNoise.hpp"
-#include "../hwopt/Minecraft/Noise/PerlinNoise.hpp"
-#include "../hwopt/Minecraft/Noise/SimplexNoise.hpp"
+#include "../hwopt/Minecraft/Chunk/Noise//BlendedNoise.hpp"
+#include "../hwopt/Minecraft/Chunk/Noise/ImprovedNoise.hpp"
+#include "../hwopt/Minecraft/Chunk/Noise/NormalNoise.hpp"
+#include "../hwopt/Minecraft/Chunk/Noise/PerlinNoise.hpp"
+#include "../hwopt/Minecraft/Chunk/Noise/SimplexNoise.hpp"
 
 static constexpr std::array AMPLITUDES_8{1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0};
 static constexpr std::array AMPLITUDES_16{1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0};

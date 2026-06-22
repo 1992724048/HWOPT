@@ -7,7 +7,9 @@
     "world.MinecraftServerMixin",
     "world.render.ViewDistanceMixin",
     "world.render.DistanceManagerMixin",
-    "world.render.ChunkTaskPriorityQueueMixin"
+    "world.render.ChunkTaskPriorityQueueMixin",
+    "CompressionDecoderMixin",
+    "CompressionEncoderMixin"
   ],
   "injectors": {
     "defaultRequire": 1

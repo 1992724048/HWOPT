@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include <array>
-#include "../../JavaNative.hpp"
+#include "../../../JavaNative.hpp"
 
 namespace minecraft::noise {
     class HWOPT_API SimplexNoise final : JavaNative<SimplexNoise> {

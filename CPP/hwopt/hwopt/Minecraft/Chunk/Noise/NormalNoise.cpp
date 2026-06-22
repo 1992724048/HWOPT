@@ -2,7 +2,7 @@
 
 #include "NormalNoise.hpp"
 
-#include "../../util.hpp"
+#include "../../../util.hpp"
 using namespace minecraft::noise;
 
 static constexpr double INPUT_FACTOR = 1.0181268882175227;
@@ -46,7 +46,7 @@ auto NormalNoise::get_value(const double x, const double y, const double z) cons
     return (this->first->get_value(x, y, z) + this->second->get_value(x2, y2, z2)) * this->value_factor;
 }
 
-auto NormalNoise::get_values(const double* xs, int xs_len, const double* ys, int ys_len, const double* zs, int zs_len, double* result, int result_len) const -> void {
+auto NormalNoise::get_values(const double* xs, int xs_len, const double* ys, int ys_len, const double* zs, int zs_len, double* result, const int result_len) const -> void {
     for (int i = 0; i < result_len; i++) {
         result[i] = get_value(xs[i], ys[i], zs[i]);
     }

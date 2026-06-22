@@ -19,7 +19,7 @@
     "mixin.noise.ImprovedNoiseMixin",
     "mixin.noise.NormalNoiseMixin",
     "mixin.noise.PerlinNoiseMixin",
-    "mixin.noise.SimplexNoiseMixin"
+    "mixin.noise.SimplexNoiseMixin",
   ],
   "injectors": {
     "defaultRequire": 1

@@ -5,6 +5,8 @@
 #include <windows.h>
 #include <sycl-plugin.h>
 #include <utility>
+#include <thread>
+#include <tbb/global_control.h>
 #include <stdpp/logger.h>
 #include <stdpp/exception.h>
 
@@ -24,6 +26,8 @@ auto init_sycl_device() -> void {
         CMSG(CLOG) << dev.error();
     }
 }
+
+static const tbb::global_control TBB_GC(tbb::global_control::max_allowed_parallelism, std::thread::hardware_concurrency());
 
 auto APIENTRY DllMain(HMODULE hModule, const DWORD ul_reason_for_call, LPVOID lpReserved) -> BOOL {
     switch (ul_reason_for_call) {

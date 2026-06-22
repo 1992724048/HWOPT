@@ -114,7 +114,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
       <AdditionalLibraryDirectories>$(SolutionDir)..\..\JAVA\src\main\resources\native\win64\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>Fortran.lib;hwopt-sycl.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Fortran.lib;hwopt-sycl.lib;cabinet.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -159,35 +159,39 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>Fortran.lib;hwopt-sycl.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Fortran.lib;hwopt-sycl.lib;cabinet.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)..\..\JAVA\src\main\resources\native\win64\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <SetChecksum>true</SetChecksum>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="Minecraft\Chunk\DensityFunctionTree.cpp" />
+    <ClCompile Include="Minecraft\Compress\Compress.cpp" />
+    <ClCompile Include="Minecraft\Chunk\Noise\BlendedNoise.cpp" />
+    <ClCompile Include="Minecraft\Chunk\Noise\ImprovedNoise.cpp" />
+    <ClCompile Include="Minecraft\Chunk\Noise\NormalNoise.cpp" />
+    <ClCompile Include="Minecraft\Chunk\Noise\PerlinNoise.cpp" />
+    <ClCompile Include="Minecraft\Chunk\Noise\SimplexNoise.cpp" />
     <ClCompile Include="Minecraft\Entity\AABB.cpp" />
     <ClCompile Include="Minecraft\Chunk\Beardifier.cpp" />
     <ClCompile Include="Minecraft\Block\BlockIdRegistry.cpp" />
     <ClCompile Include="Minecraft\Math.cpp" />
-    <ClCompile Include="Minecraft\Noise\BlendedNoise.cpp" />
-    <ClCompile Include="Minecraft\Noise\ImprovedNoise.cpp" />
-    <ClCompile Include="Minecraft\Noise\NormalNoise.cpp" />
-    <ClCompile Include="Minecraft\Noise\PerlinNoise.cpp" />
-    <ClCompile Include="Minecraft\Noise\SimplexNoise.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Global.hpp" />
+    <ClInclude Include="Minecraft\Chunk\DensityFunctionTree.hpp" />
+    <ClInclude Include="Minecraft\Chunk\Noise\BlendedNoise.hpp" />
+    <ClInclude Include="Minecraft\Chunk\Noise\ImprovedNoise.hpp" />
+    <ClInclude Include="Minecraft\Chunk\Noise\NormalNoise.hpp" />
+    <ClInclude Include="Minecraft\Chunk\Noise\PerlinNoise.hpp" />
+    <ClInclude Include="Minecraft\Chunk\Noise\SimplexNoise.hpp" />
+    <ClInclude Include="Minecraft\Compress\Compress.hpp" />
     <ClInclude Include="Minecraft\Entity\AABB.hpp" />
     <ClInclude Include="Minecraft\Chunk\Beardifier.hpp" />
     <ClInclude Include="Minecraft\Block\BlockIdRegistry.hpp" />
     <ClInclude Include="Minecraft\Math.hpp" />
-    <ClInclude Include="Minecraft\Noise\BlendedNoise.hpp" />
-    <ClInclude Include="Minecraft\Noise\ImprovedNoise.hpp" />
     <ClInclude Include="JavaNative.hpp" />
-    <ClInclude Include="Minecraft\Noise\NormalNoise.hpp" />
-    <ClInclude Include="Minecraft\Noise\PerlinNoise.hpp" />
-    <ClInclude Include="Minecraft\Noise\SimplexNoise.hpp" />
     <ClInclude Include="util.hpp" />
   </ItemGroup>
   <ItemGroup>

@@ -2,9 +2,9 @@ package com.server.world.worldgen.mixin.chunk;
 
 import com.server.world.util.ChunkGenStats;
 import com.hwpp.mod.Config;
+import com.server.world.misc.DensityPrecomputer;
 import com.server.world.worldgen.accessor.NoiseChunkAccessor;
 
-import com.hwpp.noise.CornerPrecomputer;
 import com.hwpp.util.BlockIdRegistry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
@@ -142,7 +142,7 @@ public abstract class NoiseBasedChunkGeneratorMixin {
 		final Aquifer aquifer = noiseChunk.aquifer();
 		noiseChunk.initializeForFirstCellX();
 		
-		CornerPrecomputer.precompute(noiseChunk);
+		DensityPrecomputer.precompute(noiseChunk);
 		
 		final int cellWidth = noiseAccessor.invokeCellWidth();
 		final int cellHeight = noiseAccessor.invokeCellHeight();

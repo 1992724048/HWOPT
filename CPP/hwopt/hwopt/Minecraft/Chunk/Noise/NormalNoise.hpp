@@ -23,4 +23,5 @@ namespace minecraft::noise {
         [[nodiscard]] auto max_value() const -> double;
         static auto expected_deviation(int octave_span) -> double;
     };
-} // namespace minecraft
+} // namespace minecraft::noise
+
