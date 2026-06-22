@@ -27,12 +27,13 @@ HWOPT (Hardware Optimization) is a Minecraft optimization mod that rewrites vani
 
 | Name                            | Category     | Status         | Module Version | Notes                         |
 | ------------------------------- | ------------ | -------------- | -------------- | ----------------------------- |
-| Terrain Generation Optimization | Optimization | In Development | 26.1           |                               |
-| Entity Collision Optimization   | Optimization | In Development | 26.1           |                               |
-| Entity Rendering Optimization   | Optimization | In Development | 26.1           |                               |
-| Entity AI Optimization          | Optimization | In Development | 26.1           |                               |
-| Village Spawn                   | Utility      | Completed      | 26.1           | Works outside testing as well |
-| 125-Chunk Render Distance       | Utility      | Completed      | 26.1           | Heavy on performance          |
+| Terrain Generation Optimization | Optimization | In Development | 26.1           | Optimizes vanilla chunk generation speed (compatibility with other terrain mods prioritized) |
+| Entity Collision Optimization   | Optimization | In Development | 26.1           | Optimizes vanilla entity collision computation                                         |
+| Entity Rendering Optimization   | Optimization | In Development | 26.1           |                                                                                               |
+| Entity AI Optimization          | Optimization | In Development | 26.1           |                                                                                               |
+| Network Packet Compression      | Optimization | Completed      | 26.1           | Batches packets using ICX-optimized ZSTD compression, uses ID indices instead of packet strings |
+| Village Spawn                   | Utility      | Completed      | 26.1           | Sets world spawn point to a village                                                           |
+| 125-Chunk Render Distance       | Utility      | Completed      | 26.1           | Extends vanilla render distance to 125 chunks                                                  |
 
 - Module version format: `year/revision`
 
@@ -67,7 +68,7 @@ HWOPT (Hardware Optimization) is a Minecraft optimization mod that rewrites vani
 
 3. What advantage does the Intel C++ compiler have over MSVC for compiling native DLLs?
 
-- Across multiple benchmarks against Clang, GCC, MSVC, and other compilers, the Intel C++ compiler (ICX) consistently delivers excellent performance, especially on Intel hardware where it better exploits SIMD instruction sets. Furthermore, the mod's native layer heavily depends on the Intel oneAPI ecosystem (DPC++, oneTBB, etc.). Using ICX ensures ABI consistency across components and avoids cross-compiler linking compatibility issues.
+- Across multiple benchmarks against Clang, GCC, MSVC, and other compilers, the Intel C++ compiler (ICX) consistently delivers excellent performance, especially on Intel hardware where it better exploits SIMD instruction sets. Furthermore, the mod's native layer heavily depends on the Intel oneAPI ecosystem (DPC++, oneTBB, etc.). Using ICX ensures ABI consistency across components and avoids cross-compiler linking compatibility issues. Reference: [Tencent boosts MySQL performance up to 85% with Intel® oneAPI tools](https://www.intel.com/content/www/us/en/developer/articles/technical/tencent-gains-85-percent-boost-for-mysql.html)
 
 4. Does SYCL have a performance advantage over Vulkan for this project?
 
