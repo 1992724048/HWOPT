@@ -136,7 +136,7 @@ namespace {
     auto sweep_par(const int n, const int max_collisions, const EntityRef* sorted, int* out_a, int* out_b) -> int {
         std::atomic ac{0};
         parallel_for(tbb::blocked_range<int>(0, n),
-                     [&](const tbb::blocked_range<int>& range) {
+                     [&](const tbb::blocked_range<int>& range) -> void {
                          for (int i = range.begin(); i < range.end(); i++) {
                              const auto& a = sorted[i];
                              for (int j = i + 1; j < n; j++) {

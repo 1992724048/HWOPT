@@ -29,15 +29,15 @@ We avoid blindly applying multi-threading or GPU acceleration. Every optimizatio
 
 #### Feature List
 
-| Name                            | Category     | Status         | Module Version | Notes                         |
-| ------------------------------- | ------------ | -------------- | -------------- | ----------------------------- |
-| Terrain Generation Optimization | Optimization | In Development | 26.1           | Optimizes vanilla chunk generation speed (compatibility with other terrain mods prioritized) |
-| Entity Collision Optimization   | Optimization | In Development | 26.1           | Optimizes vanilla entity collision computation                                         |
-| Entity Rendering Optimization   | Optimization | In Development | 26.1           |                                                                                               |
-| Entity AI Optimization          | Optimization | In Development | 26.1           |                                                                                               |
+| Name                            | Category     | Status         | Module Version | Notes                                                                                           |
+| ------------------------------- | ------------ | -------------- | -------------- | ----------------------------------------------------------------------------------------------- |
+| Terrain Generation Optimization | Optimization | Completed      | 26.1           | Optimizes vanilla chunk generation speed (compatibility with other terrain mods prioritized)    |
+| Entity Collision Optimization   | Optimization | Completed      | 26.1           | Optimizes vanilla entity collision computation                                                  |
+| Entity Rendering Optimization   | Optimization | In Development | 26.1           |                                                                                                 |
+| Entity AI Optimization          | Optimization | In Development | 26.1           |                                                                                                 |
 | Network Packet Compression      | Optimization | Completed      | 26.1           | Batches packets using ICX-optimized ZSTD compression, uses ID indices instead of packet strings |
-| Village Spawn                   | Utility      | Completed      | 26.1           | Sets world spawn point to a village                                                           |
-| 125-Chunk Render Distance       | Utility      | Completed      | 26.1           | Extends vanilla render distance to 125 chunks                                                  |
+| Village Spawn                   | Utility      | Completed      | 26.1           | Sets world spawn point to a village                                                             |
+| 125-Chunk Render Distance       | Utility      | Completed      | 26.1           | Extends vanilla render distance to 125 chunks                                                   |
 
 - Module version format: `year/revision`
 
