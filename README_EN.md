@@ -15,6 +15,10 @@
 
 HWOPT (Hardware Optimization) is a Minecraft optimization mod that rewrites vanilla algorithms in C++, using the Java 25 FFM API for low-overhead native calls, with GPU (SYCL/DPC++) acceleration to boost game performance.
 
+## Design Philosophy
+
+We avoid blindly applying multi-threading or GPU acceleration. Every optimization is evaluated against real-world scenarios to determine whether it genuinely benefits performance — using these techniques for their own sake would only saturate compute resources and degrade system responsiveness with little to no gain. This mod prioritizes compatibility with other mods over pushing performance to its absolute limits.
+
 ## Community
 
 - [pd34429710](https://pd.qq.com/s/fcy3gqy4x) (QQ Channel)
