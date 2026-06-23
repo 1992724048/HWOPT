@@ -5,14 +5,14 @@
 namespace minecraft::aabb {
     class HWOPT_API AABB final : JavaNative<AABB> {
     public:
-        static constexpr int PARALLEL_THRESHOLD = 1536;
+        static constexpr int PARALLEL_THRESHOLD = 2048;
 
-        double min_x;
-        double min_y;
-        double min_z;
-        double max_x;
-        double max_y;
-        double max_z;
+        double min_x{};
+        double min_y{};
+        double min_z{};
+        double max_x{};
+        double max_y{};
+        double max_z{};
 
         AABB();
 

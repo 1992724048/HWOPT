@@ -1,14 +1,12 @@
 ﻿#include "AABB.hpp"
 #include <algorithm>
+#include <atomic>
 #include <cmath>
 #include <vector>
 
 #include <tbb/blocked_range.h>
 #include <tbb/parallel_for.h>
 #include <tbb/parallel_sort.h>
-
-#include <atomic>
-#include <omp.h>
 
 using namespace minecraft::aabb;
 
@@ -48,57 +46,55 @@ auto AABB::batch_collide_axis(const int axis,
         const double sMaxZ = b[5];
 
         switch (axis) {
-            case 0: // X
+            case 0:
                 if (moving_max_y <= sMinY || moving_min_y >= sMaxY || moving_max_z <= sMinZ || moving_min_z >= sMaxZ) {
                     continue;
                 }
                 if (distance > 0.0) {
                     const double d = sMinX - moving_max_x;
-                    if (d >= -1.0E-7) {
-                        distance = (std::min)(distance, d);
+                    if (d >= -1.0E-7 && d < distance) {
+                        distance = d;
                     }
                 } else {
                     const double d = sMaxX - moving_min_x;
-                    if (d <= 1.0E-7) {
-                        distance = (std::max)(distance, d);
+                    if (d <= 1.0E-7 && d > distance) {
+                        distance = d;
                     }
                 }
                 break;
-            case 1: // Y
+            case 1:
                 if (moving_max_x <= sMinX || moving_min_x >= sMaxX || moving_max_z <= sMinZ || moving_min_z >= sMaxZ) {
                     continue;
                 }
                 if (distance > 0.0) {
                     const double d = sMinY - moving_max_y;
-                    if (d >= -1.0E-7) {
-                        distance = (std::min)(distance, d);
+                    if (d >= -1.0E-7 && d < distance) {
+                        distance = d;
                     }
                 } else {
                     const double d = sMaxY - moving_min_y;
-                    if (d <= 1.0E-7) {
-                        distance = (std::max)(distance, d);
+                    if (d <= 1.0E-7 && d > distance) {
+                        distance = d;
                     }
                 }
                 break;
-            case 2: // Z
+            default:
                 if (moving_max_x <= sMinX || moving_min_x >= sMaxX || moving_max_y <= sMinY || moving_min_y >= sMaxY) {
                     continue;
                 }
                 if (distance > 0.0) {
                     const double d = sMinZ - moving_max_z;
-                    if (d >= -1.0E-7) {
-                        distance = (std::min)(distance, d);
+                    if (d >= -1.0E-7 && d < distance) {
+                        distance = d;
                     }
                 } else {
                     const double d = sMaxZ - moving_min_z;
-                    if (d <= 1.0E-7) {
-                        distance = (std::max)(distance, d);
+                    if (d <= 1.0E-7 && d > distance) {
+                        distance = d;
                     }
                 }
                 break;
-            default: ;
         }
-
         if (std::abs(distance) < 1.0E-7) {
             return 0.0;
         }
@@ -107,14 +103,65 @@ auto AABB::batch_collide_axis(const int axis,
 }
 
 struct EntityRef {
-    double min_x;
-    double max_x;
-    double min_y;
-    double max_y;
-    double min_z;
-    double max_z;
+    double min_x, max_x, min_y, max_y, min_z, max_z;
     int id;
 };
+
+namespace {
+    auto sweep_seq(const int n, const int max_collisions, const EntityRef* sorted, int* out_a, int* out_b) -> int {
+        int total = 0;
+        for (int i = 0; i < n && total < max_collisions; i++) {
+            const auto& a = sorted[i];
+            for (int j = i + 1; j < n; j++) {
+                const auto& b = sorted[j];
+                if (b.min_x > a.max_x) {
+                    break;
+                }
+                if (a.max_y <= b.min_y || a.min_y >= b.max_y) {
+                    continue;
+                }
+                if (a.max_z <= b.min_z || a.min_z >= b.max_z) {
+                    continue;
+                }
+                out_a[total] = a.id;
+                out_b[total] = b.id;
+                if (++total >= max_collisions) {
+                    return total;
+                }
+            }
+        }
+        return total;
+    }
+
+    auto sweep_par(const int n, const int max_collisions, const EntityRef* sorted, int* out_a, int* out_b) -> int {
+        std::atomic ac{0};
+        parallel_for(tbb::blocked_range<int>(0, n),
+                     [&](const tbb::blocked_range<int>& range) {
+                         for (int i = range.begin(); i < range.end(); i++) {
+                             const auto& a = sorted[i];
+                             for (int j = i + 1; j < n; j++) {
+                                 const auto& b = sorted[j];
+                                 if (b.min_x > a.max_x) {
+                                     break;
+                                 }
+                                 if (a.max_y <= b.min_y || a.min_y >= b.max_y) {
+                                     continue;
+                                 }
+                                 if (a.max_z <= b.min_z || a.min_z >= b.max_z) {
+                                     continue;
+                                 }
+                                 const int p = ac.fetch_add(1, std::memory_order_relaxed);
+                                 if (p < max_collisions) {
+                                     out_a[p] = a.id;
+                                     out_b[p] = b.id;
+                                 }
+                             }
+                         }
+                     });
+        const int r = ac.load(std::memory_order_relaxed);
+        return r < max_collisions ? r : max_collisions;
+    }
+} // namespace
 
 auto AABB::batch_find_collisions(const double* aabbs,
                                  const int aabbs_len,
@@ -129,7 +176,6 @@ auto AABB::batch_find_collisions(const double* aabbs,
     }
 
     std::vector<EntityRef> sorted(entity_count);
-    #pragma omp simd
     for (int i = 0; i < entity_count; i++) {
         const double* b = aabbs + (i * 6);
         sorted[i].min_x = b[0];
@@ -148,61 +194,7 @@ auto AABB::batch_find_collisions(const double* aabbs,
                        });
 
     if (entity_count > PARALLEL_THRESHOLD) {
-        std::atomic ac{0};
-        parallel_for(tbb::blocked_range(0, entity_count),
-                     [&](const tbb::blocked_range<int>& range) -> void {
-                         for (int i = range.begin(); i < range.end(); i++) {
-                             const auto& a = sorted[i];
-                             for (int j = i + 1; j < entity_count; j++) {
-                                 const auto& b = sorted[j];
-                                 if (b.min_x > a.max_x) {
-                                     break;
-                                 }
-                                 if (a.max_y <= b.min_y || a.min_y >= b.max_y) {
-                                     continue;
-                                 }
-                                 if (a.max_z <= b.min_z || a.min_z >= b.max_z) {
-                                     continue;
-                                 }
-                                 const int p = ac.fetch_add(1, std::memory_order_relaxed);
-                                 if (p < max_collisions) {
-                                     output_a[p] = a.id;
-                                     output_b[p] = b.id;
-                                 }
-                             }
-                         }
-                     });
-        const int result = ac.load(std::memory_order_relaxed);
-        return result < max_collisions ? result : max_collisions;
+        return sweep_par(entity_count, max_collisions, sorted.data(), output_a, output_b);
     }
-
-    int collision_count = 0;
-
-    for (int i = 0; i < entity_count; i++) {
-        const auto& a = sorted[i];
-
-        for (int j = i + 1; j < entity_count; j++) {
-            const auto& b = sorted[j];
-
-            if (b.min_x > a.max_x) {
-                break;
-            }
-
-            if (a.max_y <= b.min_y || a.min_y >= b.max_y) {
-                continue;
-            }
-
-            if (a.max_z <= b.min_z || a.min_z >= b.max_z) {
-                continue;
-            }
-
-            if (collision_count < max_collisions) {
-                output_a[collision_count] = a.id;
-                output_b[collision_count] = b.id;
-                collision_count++;
-            }
-        }
-    }
-
-    return collision_count;
+    return sweep_seq(entity_count, max_collisions, sorted.data(), output_a, output_b);
 }
