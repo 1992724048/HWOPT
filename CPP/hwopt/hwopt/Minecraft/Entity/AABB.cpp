@@ -122,9 +122,16 @@ auto AABB::batch_find_collisions(const double* aabbs,
     }
 
     std::vector<EntityRef> sorted(entity_count);
+    #pragma omp simd
     for (int i = 0; i < entity_count; i++) {
         const double* b = aabbs + (i * 6);
-        sorted[i] = {.min_x = b[0], .max_x = b[3], .min_y = b[1], .max_y = b[4], .min_z = b[2], .max_z = b[5], .id = i};
+        sorted[i].min_x = b[0];
+        sorted[i].max_x = b[3];
+        sorted[i].min_y = b[1];
+        sorted[i].max_y = b[4];
+        sorted[i].min_z = b[2];
+        sorted[i].max_z = b[5];
+        sorted[i].id = i;
     }
 
     std::ranges::sort(sorted,

@@ -6,7 +6,8 @@
     "AABBMixin",
     "EntityMixin",
     "LivingEntityMixin",
-    "VoxelShapeMixin"
+    "VoxelShapeMixin",
+    "LevelMixin"
   ],
   "injectors": {
     "defaultRequire": 1
