@@ -21,7 +21,7 @@ namespace minecraft::dftree {
 
     static constexpr int NODE_FLOATS = 5;
 
-    class DensityFunctionTree final : public JavaNative<DensityFunctionTree> {
+    class HWOPT_API DensityFunctionTree final : public JavaNative<DensityFunctionTree> {
     public:
         DensityFunctionTree();
         static auto add_methods() -> void;

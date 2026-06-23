@@ -112,6 +112,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="DFTreeBenchmark.cpp" />
     <ClCompile Include="MathBenchmark.cpp" />
     <ClCompile Include="NoiseBenchmark.cpp" />
   </ItemGroup>

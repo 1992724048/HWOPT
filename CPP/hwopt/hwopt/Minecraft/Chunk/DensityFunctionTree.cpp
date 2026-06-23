@@ -1,5 +1,7 @@
 ﻿#include "DensityFunctionTree.hpp"
 
+#include <algorithm>
+#include <tbb/blocked_range.h>
 #include <tbb/tbb.h>
 
 using namespace minecraft::dftree;
@@ -21,7 +23,7 @@ auto DensityFunctionTree::evaluate_node(const double* nodes,
                                         const double x,
                                         const double y,
                                         const double z) -> double {
-    const double* n = nodes + node_idx * NODE_FLOATS;
+    const double* n = nodes + (node_idx * NODE_FLOATS);
     const int type = static_cast<int>(n[0]);
     const int c0 = static_cast<int>(n[1]);
     const int c1 = static_cast<int>(n[2]);
@@ -99,20 +101,23 @@ auto DensityFunctionTree::compute_densities_batch(const double* nodes,
         return;
     }
 
-    tbb::parallel_for(0,
-                      total,
-                      [&](const int i) -> void {
-                          const int x = min_x + (i % size_x);
-                          const int z = min_z + ((i / size_x) % size_z);
-                          const int y = min_y + (i / (size_x * size_z));
-                          output[i] = evaluate_node(nodes,
-                                                    0,
-                                                    reinterpret_cast<noise::BlendedNoise**>(bn_ptrs),
-                                                    bn_ptrs_len,
-                                                    reinterpret_cast<noise::NormalNoise**>(noise_ptrs),
-                                                    noise_ptrs_len,
-                                                    x,
-                                                    y,
-                                                    z);
+    const int grain = std::max(256, total / 32);
+
+    tbb::parallel_for(tbb::blocked_range<size_t>(0, total, grain),
+                      [&](const tbb::blocked_range<size_t>& r) -> void {
+                          for (size_t i = r.begin(); i < r.end(); ++i) {
+                              const int x = min_x + static_cast<int>(i % size_x);
+                              const int z = min_z + static_cast<int>((i / size_x) % size_z);
+                              const int y = min_y + static_cast<int>(i / (size_x * size_z));
+                              output[i] = evaluate_node(nodes,
+                                                        0,
+                                                        reinterpret_cast<noise::BlendedNoise**>(bn_ptrs),
+                                                        bn_ptrs_len,
+                                                        reinterpret_cast<noise::NormalNoise**>(noise_ptrs),
+                                                        noise_ptrs_len,
+                                                        x,
+                                                        y,
+                                                        z);
+                          }
                       });
 }
