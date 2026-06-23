@@ -1,0 +1,18 @@
+{
+  "required": true,
+  "target": "CLIENT",
+  "package": "com.server.render.entityculling.mixin",
+  "compatibilityLevel": "JAVA_25",
+  "mixins": [
+    "CullableMixin",
+    "EntityTickCullingMixin",
+    "LevelExtractorMixin",
+    "EntityRendererMixin",
+    "BlockEntityRenderDispatcherMixin",
+    "LivingEntityRendererAccessor",
+    "DisplayAccessor"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

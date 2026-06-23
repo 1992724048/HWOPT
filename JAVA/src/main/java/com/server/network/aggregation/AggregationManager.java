@@ -28,7 +28,7 @@ public class AggregationManager {
     public static synchronized void init() {
         if (initialized) return;
         initialized = true;
-        TIMER.scheduleWithFixedDelay(AggregationManager::tick, Config.get().netFlushMs, Config.get().netFlushMs, TimeUnit.MILLISECONDS);
+        TIMER.scheduleWithFixedDelay(AggregationManager::tick, Config.CONFIG.netFlushMs.get(), Config.CONFIG.netFlushMs.get(), TimeUnit.MILLISECONDS);
     }
 
     public static void enqueue(Connection conn, Packet<?> packet) {
@@ -36,7 +36,7 @@ public class AggregationManager {
             var batch = BUFFERS.computeIfAbsent(conn, k -> new Batch());
             batch.packets.add(packet);
             batch.estimatedBytes += 256;
-            if (batch.packets.size() >= Config.get().netMaxCount || batch.estimatedBytes >= Config.get().netMaxBytes) {
+            if (batch.packets.size() >= Config.CONFIG.netMaxCount.get() || batch.estimatedBytes >= Config.CONFIG.netMaxBytes.get()) {
                 var toSend = batch.packets;
                 BUFFERS.remove(conn);
                 flushBatch(conn, toSend);

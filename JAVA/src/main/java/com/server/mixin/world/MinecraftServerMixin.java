@@ -21,7 +21,7 @@ import java.util.Optional;
 public abstract class MinecraftServerMixin {
     @Inject(method = "setInitialSpawn", at = @At("HEAD"), cancellable = true)
     private static void hwopt$spawnAtVillage(ServerLevel level, ServerLevelData levelData, boolean spawnBonusChest, boolean isDebug, LevelLoadListener levelLoadListener, CallbackInfo ci) {
-        if (!Config.get().spawnAtVillage) {
+        if (!Config.CONFIG.spawnAtVillage.get()) {
             return;
         }
         if (!level.dimension().equals(Level.OVERWORLD)) {

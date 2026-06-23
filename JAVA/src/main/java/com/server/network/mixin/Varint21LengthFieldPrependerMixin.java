@@ -15,7 +15,7 @@ public class Varint21LengthFieldPrependerMixin {
     @Inject(method = "encode", at = @At("HEAD"))
     private void hwopt$checkPacketSize(ChannelHandlerContext context, ByteBuf input, ByteBuf output, CallbackInfo ci) {
         int size = input.readableBytes();
-        if (size > com.hwpp.mod.Config.get().netMaxPacketSize) {
+        if (size > com.hwpp.mod.Config.CONFIG.netMaxPacketSize.get()) {
             throw new IllegalArgumentException("Packet too large: " + size);
         }
     }

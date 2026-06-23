@@ -1,10 +1,10 @@
 package com.server.render.entityculling.access;
 
 public interface Cullable {
-	boolean isCulled();
-	void setCulled(boolean culled);
-	boolean isForcedVisible();
-	void setTimeout(long ticks);
-	boolean isOutOfCamera();
-	void setOutOfCamera(boolean outOfCamera);
+    void setTimeout();
+    boolean isForcedVisible();
+    void setCulled(boolean value);
+    boolean isCulled();
+    void setOutOfCamera(boolean value);
+    boolean isOutOfCamera();
 }

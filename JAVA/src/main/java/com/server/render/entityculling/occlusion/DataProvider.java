@@ -1,8 +1,7 @@
 package com.server.render.entityculling.occlusion;
 
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.BlockGetter;
-
 public interface DataProvider {
-	boolean isOpaqueFullCube(BlockGetter level, BlockPos pos);
+    boolean prepareChunk(int chunkX, int chunkZ);
+    boolean isOpaqueFullCube(int x, int y, int z);
+    void cleanup();
 }

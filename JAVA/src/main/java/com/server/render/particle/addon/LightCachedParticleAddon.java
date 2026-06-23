@@ -1,26 +1,33 @@
 package com.server.render.particle.addon;
 
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.BlockAndLightGetter;
 
 public interface LightCachedParticleAddon {
-	byte hwopt$getCompressedLight();
-	void hwopt$setCompressedLight(byte light);
-	boolean hwopt$hasLightCache();
-	void hwopt$enableLightCache();
-	void hwopt$refreshLightCache();
-	ClientLevel hwopt$level();
+	byte INITIAL_LIGHT_CACHE = 0;
 
-	static byte compress(int packedLight) {
-		int block = (packedLight >> 4) & 0xF;
-		int sky = (packedLight >> 20) & 0xF;
-		return (byte) ((sky << 4) | block);
+	static byte compress(int light) {
+		return (byte) (light >> 4 & 0xF | light >> 16 & 0xF0);
 	}
 
-	static int decompress(byte compressed) {
-		int block = compressed & 0xF;
-		int sky = (compressed >> 4) & 0xF;
-		return (sky << 20) | (block << 4);
+	static int decompress(byte lightCache) {
+		return (lightCache & 0xF) << 4 | (lightCache & 0xF0) << 16;
 	}
+
+	void asyncparticles$setLight(int light);
+
+	byte asyncparticles$getCompressedLight();
+
+	default int asyncparticles$getCachedLight() {
+		return decompress(this.asyncparticles$getCompressedLight());
+	}
+
+	void asyncparticles$refresh();
+
+	void asyncparticles$enableLightCache();
+
+	void asyncparticles$disableLightCache();
+
+	boolean asyncparticles$isEnabledLightCache();
+
+	ClientLevel asyncparticles$level();
 }

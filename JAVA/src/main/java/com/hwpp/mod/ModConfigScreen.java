@@ -2,136 +2,163 @@ package com.hwpp.mod;
 
 import dev.isxander.yacl3.api.*;
 import dev.isxander.yacl3.api.controller.BooleanControllerBuilder;
-import dev.isxander.yacl3.api.controller.IntegerSliderControllerBuilder;
 import dev.isxander.yacl3.api.controller.IntegerFieldControllerBuilder;
+import dev.isxander.yacl3.api.controller.IntegerSliderControllerBuilder;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 
 public class ModConfigScreen {
-	public static Screen create(Screen parent) {
-		return YetAnotherConfigLib.createBuilder()
-			.title(Component.translatable("hwopt.config.title"))
-			.category(ConfigCategory.createBuilder()
-				.name(Component.translatable("hwopt.config.category.rendering"))
-				.group(OptionGroup.createBuilder()
-					.name(Component.translatable("hwopt.config.group.entityCulling"))
-					.collapsed(false)
-					.option(Option.<Boolean>createBuilder()
-						.name(Component.translatable("hwopt.config.tickCulling"))
-						.description(OptionDescription.of(Component.translatable("hwopt.config.tickCulling.desc")))
-						.binding(true, () -> Config.get().tickCulling, v -> Config.get().tickCulling = v)
-						.controller(opt -> BooleanControllerBuilder.create(opt))
-						.build())
-					.option(Option.<Boolean>createBuilder()
-						.name(Component.translatable("hwopt.config.blockEntityCulling"))
-						.binding(true, () -> Config.get().blockEntityCulling, v -> Config.get().blockEntityCulling = v)
-						.controller(opt -> BooleanControllerBuilder.create(opt))
-						.build())
-					.option(Option.<Boolean>createBuilder()
-						.name(Component.translatable("hwopt.config.solidLeaves"))
-						.binding(false, () -> Config.get().solidLeaves, v -> Config.get().solidLeaves = v)
-						.controller(opt -> BooleanControllerBuilder.create(opt))
-						.build())
-					.option(Option.<Boolean>createBuilder()
-						.name(Component.translatable("hwopt.config.nametagsThroughWalls"))
-						.binding(false, () -> Config.get().nametagsThroughWalls, v -> Config.get().nametagsThroughWalls = v)
-						.controller(opt -> BooleanControllerBuilder.create(opt))
-						.build())
-					.option(Option.<Integer>createBuilder()
-						.name(Component.translatable("hwopt.config.tracingDistance"))
-						.binding(128, () -> Config.get().tracingDistance, v -> Config.get().tracingDistance = v)
-						.controller(opt -> IntegerSliderControllerBuilder.create(opt)
-							.range(16, 512)
-							.step(16))
-						.build())
-					.build())
-				.group(OptionGroup.createBuilder()
-					.name(Component.translatable("hwopt.config.group.particle"))
-					.collapsed(false)
-					.option(Option.<Boolean>createBuilder()
-						.name(Component.translatable("hwopt.config.asyncParticleTick"))
-						.binding(true, () -> Config.get().asyncParticleTick, v -> Config.get().asyncParticleTick = v)
-						.controller(opt -> BooleanControllerBuilder.create(opt))
-						.build())
-					.build())
-				.build())
-			.category(ConfigCategory.createBuilder()
-				.name(Component.translatable("hwopt.config.category.network"))
-				.group(OptionGroup.createBuilder()
-					.name(Component.translatable("hwopt.config.group.aggregation"))
-					.collapsed(false)
-					.option(Option.<Integer>createBuilder()
-						.name(Component.translatable("hwopt.config.netFlushMs"))
-						.binding(20, () -> Config.get().netFlushMs, v -> Config.get().netFlushMs = v)
-						.controller(opt -> IntegerSliderControllerBuilder.create(opt).range(5, 100).step(5))
-						.build())
-					.option(Option.<Integer>createBuilder()
-						.name(Component.translatable("hwopt.config.netMaxBytes"))
-						.binding(262144, () -> Config.get().netMaxBytes, v -> Config.get().netMaxBytes = v)
-						.controller(opt -> IntegerSliderControllerBuilder.create(opt).range(16384, 1048576).step(16384))
-						.build())
-					.option(Option.<Integer>createBuilder()
-						.name(Component.translatable("hwopt.config.netMaxCount"))
-						.binding(50, () -> Config.get().netMaxCount, v -> Config.get().netMaxCount = v)
-						.controller(opt -> IntegerSliderControllerBuilder.create(opt).range(5, 200).step(5))
-						.build())
-					.option(Option.<Integer>createBuilder()
-						.name(Component.translatable("hwopt.config.netMaxPacketSize"))
-						.binding(4194304, () -> Config.get().netMaxPacketSize, v -> Config.get().netMaxPacketSize = v)
-						.controller(opt -> IntegerSliderControllerBuilder.create(opt).range(262144, 16777216).step(262144))
-						.build())
-					.build())
-				.group(OptionGroup.createBuilder()
-					.name(Component.translatable("hwopt.config.group.dcc"))
-					.collapsed(false)
-					.option(Option.<Integer>createBuilder()
-						.name(Component.translatable("hwopt.config.dccCacheTimeout"))
-						.binding(60, () -> Config.get().dccCacheTimeout, v -> Config.get().dccCacheTimeout = v)
-						.controller(opt -> IntegerSliderControllerBuilder.create(opt).range(10, 300).step(10))
-						.build())
-					.option(Option.<Integer>createBuilder()
-						.name(Component.translatable("hwopt.config.dccCacheDistance"))
-						.binding(8, () -> Config.get().dccCacheDistance, v -> Config.get().dccCacheDistance = v)
-						.controller(opt -> IntegerSliderControllerBuilder.create(opt).range(2, 32).step(2))
-						.build())
-					.option(Option.<Integer>createBuilder()
-						.name(Component.translatable("hwopt.config.dccBufferDistance"))
-						.binding(8, () -> Config.get().dccBufferDistance, v -> Config.get().dccBufferDistance = v)
-						.controller(opt -> IntegerSliderControllerBuilder.create(opt).range(2, 32).step(2))
-						.build())
-					.build())
-				.build())
-			.category(ConfigCategory.createBuilder()
-				.name(Component.translatable("hwopt.config.category.world"))
-				.group(OptionGroup.createBuilder()
-					.name(Component.translatable("hwopt.config.group.world"))
-					.option(Option.<Boolean>createBuilder()
-						.name(Component.translatable("hwopt.configuration.world.spawnAtVillage"))
-						.description(OptionDescription.of(Component.translatable("hwopt.configuration.world.spawnAtVillage.tooltip")))
-						.binding(false, () -> Config.get().spawnAtVillage, v -> Config.get().spawnAtVillage = v)
-						.controller(opt -> BooleanControllerBuilder.create(opt))
-						.build())
-					.build())
-				.build())
-			.category(ConfigCategory.createBuilder()
-				.name(Component.translatable("hwopt.config.category.debug"))
-				.group(OptionGroup.createBuilder()
-					.name(Component.translatable("hwopt.config.group.debug"))
-					.option(Option.<Boolean>createBuilder()
-						.name(Component.translatable("hwopt.configuration.debug.logChunkGen"))
-						.description(OptionDescription.of(Component.translatable("hwopt.configuration.debug.logChunkGen.tooltip")))
-						.binding(false, () -> Config.get().logChunkGen, v -> Config.get().logChunkGen = v)
-						.controller(opt -> BooleanControllerBuilder.create(opt))
-						.build())
-					.option(Option.<Integer>createBuilder()
-						.name(Component.translatable("hwopt.configuration.debug.logChunkGenInterval"))
-						.binding(0, () -> Config.get().logChunkGenInterval, v -> Config.get().logChunkGenInterval = v)
-						.controller(opt -> IntegerFieldControllerBuilder.create(opt))
-						.build())
-					.build())
-				.build())
-			.save(Config::save)
-			.build()
-			.generateScreen(parent);
-	}
+    private static final Config C = Config.CONFIG;
+
+    public static Screen create(Screen parent) {
+        return YetAnotherConfigLib.createBuilder()
+            .title(Component.translatable("hwopt.config.title"))
+            .category(ConfigCategory.createBuilder()
+                .name(Component.translatable("hwopt.config.category.rendering"))
+                .group(OptionGroup.createBuilder()
+                    .name(Component.translatable("hwopt.config.group.entityCulling"))
+                    .collapsed(false)
+                    .option(boolOpt("hwopt.config.tickCulling", "hwopt.config.tickCulling.desc",
+                            true, C.tickCulling, C.tickCulling::set))
+                    .option(boolOpt("hwopt.config.solidLeaves",
+                            "hwopt.config.solidLeaves.desc",
+                            false, C.solidLeaves, C.solidLeaves::set))
+                    .option(intOpt("hwopt.config.tracingDistance",
+                            "hwopt.config.tracingDistance.desc",
+                            128, C.tracingDistance, C.tracingDistance::set,
+                            16, 512, 16))
+                    .option(intOpt("hwopt.config.sleepDelay",
+                            "hwopt.config.sleepDelay.desc",
+                            10, C.sleepDelay, C.sleepDelay::set, 0, 1000, 10))
+                    .option(intOpt("hwopt.config.hitboxLimit",
+                            "hwopt.config.hitboxLimit.desc",
+                            50, C.hitboxLimit, C.hitboxLimit::set, 1, 500, 1))
+                    .option(intOpt("hwopt.config.captureRate",
+                            "hwopt.config.captureRate.desc",
+                            5, C.captureRate, C.captureRate::set, 1, 100, 1))
+                    .option(boolOpt("hwopt.config.skipEntityCulling",
+                            "hwopt.config.skipEntityCulling.desc",
+                            false, C.skipEntityCulling, C.skipEntityCulling::set))
+                    .option(boolOpt("hwopt.config.skipBlockEntityCulling",
+                            "hwopt.config.skipBlockEntityCulling.desc",
+                            false, C.skipBlockEntityCulling, C.skipBlockEntityCulling::set))
+                    .option(boolOpt("hwopt.config.forceDisplayCulling",
+                            "hwopt.config.forceDisplayCulling.desc",
+                            false, C.forceDisplayCulling, C.forceDisplayCulling::set))
+                    .option(boolOpt("hwopt.config.debugMode",
+                            "hwopt.config.debugMode.desc",
+                            false, C.debugMode, C.debugMode::set))
+                    .build())
+                .group(OptionGroup.createBuilder()
+                    .name(Component.translatable("hwopt.config.group.particle"))
+                    .collapsed(false)
+                    .option(boolOpt("hwopt.config.asyncParticleTick",
+                            "hwopt.config.asyncParticleTick.desc",
+                            true, C.asyncParticleTick, C.asyncParticleTick::set))
+                    .option(boolOpt("hwopt.config.particleLightCache",
+                            "hwopt.config.particleLightCache.desc",
+                            true, C.particleLightCache, C.particleLightCache::set))
+                    .option(boolOpt("hwopt.config.removeIfMissedTick",
+                            "hwopt.config.removeIfMissedTick.desc",
+                            true, C.removeIfMissedTick, C.removeIfMissedTick::set))
+                    .option(intOpt("hwopt.config.particleLimit",
+                            "hwopt.config.particleLimit.desc",
+                            16384, C.particleLimit, C.particleLimit::set, 4096, 262144, 1024))
+                    .option(boolOpt("hwopt.config.parallelQueueRemoval",
+                            "hwopt.config.parallelQueueRemoval.desc",
+                            false, C.parallelQueueRemoval, C.parallelQueueRemoval::set))
+                    .option(boolOpt("hwopt.config.parallelQueueEviction",
+                            "hwopt.config.parallelQueueEviction.desc",
+                            false, C.parallelQueueEviction, C.parallelQueueEviction::set))
+                    .build())
+                .build())
+            .category(ConfigCategory.createBuilder()
+                .name(Component.translatable("hwopt.config.category.network"))
+                .group(OptionGroup.createBuilder()
+                    .name(Component.translatable("hwopt.config.group.aggregation"))
+                    .collapsed(false)
+                    .option(intOpt("hwopt.config.netFlushMs",
+                            "hwopt.config.netFlushMs.desc",
+                            20, C.netFlushMs, C.netFlushMs::set, 5, 100, 5))
+                    .option(intOpt("hwopt.config.netMaxBytes",
+                            "hwopt.config.netMaxBytes.desc",
+                            262144, C.netMaxBytes, C.netMaxBytes::set, 16384, 1048576, 16384))
+                    .option(intOpt("hwopt.config.netMaxCount",
+                            "hwopt.config.netMaxCount.desc",
+                            50, C.netMaxCount, C.netMaxCount::set, 5, 200, 5))
+                    .option(intOpt("hwopt.config.netMaxPacketSize",
+                            "hwopt.config.netMaxPacketSize.desc",
+                            4194304, C.netMaxPacketSize, C.netMaxPacketSize::set, 262144, 16777216, 262144))
+                    .build())
+                .group(OptionGroup.createBuilder()
+                    .name(Component.translatable("hwopt.config.group.dcc"))
+                    .collapsed(false)
+                    .option(boolOpt("hwopt.config.dccEnabled",
+                            "hwopt.config.dccEnabled.desc",
+                            true, C.dccEnabled, C.dccEnabled::set))
+                    .option(intOpt("hwopt.config.dccCacheTimeout",
+                            "hwopt.config.dccCacheTimeout.desc",
+                            60, C.dccCacheTimeout, C.dccCacheTimeout::set, 10, 300, 10))
+                    .option(intOpt("hwopt.config.dccCacheDistance",
+                            "hwopt.config.dccCacheDistance.desc",
+                            8, C.dccCacheDistance, C.dccCacheDistance::set, 2, 32, 2))
+                    .option(intOpt("hwopt.config.dccCacheSizeLimit",
+                            "hwopt.config.dccCacheSizeLimit.desc",
+                            1200, C.dccCacheSizeLimit, C.dccCacheSizeLimit::set, 100, 5000, 100))
+                    .option(intOpt("hwopt.config.dccBufferDistance",
+                            "hwopt.config.dccBufferDistance.desc",
+                            8, C.dccBufferDistance, C.dccBufferDistance::set, 2, 32, 2))
+                    .build())
+                .build())
+            .category(ConfigCategory.createBuilder()
+                .name(Component.translatable("hwopt.config.category.world"))
+                .group(OptionGroup.createBuilder()
+                    .name(Component.translatable("hwopt.config.group.world"))
+                    .option(boolOpt("hwopt.configuration.world.spawnAtVillage",
+                            "hwopt.configuration.world.spawnAtVillage.tooltip",
+                            false, C.spawnAtVillage, C.spawnAtVillage::set))
+                    .build())
+                .build())
+            .category(ConfigCategory.createBuilder()
+                .name(Component.translatable("hwopt.config.category.debug"))
+                .group(OptionGroup.createBuilder()
+                    .name(Component.translatable("hwopt.config.group.debug"))
+                    .option(boolOpt("hwopt.configuration.debug.logChunkGen",
+                            "hwopt.configuration.debug.logChunkGen.tooltip",
+                            false, C.logChunkGen, C.logChunkGen::set))
+                    .option(Option.<Integer>createBuilder()
+                            .name(Component.translatable("hwopt.configuration.debug.logChunkGenInterval"))
+                            .description(OptionDescription.of(Component.translatable("hwopt.configuration.debug.logChunkGenInterval.tooltip")))
+                            .binding(0, C.logChunkGenInterval, C.logChunkGenInterval::set)
+                            .controller(IntegerFieldControllerBuilder::create)
+                            .build())
+                    .build())
+                .build())
+            .save(Config.SPEC::save)
+            .build()
+            .generateScreen(parent);
+    }
+
+    private static Option<Boolean> boolOpt(String key, String descKey, boolean def,
+                                            java.util.function.Supplier<Boolean> getter,
+                                            java.util.function.Consumer<Boolean> setter) {
+        var b = Option.<Boolean>createBuilder()
+                .name(Component.translatable(key))
+                .binding(def, getter, setter)
+                .controller(BooleanControllerBuilder::create);
+        if (descKey != null) b.description(OptionDescription.of(Component.translatable(descKey)));
+        return b.build();
+    }
+
+    private static Option<Integer> intOpt(String key, String descKey, int def,
+                                           java.util.function.Supplier<Integer> getter,
+                                           java.util.function.Consumer<Integer> setter,
+                                           int min, int max, int step) {
+        var b = Option.<Integer>createBuilder()
+                .name(Component.translatable(key))
+                .binding(def, getter, setter)
+                .controller(o -> IntegerSliderControllerBuilder.create(o).range(min, max).step(step));
+        if (descKey != null) b.description(OptionDescription.of(Component.translatable(descKey)));
+        return b.build();
+    }
 }

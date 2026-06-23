@@ -128,7 +128,7 @@ configurations {
 
 dependencies {
     implementation files("run/mods/yet_another_config_lib_v3-3.9.4+26.2-neoforge.jar")
-    implementation "org.tomlj:tomlj:1.0.0"
+
 
     // Example optional mod dependency with JEI
     // The JEI API is declared for compile time use, while the full JEI artifact is used at runtime

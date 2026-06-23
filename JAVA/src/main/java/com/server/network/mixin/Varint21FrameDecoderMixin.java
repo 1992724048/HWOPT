@@ -20,7 +20,7 @@ public class Varint21FrameDecoderMixin {
         int readable = input.readableBytes();
         if (readable <= 0) return;
 
-        int maxSize = com.hwpp.mod.Config.get().netMaxPacketSize;
+        int maxSize = com.hwpp.mod.Config.CONFIG.netMaxPacketSize.get();
         int idx = input.readerIndex();
         int frameLen = 0;
 

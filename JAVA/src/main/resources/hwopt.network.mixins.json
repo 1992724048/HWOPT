@@ -1,15 +1,17 @@
 {
   "required": true,
+  "target": "CLIENT",
+  "package": "com.server.network.mixin",
   "compatibilityLevel": "JAVA_25",
   "mixins": [
-    "com.server.network.mixin.ConnectionMixin",
-    "com.server.network.mixin.CompressionEncoderMixin",
-    "com.server.network.mixin.CompressionDecoderMixin",
-    "com.server.network.mixin.CustomPacketPayloadCodecMixin",
-    "com.server.network.mixin.Varint21FrameDecoderMixin",
-    "com.server.network.mixin.Varint21LengthFieldPrependerMixin",
-    "com.server.network.mixin.ServerPlayerChunkTrackingViewMixin",
-    "com.server.network.mixin.PlayerListMixin"
+    "ConnectionMixin",
+    "CompressionEncoderMixin",
+    "CompressionDecoderMixin",
+    "CustomPacketPayloadCodecMixin",
+    "DebugScreenEntriesAccessor",
+    "ChunkMapMixin",
+    "Varint21FrameDecoderMixin",
+    "Varint21LengthFieldPrependerMixin"
   ],
   "injectors": {
     "defaultRequire": 1
