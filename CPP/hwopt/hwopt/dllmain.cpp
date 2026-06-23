@@ -23,7 +23,7 @@ auto init_sycl_device() -> void {
     if (auto dev = sycl::Device::create_device()) {
         hwopt::global::handle = std::move(dev.value());
     } else {
-        CMSG(CLOG) << dev.error();
+        CLOG << dev.error();
     }
 }
 
