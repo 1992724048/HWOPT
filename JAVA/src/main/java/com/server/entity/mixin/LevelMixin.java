@@ -9,6 +9,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 
@@ -18,10 +19,12 @@ public abstract class LevelMixin {
 	@Inject(method = "getEntities(Lnet/minecraft/world/entity/Entity;Lnet/minecraft/world/phys/AABB;Ljava/util/function/Predicate;)Ljava/util/List;", at = @At("HEAD"), cancellable = true)
 	private void hwopt$onGetEntities(Entity entity, AABB aabb, Predicate<? super Entity> predicate, CallbackInfoReturnable<List<Entity>> cir) {
 		if (entity == null) return;
-		List<Entity> cached = CollisionMapData.get(entity);
-		if (cached == null || cached.isEmpty()) return;
-		// cached pairs were computed with a broader predicate (pushableBy);
-		// filter by the actual predicate for correctness
-		cir.setReturnValue(cached.stream().filter(predicate).toList());
+		List<Entity> cached = CollisionMapData.getCollisionList(entity);
+		if (cached.isEmpty()) return;
+		List<Entity> filtered = new ArrayList<>(cached.size());
+		for (Entity e : cached) {
+			if (e != null && predicate.test(e)) filtered.add(e);
+		}
+		cir.setReturnValue(filtered);
 	}
 }

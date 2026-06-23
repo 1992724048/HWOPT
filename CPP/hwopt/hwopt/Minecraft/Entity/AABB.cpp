@@ -3,6 +3,13 @@
 #include <cmath>
 #include <vector>
 
+#include <tbb/blocked_range.h>
+#include <tbb/parallel_for.h>
+#include <tbb/parallel_sort.h>
+
+#include <atomic>
+#include <omp.h>
+
 using namespace minecraft::aabb;
 
 AABB::AABB() {
@@ -134,10 +141,40 @@ auto AABB::batch_find_collisions(const double* aabbs,
         sorted[i].id = i;
     }
 
-    std::ranges::sort(sorted,
-                      [](const EntityRef& a, const EntityRef& b) -> bool {
-                          return a.min_x < b.min_x;
-                      });
+    tbb::parallel_sort(sorted.begin(),
+                       sorted.end(),
+                       [](const EntityRef& a, const EntityRef& b) -> bool {
+                           return a.min_x < b.min_x;
+                       });
+
+    if (entity_count > PARALLEL_THRESHOLD) {
+        std::atomic ac{0};
+        parallel_for(tbb::blocked_range(0, entity_count),
+                     [&](const tbb::blocked_range<int>& range) -> void {
+                         for (int i = range.begin(); i < range.end(); i++) {
+                             const auto& a = sorted[i];
+                             for (int j = i + 1; j < entity_count; j++) {
+                                 const auto& b = sorted[j];
+                                 if (b.min_x > a.max_x) {
+                                     break;
+                                 }
+                                 if (a.max_y <= b.min_y || a.min_y >= b.max_y) {
+                                     continue;
+                                 }
+                                 if (a.max_z <= b.min_z || a.min_z >= b.max_z) {
+                                     continue;
+                                 }
+                                 const int p = ac.fetch_add(1, std::memory_order_relaxed);
+                                 if (p < max_collisions) {
+                                     output_a[p] = a.id;
+                                     output_b[p] = b.id;
+                                 }
+                             }
+                         }
+                     });
+        const int result = ac.load(std::memory_order_relaxed);
+        return result < max_collisions ? result : max_collisions;
+    }
 
     int collision_count = 0;
 

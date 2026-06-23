@@ -1,7 +1,6 @@
 package com.hwpp.mod;
 
 import com.mojang.logging.LogUtils;
-import com.server.entity.util.EntityPushSystem;
 import com.server.world.util.ChunkGenStats;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
@@ -14,7 +13,6 @@ import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.event.level.LevelEvent;
-import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import org.slf4j.Logger;
 
 @Mod(HWOPT.MODID)
@@ -41,13 +39,6 @@ public class HWOPT {
 			if (level.dimension() == Level.OVERWORLD) {
 				ChunkGenStats.reset();
 			}
-		}
-	}
-	
-	@SubscribeEvent
-	public void onServerTick(ServerTickEvent.Post event) {
-		for (ServerLevel level : event.getServer().getAllLevels()) {
-			EntityPushSystem.tick(level);
 		}
 	}
 	

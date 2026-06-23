@@ -1,30 +1,55 @@
 package com.server.entity.util;
 
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
 import net.minecraft.world.entity.Entity;
 
-import java.util.*;
+import java.util.AbstractList;
+import java.util.Collections;
+import java.util.List;
 
 public class CollisionMapData {
-	private static final Map<Entity, List<Entity>> collisionMap = new IdentityHashMap<>();
+	private static final Int2ObjectOpenHashMap<IntArrayList> collisionMap = new Int2ObjectOpenHashMap<>(1000);
 	
 	public static void newTick() {
 		collisionMap.clear();
 	}
 	
-	public static void flush() {
-		// no-op: map is ready for reads
+	public static void putCollision(int idA, int idB) {
+		addSingle(idA, idB);
+		addSingle(idB, idA);
 	}
 	
-	public static void put(Entity a, Entity b) {
-		addSingle(a, b);
-		addSingle(b, a);
+	private static void addSingle(int source, int target) {
+		IntArrayList list = collisionMap.get(source);
+		if (list == null) {
+			list = new IntArrayList(2);
+			collisionMap.put(source, list);
+		}
+		list.add(target);
 	}
 	
-	private static void addSingle(Entity key, Entity value) {
-		collisionMap.computeIfAbsent(key, k -> new ArrayList<>()).add(value);
+	public static List<Entity> getCollisionList(Entity source) {
+		IntArrayList ids = collisionMap.get(TempID.getId(source));
+		if (ids == null || ids.isEmpty()) return Collections.emptyList();
+		return new EntityListView(ids);
 	}
 	
-	public static List<Entity> get(Entity entity) {
-		return collisionMap.get(entity);
+	private static class EntityListView extends AbstractList<Entity> {
+		private final IntArrayList ids;
+		
+		EntityListView(IntArrayList ids) {
+			this.ids = ids;
+		}
+		
+		@Override
+		public Entity get(int index) {
+			return TempID.getEntity(ids.getInt(index));
+		}
+		
+		@Override
+		public int size() {
+			return ids.size();
+		}
 	}
 }

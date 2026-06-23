@@ -14,7 +14,6 @@ public class EntityPushSystem {
 	public static void tick(ServerLevel level) {
 		CollisionMapData.newTick();
 		
-		// Gather all living entities in the world
 		List<LivingEntity> all = new ArrayList<>();
 		for (Entity e : level.getAllEntities()) {
 			if (e instanceof LivingEntity le && le.isAlive() && !e.isRemoved()) {
@@ -44,27 +43,18 @@ public class EntityPushSystem {
 		AABBNative nativeAABB = AABBNative.instance();
 		int pairCount = nativeAABB.batchFindCollisions(aabbs, outA, outB, count, maxPairs);
 		
-		boolean[] pushed = new boolean[count];
-		
 		for (int i = 0; i < pairCount; i++) {
 			int ia = outA[i];
 			int ib = outB[i];
 			if (ia >= count || ib >= count) continue;
 			
+			CollisionMapData.putCollision(ia, ib);
+			
 			LivingEntity a = all.get(ia);
 			LivingEntity b = all.get(ib);
-			CollisionMapData.put(a, b);
-			
-			if (!pushed[ia]) {
+			if (a.getBoundingBox().intersects(b.getBoundingBox())) {
 				a.push(b);
-				pushed[ia] = true;
-			}
-			if (!pushed[ib]) {
-				b.push(a);
-				pushed[ib] = true;
 			}
 		}
-		
-		CollisionMapData.flush();
 	}
 }

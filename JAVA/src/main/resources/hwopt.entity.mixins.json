@@ -7,7 +7,8 @@
     "EntityMixin",
     "LivingEntityMixin",
     "VoxelShapeMixin",
-    "LevelMixin"
+    "LevelMixin",
+    "ServerLevelMixin"
   ],
   "injectors": {
     "defaultRequire": 1

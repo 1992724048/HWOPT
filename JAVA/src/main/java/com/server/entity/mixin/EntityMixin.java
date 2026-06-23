@@ -1,5 +1,6 @@
 package com.server.entity.mixin;
 
+import com.server.entity.access.IEntityNativeId;
 import library.dll.AABBNative;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.Entity;
@@ -15,10 +16,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.List;
 
+import static net.minecraft.core.Direction.Axis.X;
+import static net.minecraft.core.Direction.Axis.Y;
+import static net.minecraft.core.Direction.Axis.Z;
+
 @Mixin(Entity.class)
-public abstract class EntityMixin {
-	
-	// ── cached AABB for fast extraction ────────────────────────
+public abstract class EntityMixin implements IEntityNativeId {
 	@Unique
 	private double hwopt$bbMinX;
 	@Unique
@@ -52,7 +55,19 @@ public abstract class EntityMixin {
 		out[offset + 5] = this.hwopt$bbMaxZ + inflate;
 	}
 	
-	// ── Block collision batch ──────────────────────────────────
+	@Unique
+	private int hwopt$nativeId = -1;
+	
+	@Override
+	public int hwopt$getNativeId() {
+		return hwopt$nativeId;
+	}
+	
+	@Override
+	public void hwopt$setNativeId(int id) {
+		this.hwopt$nativeId = id;
+	}
+	
 	@Unique
 	private static double[] hwopt$boxCache = new double[384];
 	
@@ -84,19 +99,58 @@ public abstract class EntityMixin {
 		int boxCount = hwopt$flattenShapes(shapes);
 		if (boxCount == 0) return movement;
 		
-		Vec3 resolvedMovement = Vec3.ZERO;
 		AABBNative nativeAABB = AABBNative.instance();
+		double rx = 0.0, ry = 0.0, rz = 0.0;
 		
-		for (Direction.Axis axis : Direction.axisStepOrder(movement)) {
-			double axisMovement = movement.get(axis);
-			if (axisMovement == 0.0) continue;
-			
-			AABB movingBox = boundingBox.move(resolvedMovement);
-			double collision = nativeAABB.batchCollideAxis(axis.ordinal(), movingBox.minX, movingBox.minY, movingBox.minZ, movingBox.maxX, movingBox.maxY, movingBox.maxZ, hwopt$boxCache, axisMovement);
-			
-			resolvedMovement = resolvedMovement.with(axis, collision);
+		double mx = movement.x, my = movement.y, mz = movement.z;
+		double ax = Math.abs(mx), ay = Math.abs(my), az = Math.abs(mz);
+		
+		Direction.Axis a1, a2, a3;
+		if (ax > ay) {
+			if (az > ax) {
+				a1 = Z;
+				a2 = X;
+				a3 = Y;
+			} else {
+				a1 = X;
+				a2 = az > ay ? Z : Y;
+				a3 = az > ay ? Y : Z;
+			}
+		} else {
+			if (az > ay) {
+				a1 = Z;
+				a2 = Y;
+				a3 = X;
+			} else {
+				a1 = Y;
+				a2 = az > ax ? Z : X;
+				a3 = az > ax ? X : Z;
+			}
 		}
 		
-		return resolvedMovement;
+		for (int i = 0; i < 3; i++) {
+			Direction.Axis axis = switch (i) {
+				case 0 -> a1;
+				case 1 -> a2;
+				default -> a3;
+			};
+			double axisMovement = axis == X ? mx : axis == Y ? my : mz;
+			if (axisMovement == 0.0) continue;
+			
+			double movingMinX = boundingBox.minX + rx;
+			double movingMinY = boundingBox.minY + ry;
+			double movingMinZ = boundingBox.minZ + rz;
+			double movingMaxX = boundingBox.maxX + rx;
+			double movingMaxY = boundingBox.maxY + ry;
+			double movingMaxZ = boundingBox.maxZ + rz;
+			
+			double collision = nativeAABB.batchCollideAxis(axis.ordinal(), movingMinX, movingMinY, movingMinZ, movingMaxX, movingMaxY, movingMaxZ, hwopt$boxCache, axisMovement);
+			
+			if (axis == X) rx = collision;
+			else if (axis == Y) ry = collision;
+			else rz = collision;
+		}
+		
+		return new Vec3(rx, ry, rz);
 	}
 }

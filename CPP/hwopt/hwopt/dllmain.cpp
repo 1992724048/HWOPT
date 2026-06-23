@@ -9,6 +9,7 @@
 #include <tbb/global_control.h>
 #include <stdpp/logger.h>
 #include <stdpp/exception.h>
+#include <omp.h>
 
 #include "Global.hpp"
 #include "JavaNative.hpp"
@@ -36,6 +37,7 @@ auto APIENTRY DllMain(HMODULE hModule, const DWORD ul_reason_for_call, LPVOID lp
             stdpp::log::Logger::prepare_file_logging("logs");
             stdpp::log::Logger::set_level(stdpp::log::Level::Debug, stdpp::log::LoggerType::Any);
             mi_stats_reset();
+            omp_set_num_threads(static_cast<int>(std::thread::hardware_concurrency()));
             JavaNativeBase::init_all();
             break;
         case DLL_THREAD_ATTACH:
