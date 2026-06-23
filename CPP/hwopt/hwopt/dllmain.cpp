@@ -35,7 +35,7 @@ auto APIENTRY DllMain(HMODULE hModule, const DWORD ul_reason_for_call, LPVOID lp
         case DLL_PROCESS_ATTACH:
             stdpp::exception::Crash::set_callback(nullptr);
             stdpp::log::Logger::prepare_file_logging("logs");
-            stdpp::log::Logger::set_level(stdpp::log::Level::Debug, stdpp::log::LoggerType::Any);
+            stdpp::log::Logger::set_level(stdpp::log::Level::Debug, stdpp::log::LoggerType::ConsoleLogger);
             mi_stats_reset();
             omp_set_num_threads(static_cast<int>(std::thread::hardware_concurrency()));
             JavaNativeBase::init_all();

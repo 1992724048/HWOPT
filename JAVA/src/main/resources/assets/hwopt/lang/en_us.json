@@ -9,5 +9,33 @@
 
   "hwopt.configuration.world": "World",
   "hwopt.configuration.world.spawnAtVillage": "Spawn at Village",
-  "hwopt.configuration.world.spawnAtVillage.tooltip": "Move world spawn to the nearest village"
+  "hwopt.configuration.world.spawnAtVillage.tooltip": "Move world spawn to the nearest village",
+
+  "hwopt.config.title": "HWOPT Config",
+  "hwopt.config.category.rendering": "Rendering",
+  "hwopt.config.group.entityCulling": "Entity Culling",
+  "hwopt.config.group.particle": "Particle",
+  "hwopt.config.tickCulling": "Entity Tick Culling",
+  "hwopt.config.tickCulling.desc": "Cull entity ticking when behind walls",
+  "hwopt.config.blockEntityCulling": "Block Entity Culling",
+  "hwopt.config.solidLeaves": "Solid Leaves",
+  "hwopt.config.nametagsThroughWalls": "Nametags Through Walls",
+  "hwopt.config.tracingDistance": "Tracing Distance",
+  "hwopt.config.asyncParticleTick": "Async Particle Tick",
+
+  "hwopt.config.category.network": "Network",
+  "hwopt.config.group.aggregation": "Packet Aggregation",
+  "hwopt.config.group.dcc": "Chunk Cache (DCC)",
+  "hwopt.config.netFlushMs": "Flush Interval (ms)",
+  "hwopt.config.netMaxBytes": "Max Batch Size (bytes)",
+  "hwopt.config.netMaxCount": "Max Batch Count",
+  "hwopt.config.netMaxPacketSize": "Max Packet Size (bytes)",
+  "hwopt.config.dccCacheTimeout": "Cache Timeout (s)",
+  "hwopt.config.dccCacheDistance": "Cache Distance (chunks)",
+  "hwopt.config.dccBufferDistance": "Buffer Distance (chunks)",
+
+  "hwopt.config.category.debug": "Debug",
+  "hwopt.config.category.world": "World",
+  "hwopt.config.group.debug": "Debug Options",
+  "hwopt.config.group.world": "World Options"
 }

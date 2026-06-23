@@ -1,4 +1,4 @@
-package com.server.mixin;
+package com.server.network.mixin;
 
 import com.server.network.PacketIndexRegistry;
 import net.minecraft.network.FriendlyByteBuf;
@@ -12,12 +12,7 @@ public abstract class CustomPacketPayloadCodecMixin {
 	
 	@Redirect(method = "writeCap", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/FriendlyByteBuf;writeIdentifier(Lnet/minecraft/resources/Identifier;)Lnet/minecraft/network/FriendlyByteBuf;"), expect = 1)
 	private FriendlyByteBuf hwopt$writeIndexed(FriendlyByteBuf buf, Identifier id) {
-		PacketIndexRegistry reg = PacketIndexRegistry.INSTANCE;
-		int idx = reg.getIndex(id);
-		if (idx < 0) {
-			reg.captureVanillaPayloads(this);
-			idx = reg.getIndex(id);
-		}
+		int idx = PacketIndexRegistry.INSTANCE.getIndex(id);
 		if (idx >= 0) {
 			buf.writeByte(0);
 			buf.writeShort(PacketIndexRegistry.getModIdx(idx));
@@ -33,12 +28,7 @@ public abstract class CustomPacketPayloadCodecMixin {
 		if (firstByte == 0) {
 			buf.readByte();
 			int packed = PacketIndexRegistry.pack(buf.readUnsignedShort(), buf.readUnsignedShort());
-			PacketIndexRegistry reg = PacketIndexRegistry.INSTANCE;
-			Identifier id = reg.getIdentifier(packed);
-			if (id == null) {
-				reg.captureVanillaPayloads(this);
-				id = reg.getIdentifier(packed);
-			}
+			Identifier id = PacketIndexRegistry.INSTANCE.getIdentifier(packed);
 			return id;
 		}
 		return buf.readIdentifier();

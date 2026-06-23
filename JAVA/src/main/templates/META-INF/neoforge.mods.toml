@@ -45,16 +45,19 @@ HWOPT (Hardware Optimization) is a Minecraft optimization mod that rewrites vani
 
 # The [[mixins]] block allows you to declare your mixin config to FML so that it gets loaded.
 [[mixins]]
-config="${mod_id}.worldgen.mixins.json"
+config="${mod_id}.world.mixins.json"
 
 [[mixins]]
 config="${mod_id}.server.mixins.json"
 
 [[mixins]]
-config="${mod_id}.client.mixins.json"
+config="${mod_id}.entity.mixins.json"
 
 [[mixins]]
-config="${mod_id}.entity.mixins.json"
+config="${mod_id}.network.mixins.json"
+
+[[mixins]]
+config="${mod_id}.render.mixins.json"
 
 # The [[accessTransformers]] block allows you to declare where your AT file is.
 # If this block is omitted, a fallback attempt will be made to load an AT from META-INF/accesstransformer.cfg

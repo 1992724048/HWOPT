@@ -81,8 +81,8 @@ public abstract class NoiseBasedChunkGeneratorMixin {
 	
 	@Unique
 	private void hwopt$printStats() {
-		boolean logGen = Config.LOG_CHUNK_GEN.getAsBoolean();
-		int interval = Config.LOG_CHUNK_GEN_INTERVAL.getAsInt();
+		boolean logGen = Config.get().logChunkGen;
+		int interval = Config.get().logChunkGenInterval;
 		if (!logGen && interval <= 0) return;
 		hwopt$printStatsOnComplete(logGen, interval);
 	}

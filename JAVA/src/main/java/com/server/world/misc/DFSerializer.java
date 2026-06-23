@@ -18,7 +18,7 @@ public class DFSerializer {
 	static final int CONSTANT = 0, ADD = 1, MUL = 2, MIN = 3, MAX = 4;
 	static final int TRANSFORM = 5, RANGE_CHOICE = 6, BLENDED_NOISE = 7, NOISE = 8, Y_GRADIENT = 9;
 	
-	public static record SerializedTree(double[] nodes, long[] bnPtrs, long[] noisePtrs) {
+	public record SerializedTree(double[] nodes, long[] bnPtrs, long[] noisePtrs) {
 	}
 	
 	private static final ConcurrentHashMap<Class<?>, ConcurrentHashMap<String, Method>> MH_CACHE = new ConcurrentHashMap<>();

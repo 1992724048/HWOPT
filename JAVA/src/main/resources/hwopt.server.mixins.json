@@ -7,11 +7,7 @@
     "world.MinecraftServerMixin",
     "world.render.ViewDistanceMixin",
     "world.render.DistanceManagerMixin",
-    "world.render.ChunkTaskPriorityQueueMixin",
-    "ConnectionMixin",
-    "CompressionDecoderMixin",
-    "CompressionEncoderMixin",
-    "CustomPacketPayloadCodecMixin"
+    "world.render.ChunkTaskPriorityQueueMixin"
   ],
   "injectors": {
     "defaultRequire": 1

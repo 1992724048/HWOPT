@@ -8,6 +8,8 @@
 #include <tbb/parallel_for.h>
 #include <tbb/parallel_sort.h>
 
+#include "stdpp/util.h"
+
 using namespace minecraft::aabb;
 
 AABB::AABB() {
@@ -132,35 +134,6 @@ namespace {
         }
         return total;
     }
-
-    auto sweep_par(const int n, const int max_collisions, const EntityRef* sorted, int* out_a, int* out_b) -> int {
-        std::atomic ac{0};
-        parallel_for(tbb::blocked_range<int>(0, n),
-                     [&](const tbb::blocked_range<int>& range) -> void {
-                         for (int i = range.begin(); i < range.end(); i++) {
-                             const auto& a = sorted[i];
-                             for (int j = i + 1; j < n; j++) {
-                                 const auto& b = sorted[j];
-                                 if (b.min_x > a.max_x) {
-                                     break;
-                                 }
-                                 if (a.max_y <= b.min_y || a.min_y >= b.max_y) {
-                                     continue;
-                                 }
-                                 if (a.max_z <= b.min_z || a.min_z >= b.max_z) {
-                                     continue;
-                                 }
-                                 const int p = ac.fetch_add(1, std::memory_order_relaxed);
-                                 if (p < max_collisions) {
-                                     out_a[p] = a.id;
-                                     out_b[p] = b.id;
-                                 }
-                             }
-                         }
-                     });
-        const int r = ac.load(std::memory_order_relaxed);
-        return r < max_collisions ? r : max_collisions;
-    }
 } // namespace
 
 auto AABB::batch_find_collisions(const double* aabbs,
@@ -192,9 +165,5 @@ auto AABB::batch_find_collisions(const double* aabbs,
                        [](const EntityRef& a, const EntityRef& b) -> bool {
                            return a.min_x < b.min_x;
                        });
-
-    if (entity_count > PARALLEL_THRESHOLD) {
-        return sweep_par(entity_count, max_collisions, sorted.data(), output_a, output_b);
-    }
     return sweep_seq(entity_count, max_collisions, sorted.data(), output_a, output_b);
 }

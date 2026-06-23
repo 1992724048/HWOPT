@@ -1,8 +1,8 @@
 ﻿#include "DensityFunctionTree.hpp"
 
 #include <algorithm>
-#include <tbb/blocked_range.h>
-#include <tbb/tbb.h>
+
+#include "stdpp/util.h"
 
 using namespace minecraft::dftree;
 
@@ -101,23 +101,10 @@ auto DensityFunctionTree::compute_densities_batch(const double* nodes,
         return;
     }
 
-    const int grain = std::max(256, total / 32);
-
-    tbb::parallel_for(tbb::blocked_range<size_t>(0, total, grain),
-                      [&](const tbb::blocked_range<size_t>& r) -> void {
-                          for (size_t i = r.begin(); i < r.end(); ++i) {
-                              const int x = min_x + static_cast<int>(i % size_x);
-                              const int z = min_z + static_cast<int>((i / size_x) % size_z);
-                              const int y = min_y + static_cast<int>(i / (size_x * size_z));
-                              output[i] = evaluate_node(nodes,
-                                                        0,
-                                                        reinterpret_cast<noise::BlendedNoise**>(bn_ptrs),
-                                                        bn_ptrs_len,
-                                                        reinterpret_cast<noise::NormalNoise**>(noise_ptrs),
-                                                        noise_ptrs_len,
-                                                        x,
-                                                        y,
-                                                        z);
-                          }
-                      });
+    for (int i = 0; i < total; ++i) {
+        const int x = min_x + (i % size_x);
+        const int z = min_z + ((i / size_x) % size_z);
+        const int y = min_y + (i / (size_x * size_z));
+        output[i] = evaluate_node(nodes, 0, reinterpret_cast<noise::BlendedNoise**>(bn_ptrs), bn_ptrs_len, reinterpret_cast<noise::NormalNoise**>(noise_ptrs), noise_ptrs_len, x, y, z);
+    }
 }

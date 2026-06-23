@@ -3,11 +3,10 @@
   "package": "com.server.entity.mixin",
   "compatibilityLevel": "JAVA_25",
   "mixins": [
-    "AABBMixin",
     "EntityMixin",
     "LivingEntityMixin",
-    "VoxelShapeMixin",
     "LevelMixin",
+    "PathNavigationMixin",
     "ServerLevelMixin"
   ],
   "injectors": {

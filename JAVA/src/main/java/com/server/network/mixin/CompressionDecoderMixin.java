@@ -1,4 +1,4 @@
-package com.server.mixin;
+package com.server.network.mixin;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;

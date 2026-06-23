@@ -1,0 +1,17 @@
+{
+  "required": true,
+  "target": "CLIENT",
+  "compatibilityLevel": "JAVA_25",
+  "mixins": [
+    "com.server.render.entityculling.mixin.MinecraftCullingMixin",
+    "com.server.render.entityculling.mixin.LevelExtractorMixin",
+    "com.server.render.entityculling.mixin.CullableMixin",
+    "com.server.render.particle.mixin.ParticleMixin",
+    "com.server.render.particle.mixin.ParticleEngineMixin",
+    "com.server.render.particle.mixin.ParticleEngineQueueMixin",
+    "com.server.render.particle.mixin.ParticleGroupMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

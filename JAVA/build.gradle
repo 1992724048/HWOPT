@@ -18,7 +18,6 @@ version = mod_version
 group = mod_group_id
 
 repositories {
-    // Add here additional repositories if required by some of the dependencies below.
 }
 
 base {
@@ -128,6 +127,9 @@ configurations {
 }
 
 dependencies {
+    implementation files("run/mods/yet_another_config_lib_v3-3.9.4+26.2-neoforge.jar")
+    implementation "org.tomlj:tomlj:1.0.0"
+
     // Example optional mod dependency with JEI
     // The JEI API is declared for compile time use, while the full JEI artifact is used at runtime
     // compileOnly "mezz.jei:jei-${mc_version}-common-api:${jei_version}"

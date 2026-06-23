@@ -9,5 +9,33 @@
 
   "hwopt.configuration.world": "世界",
   "hwopt.configuration.world.spawnAtVillage": "在村庄出生",
-  "hwopt.configuration.world.spawnAtVillage.tooltip": "将世界出生点移动到最近的村庄"
+  "hwopt.configuration.world.spawnAtVillage.tooltip": "将世界出生点移动到最近的村庄",
+
+  "hwopt.config.title": "HWOPT 配置",
+  "hwopt.config.category.rendering": "渲染",
+  "hwopt.config.group.entityCulling": "实体剔除",
+  "hwopt.config.group.particle": "粒子",
+  "hwopt.config.tickCulling": "实体 Tick 剔除",
+  "hwopt.config.tickCulling.desc": "遮挡后跳过实体 tick",
+  "hwopt.config.blockEntityCulling": "方块实体剔除",
+  "hwopt.config.solidLeaves": "树叶视为实体",
+  "hwopt.config.nametagsThroughWalls": "墙体透名",
+  "hwopt.config.tracingDistance": "检测距离",
+  "hwopt.config.asyncParticleTick": "异步粒子 Tick",
+
+  "hwopt.config.category.network": "网络",
+  "hwopt.config.group.aggregation": "数据包聚合",
+  "hwopt.config.group.dcc": "区块缓存 (DCC)",
+  "hwopt.config.netFlushMs": "刷新间隔 (毫秒)",
+  "hwopt.config.netMaxBytes": "最大批处理大小 (字节)",
+  "hwopt.config.netMaxCount": "最大批处理包数",
+  "hwopt.config.netMaxPacketSize": "最大包大小 (字节)",
+  "hwopt.config.dccCacheTimeout": "缓存超时 (秒)",
+  "hwopt.config.dccCacheDistance": "缓存距离 (区块)",
+  "hwopt.config.dccBufferDistance": "预留视距 (区块)",
+
+  "hwopt.config.category.debug": "调试",
+  "hwopt.config.category.world": "世界",
+  "hwopt.config.group.debug": "调试选项",
+  "hwopt.config.group.world": "世界选项"
 }

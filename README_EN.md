@@ -29,15 +29,16 @@ We avoid blindly applying multi-threading or GPU acceleration. Every optimizatio
 
 #### Feature List
 
-| Name                            | Category     | Status         | Module Version | Notes                                                                                           |
-| ------------------------------- | ------------ | -------------- | -------------- | ----------------------------------------------------------------------------------------------- |
-| Terrain Generation Optimization | Optimization | Completed      | 26.1           | Optimizes vanilla chunk generation speed (compatibility with other terrain mods prioritized)    |
-| Entity Collision Optimization   | Optimization | Completed      | 26.1           | Optimizes vanilla entity collision computation                                                  |
-| Entity Rendering Optimization   | Optimization | In Development | 26.1           |                                                                                                 |
-| Entity AI Optimization          | Optimization | In Development | 26.1           |                                                                                                 |
-| Network Packet Compression      | Optimization | Completed      | 26.1           | Batches packets using ICX-optimized ZSTD compression, uses ID indices instead of packet strings |
-| Village Spawn                   | Utility      | Completed      | 26.1           | Sets world spawn point to a village                                                             |
-| 125-Chunk Render Distance       | Utility      | Completed      | 26.1           | Extends vanilla render distance to 125 chunks                                                   |
+| Name                              | Category     | Status    | Module Version | Notes                                                                                         |
+| --------------------------------- | ------------ | --------- | -------------- | --------------------------------------------------------------------------------------------- |
+| Terrain Generation Optimization   | Optimization | Completed | 26.1           | Optimizes vanilla chunk generation speed (compatibility with other terrain mods prioritized)  |
+| Entity Collision Optimization     | Optimization | Completed | 26.1           | Batch AABB collision (native C++), fixes race conditions, step-up bugs, twitching             |
+| Entity Rendering Culling          | Optimization | Completed | 26.1           | Async background occlusion + 2×2×2 cell grouping + Cullable cache, supports tick/block culling|
+| Entity AI Optimization            | Optimization | Completed | 26.1           | Pathfinding cooldown (5 ticks)                                                                |
+| Particle Async Tick Optimization  | Optimization | Completed | 26.1           | ForkJoinPool parallel update + light cache + spin-lock ring buffer + throttle extraction      |
+| Network Packet Compression        | Optimization | Completed | 26.1           | Batches packets using ICX-optimized ZSTD compression, uses ID indices instead of packet strings |
+| Village Spawn                     | Utility      | Completed | 26.1           | Sets world spawn point to a village                                                           |
+
 
 - Module version format: `year/revision`
 

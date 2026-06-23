@@ -16,9 +16,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.List;
 
-import static net.minecraft.core.Direction.Axis.X;
-import static net.minecraft.core.Direction.Axis.Y;
-import static net.minecraft.core.Direction.Axis.Z;
+import static net.minecraft.core.Direction.Axis.*;
 
 @Mixin(Entity.class)
 public abstract class EntityMixin implements IEntityNativeId {
@@ -46,16 +44,6 @@ public abstract class EntityMixin implements IEntityNativeId {
 	}
 	
 	@Unique
-	public void hwopt$extractBoundingBox(double[] out, int offset, double inflate) {
-		out[offset] = this.hwopt$bbMinX - inflate;
-		out[offset + 1] = this.hwopt$bbMinY - inflate;
-		out[offset + 2] = this.hwopt$bbMinZ - inflate;
-		out[offset + 3] = this.hwopt$bbMaxX + inflate;
-		out[offset + 4] = this.hwopt$bbMaxY + inflate;
-		out[offset + 5] = this.hwopt$bbMaxZ + inflate;
-	}
-	
-	@Unique
 	private int hwopt$nativeId = -1;
 	
 	@Override
@@ -69,25 +57,35 @@ public abstract class EntityMixin implements IEntityNativeId {
 	}
 	
 	@Unique
-	private static double[] hwopt$boxCache = new double[384];
+	private static final ThreadLocal<double[]> hwopt$boxCacheTL = ThreadLocal.withInitial(() -> new double[384]);
 	
 	@Unique
 	private static int hwopt$flattenShapes(List<VoxelShape> shapes) {
+		double[] cache = hwopt$boxCacheTL.get();
 		int pos = 0;
 		for (VoxelShape shape : shapes) {
 			List<AABB> aabbs = shape.toAabbs();
 			int need = pos + aabbs.size() * 6;
-			if (hwopt$boxCache.length < need) {
-				hwopt$boxCache = new double[need * 2];
+			if (cache.length < need) {
+				cache = new double[need * 2];
+				hwopt$boxCacheTL.set(cache);
 			}
 			for (AABB aabb : aabbs) {
-				hwopt$boxCache[pos++] = aabb.minX;
-				hwopt$boxCache[pos++] = aabb.minY;
-				hwopt$boxCache[pos++] = aabb.minZ;
-				hwopt$boxCache[pos++] = aabb.maxX;
-				hwopt$boxCache[pos++] = aabb.maxY;
-				hwopt$boxCache[pos++] = aabb.maxZ;
+				cache[pos++] = aabb.minX;
+				cache[pos++] = aabb.minY;
+				cache[pos++] = aabb.minZ;
+				cache[pos++] = aabb.maxX;
+				cache[pos++] = aabb.maxY;
+				cache[pos++] = aabb.maxZ;
 			}
+		}
+		for (int i = pos; i < cache.length; i += 6) {
+			cache[i] = Double.MAX_VALUE;
+			cache[i + 1] = Double.MAX_VALUE;
+			cache[i + 2] = Double.MAX_VALUE;
+			cache[i + 3] = -Double.MAX_VALUE;
+			cache[i + 4] = -Double.MAX_VALUE;
+			cache[i + 5] = -Double.MAX_VALUE;
 		}
 		return pos;
 	}
@@ -103,37 +101,8 @@ public abstract class EntityMixin implements IEntityNativeId {
 		double rx = 0.0, ry = 0.0, rz = 0.0;
 		
 		double mx = movement.x, my = movement.y, mz = movement.z;
-		double ax = Math.abs(mx), ay = Math.abs(my), az = Math.abs(mz);
-		
-		Direction.Axis a1, a2, a3;
-		if (ax > ay) {
-			if (az > ax) {
-				a1 = Z;
-				a2 = X;
-				a3 = Y;
-			} else {
-				a1 = X;
-				a2 = az > ay ? Z : Y;
-				a3 = az > ay ? Y : Z;
-			}
-		} else {
-			if (az > ay) {
-				a1 = Z;
-				a2 = Y;
-				a3 = X;
-			} else {
-				a1 = Y;
-				a2 = az > ax ? Z : X;
-				a3 = az > ax ? X : Z;
-			}
-		}
-		
-		for (int i = 0; i < 3; i++) {
-			Direction.Axis axis = switch (i) {
-				case 0 -> a1;
-				case 1 -> a2;
-				default -> a3;
-			};
+
+		for (Direction.Axis axis : Direction.axisStepOrder(movement)) {
 			double axisMovement = axis == X ? mx : axis == Y ? my : mz;
 			if (axisMovement == 0.0) continue;
 			
@@ -144,7 +113,7 @@ public abstract class EntityMixin implements IEntityNativeId {
 			double movingMaxY = boundingBox.maxY + ry;
 			double movingMaxZ = boundingBox.maxZ + rz;
 			
-			double collision = nativeAABB.batchCollideAxis(axis.ordinal(), movingMinX, movingMinY, movingMinZ, movingMaxX, movingMaxY, movingMaxZ, hwopt$boxCache, axisMovement);
+			double collision = nativeAABB.batchCollideAxis(axis.ordinal(), movingMinX, movingMinY, movingMinZ, movingMaxX, movingMaxY, movingMaxZ, hwopt$boxCacheTL.get(), axisMovement);
 			
 			if (axis == X) rx = collision;
 			else if (axis == Y) ry = collision;
