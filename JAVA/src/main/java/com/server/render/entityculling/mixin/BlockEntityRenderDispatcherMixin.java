@@ -1,6 +1,6 @@
 package com.server.render.entityculling.mixin;
 
-import com.server.render.entityculling.EntityCullingMod;
+import com.server.render.entityculling.EntityCulling;
 import com.server.render.entityculling.access.Cullable;
 import com.hwpp.mod.Config;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
@@ -25,9 +25,9 @@ public abstract class BlockEntityRenderDispatcherMixin {
                                               boolean isGloballyRendered,
                                               CallbackInfoReturnable<Object> ci) {
         if (isGloballyRendered) return;
-        EntityCullingMod mod = EntityCullingMod.getInstance();
+        EntityCulling mod = EntityCulling.getInstance();
         if (Config.CONFIG.skipBlockEntityCulling.get()) return;
-        if (!EntityCullingMod.enabled || !Config.CONFIG.tickCulling.get()) return;
+        if (!EntityCulling.enabled || !Config.CONFIG.tickCulling.get()) return;
         BlockEntityRenderer<?, ?> renderer = getRenderer(blockEntity);
         if (renderer == null) return;
         if (renderer.shouldRenderOffScreen()) {

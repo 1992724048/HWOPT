@@ -30,4 +30,5 @@ public class ConfigHelper {
 	public static int getParticleLimit() {
 		return Config.CONFIG.particleLimit.get();
 	}
+
 }

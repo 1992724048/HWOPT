@@ -40,6 +40,7 @@ auto APIENTRY DllMain(HMODULE hModule, const DWORD ul_reason_for_call, LPVOID lp
             omp_set_num_threads(static_cast<int>(std::thread::hardware_concurrency()));
             omp_set_dynamic(1);
             omp_set_schedule(omp_sched_guided, 1);
+            kmp_set_blocktime(0);
             JavaNativeBase::init_all();
             break;
         case DLL_THREAD_ATTACH:

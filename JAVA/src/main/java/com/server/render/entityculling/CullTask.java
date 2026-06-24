@@ -70,7 +70,7 @@ public class CullTask implements Runnable {
 		while (client.isRunning()) {
 			try {
 				Thread.sleep(sleepDelay);
-				if (EntityCullingMod.enabled && ingame && !client.isPaused()) {
+				if (EntityCulling.enabled && ingame && !client.isPaused()) {
 					if (requestCull || !(cameraMC.x == lastPos.x && cameraMC.y == lastPos.y && cameraMC.z == lastPos.z)) {
 						long start = System.nanoTime();
 						requestCull = false;
@@ -92,7 +92,7 @@ public class CullTask implements Runnable {
 	
 	private void cullEntities(Vec3 cameraMC, Vec3d camera) {
 		if (disableEntityCulling) return;
-		EntityCullingMod mod = EntityCullingMod.getInstance();
+		EntityCulling mod = EntityCulling.getInstance();
 		int tracingDist = Math.max(client.options.renderDistance().get() * 16, 16);
 		
 		Int2ObjectOpenHashMap<Group> groupMap = new Int2ObjectOpenHashMap<>();
@@ -159,7 +159,7 @@ public class CullTask implements Runnable {
 	
 	private void cullBlockEntities(Vec3 cameraMC, Vec3d camera) {
 		if (disableBlockEntityCulling) return;
-		EntityCullingMod mod = EntityCullingMod.getInstance();
+		EntityCulling mod = EntityCulling.getInstance();
 		Iterator<Map.Entry<BlockPos, BlockEntity>> iterator = blockEntities.entrySet().iterator();
 		while (iterator.hasNext()) {
 			Map.Entry<BlockPos, BlockEntity> entry;

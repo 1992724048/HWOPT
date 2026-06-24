@@ -1,6 +1,6 @@
 package com.server.render.entityculling.mixin;
 
-import com.server.render.entityculling.EntityCullingMod;
+import com.server.render.entityculling.EntityCulling;
 import com.server.render.entityculling.access.Cullable;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -36,7 +36,7 @@ public class CullableMixin implements Cullable {
 
     @Override
     public boolean isCulled() {
-        if (!EntityCullingMod.enabled) return false;
+        if (!EntityCulling.enabled) return false;
         return culled;
     }
 
@@ -47,7 +47,7 @@ public class CullableMixin implements Cullable {
 
     @Override
     public boolean isOutOfCamera() {
-        if (!EntityCullingMod.enabled) return false;
+        if (!EntityCulling.enabled) return false;
         return outOfCamera;
     }
 }

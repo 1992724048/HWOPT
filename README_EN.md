@@ -15,10 +15,6 @@
 
 HWOPT (Hardware Optimization) is a Minecraft optimization mod that rewrites vanilla algorithms in C++, using the Java 25 FFM API for low-overhead native calls, with GPU (SYCL/DPC++) acceleration to boost game performance.
 
-## Design Philosophy
-
-We avoid blindly applying multi-threading or GPU acceleration. Every optimization is evaluated against real-world scenarios to determine whether it genuinely benefits performance — using these techniques for their own sake would only saturate compute resources and degrade system responsiveness with little to no gain. This mod prioritizes compatibility with other mods over pushing performance to its absolute limits.
-
 ## Community
 
 - [pd34429710](https://pd.qq.com/s/fcy3gqy4x) (QQ Channel)
@@ -29,16 +25,18 @@ We avoid blindly applying multi-threading or GPU acceleration. Every optimizatio
 
 #### Feature List
 
-| Name                              | Category     | Status    | Module Version | Notes                                                                                         |
-| --------------------------------- | ------------ | --------- | -------------- | --------------------------------------------------------------------------------------------- |
-| Terrain Generation Optimization   | Optimization | Completed | 26.1           | Optimizes vanilla chunk generation speed (compatibility with other terrain mods prioritized)  |
-| Entity Collision Optimization     | Optimization | Completed | 26.1           | Batch AABB collision (native C++), fixes race conditions, step-up bugs, twitching             |
-| Entity Rendering Culling          | Optimization | Completed | 26.1           | Async background occlusion + 2×2×2 cell grouping + Cullable cache, supports tick/block culling|
-| Entity AI Optimization            | Optimization | Completed | 26.1           | Pathfinding cooldown (5 ticks)                                                                |
-| Particle Async Tick Optimization  | Optimization | Completed | 26.1           | ForkJoinPool parallel update + light cache + spin-lock ring buffer + throttle extraction      |
-| Network Packet Compression        | Optimization | Completed | 26.1           | Batches packets using ICX-optimized ZSTD compression, uses ID indices instead of packet strings |
-| Village Spawn                     | Utility      | Completed | 26.1           | Sets world spawn point to a village                                                           |
-
+| Name                              | Category     | Status    | Module Version | Notes                                                                    |
+| --------------------------------- | ------------ | --------- | -------------- | ------------------------------------------------------------------------ |
+| Terrain Generation Optimization   | Optimization | Completed | 26.1           | Optimizes vanilla chunk generation speed                                 |
+| Entity Collision Optimization     | Optimization | Completed | 26.1           | Batch AABB collision                                                     |
+| Entity Rendering Culling          | Optimization | Completed | 26.1           | Don't render entities/block-entities behind walls, supports tick culling |
+| Entity AI Optimization            | Optimization | Completed | 26.1           | Pathfinding cooldown (5 ticks)                                           |
+| Particle Optimization             | Optimization | Completed | 26.1           | Async ticking + light cache + collision optimization                     |
+| Network Packet Compression        | Optimization | Completed | 26.1           | Reduces network traffic, outbound ~13% of vanilla                        |
+| Village Spawn                     | Utility      | Completed | 26.1           | Auto-set world spawn to a village                                        |
+| Async Logging                     | Optimization | Completed | 26.1           | Async log writing                                                        |
+| Mob Despawn Tweaks                | Optimization | Completed | 26.1           | Item-picking mobs can despawn naturally, dropping carried items          |
+| More optimizations coming soon... |              | WIP       |                |                                                                          |
 
 - Module version format: `year/revision`
 
@@ -89,6 +87,14 @@ We avoid blindly applying multi-threading or GPU acceleration. Every optimizatio
   | Vulkan                | AMD RX 6600             |    f32    |   Host   |   941 ms   |   94.1 μs   |   10,627 ops/s   |
 
 - **Reproduce:** Test code at `CPP/hwopt/hwopt-benchmark/MathBenchmark.cpp`, anyone with compatible hardware and toolchain can re-run the benchmarks.
+
+5. Will Vulkan be considered for broader hardware support in the future?
+
+- Possibly. The Vulkan backend is not a high priority, but if there is community demand and dedicated contributors, we can evaluate it. SYCL remains the preferred choice for performance and cross-platform support.
+
+6. Why is the mod file size so large?
+
+- The size comes from 30+ DLLs under `native/`. Major contributors: **SYCL JIT compiler** (`sycl-jit.dll` 186MB + `common_clang64.dll` 145MB), **Intel GPU compiler** (`intelocl64.dll` 106MB), **OpenMP offloading runtime** (`omptarget.dll` 66MB) — totaling ~542MB.
 
 ## Quick Start
 

@@ -1,6 +1,6 @@
 package com.server.render.entityculling.mixin;
 
-import com.server.render.entityculling.EntityCullingMod;
+import com.server.render.entityculling.EntityCulling;
 import com.server.render.entityculling.NMSCullingHelper;
 import com.server.render.entityculling.access.Cullable;
 import com.hwpp.mod.Config;
@@ -24,9 +24,9 @@ public class LevelExtractorMixin {
 
     @Inject(method = "extractEntity", at = @At("HEAD"), cancellable = true)
     private void hwopt$extractEntity(Entity entity, float partialTick, CallbackInfoReturnable<EntityRenderState> ci) {
-        EntityCullingMod mod = EntityCullingMod.getInstance();
+        EntityCulling mod = EntityCulling.getInstance();
         if (Config.CONFIG.skipEntityCulling.get()) return;
-        if (!EntityCullingMod.enabled || !Config.CONFIG.tickCulling.get()) return;
+        if (!EntityCulling.enabled || !Config.CONFIG.tickCulling.get()) return;
         Cullable cullable = (Cullable) entity;
         if (!cullable.isForcedVisible() && cullable.isCulled() && !NMSCullingHelper.ignoresCulling(entity)) {
             EntityRenderState state = new EntityRenderState();
@@ -46,6 +46,6 @@ public class LevelExtractorMixin {
     @Inject(method = "extractVisibleEntities", at = @At("HEAD"))
     private void hwopt$extractVisibleEntities(Camera camera, Frustum frustum, DeltaTracker deltaTracker,
                                                LevelRenderState levelRenderState, CallbackInfo ci) {
-        EntityCullingMod.getInstance().frustum = frustum;
+        EntityCulling.getInstance().frustum = frustum;
     }
 }

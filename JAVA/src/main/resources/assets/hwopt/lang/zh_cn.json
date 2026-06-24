@@ -35,8 +35,6 @@
   "hwopt.config.parallelQueueRemoval.desc": "使用多线程并行清理死亡粒子",
   "hwopt.config.parallelQueueEviction": "并行队列淘汰",
   "hwopt.config.parallelQueueEviction.desc": "在队列清理时并行执行淘汰回调",
-  "hwopt.config.particleTypeBlacklist": "禁用粒子类型",
-  "hwopt.config.particleTypeBlacklist.desc": "逗号分隔的粒子类型 ID，如 minecraft:smoke,minecraft:flame",
 
   "hwopt.config.category.network": "网络",
   "hwopt.config.group.aggregation": "数据包聚合",

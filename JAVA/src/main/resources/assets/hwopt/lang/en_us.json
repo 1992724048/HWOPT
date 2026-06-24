@@ -35,8 +35,6 @@
   "hwopt.config.parallelQueueRemoval.desc": "Use multiple threads when removing dead particles from queues",
   "hwopt.config.parallelQueueEviction": "Parallel Queue Eviction",
   "hwopt.config.parallelQueueEviction.desc": "Run eviction callbacks in parallel during queue removal",
-  "hwopt.config.particleTypeBlacklist": "Disabled Particle Types",
-  "hwopt.config.particleTypeBlacklist.desc": "Comma-separated particle type IDs to disable, e.g. minecraft:smoke,minecraft:flame",
 
   "hwopt.config.category.network": "Network",
   "hwopt.config.group.aggregation": "Packet Aggregation",

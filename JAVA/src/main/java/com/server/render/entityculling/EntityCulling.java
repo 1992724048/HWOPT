@@ -21,9 +21,9 @@ import org.slf4j.LoggerFactory;
 import java.util.*;
 import java.util.function.Function;
 
-public class EntityCullingMod {
+public class EntityCulling {
     public static final Logger LOGGER = LoggerFactory.getLogger("EntityCulling");
-    private static EntityCullingMod instance;
+    private static volatile EntityCulling instance;
     public static boolean enabled = true;
 
     public final DebugCollector debugCollector = new DebugCollector();
@@ -42,13 +42,13 @@ public class EntityCullingMod {
     public double lastTickTime = 0;
     public Frustum frustum = null;
 
-    private Thread cullThread;
+    private final Thread cullThread;
     private int tickCounter = 0;
     private boolean lateInit = false;
-    private Set<Function<BlockEntity, Boolean>> dynamicBlockEntityWhitelist = new HashSet<>();
-    private Set<Function<Entity, Boolean>> dynamicEntityWhitelist = new HashSet<>();
+    private final Set<Function<BlockEntity, Boolean>> dynamicBlockEntityWhitelist = new HashSet<>();
+    private final Set<Function<Entity, Boolean>> dynamicEntityWhitelist = new HashSet<>();
 
-    public EntityCullingMod() {
+    public EntityCulling() {
         instance = this;
         culling = new OcclusionCullingInstance(64, new Provider());
         cullTask = new CullTask(culling, blockEntityWhitelist, entityWhitelist);
@@ -64,11 +64,11 @@ public class EntityCullingMod {
         initWhitelists();
     }
 
-    public static EntityCullingMod getInstance() {
+    public static EntityCulling getInstance() {
         if (instance == null) {
-            synchronized (EntityCullingMod.class) {
+            synchronized (EntityCulling.class) {
                 if (instance == null) {
-                    new EntityCullingMod();
+                    new EntityCulling();
                 }
             }
         }

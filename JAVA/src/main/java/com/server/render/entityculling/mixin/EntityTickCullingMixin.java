@@ -1,6 +1,6 @@
 package com.server.render.entityculling.mixin;
 
-import com.server.render.entityculling.EntityCullingMod;
+import com.server.render.entityculling.EntityCulling;
 import com.server.render.entityculling.NMSCullingHelper;
 import com.server.render.entityculling.access.Cullable;
 import com.hwpp.mod.Config;
@@ -22,7 +22,7 @@ public class EntityTickCullingMixin {
 
     @Inject(method = "tickNonPassenger", at = @At("HEAD"), cancellable = true)
     private void hwopt$tickEntity(Entity entity, CallbackInfo ci) {
-        EntityCullingMod mod = EntityCullingMod.getInstance();
+        EntityCulling mod = EntityCulling.getInstance();
         if (!Config.CONFIG.tickCulling.get() || Config.CONFIG.skipEntityCulling.get()) return;
         if (mod.tickCullWhitelists.contains(entity.getType())) return;
         if (mod.entityWhitelist.contains(entity.getType())) return;
