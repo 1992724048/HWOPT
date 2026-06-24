@@ -51,7 +51,7 @@ config="${mod_id}.world.mixins.json"
 config="${mod_id}.server.mixins.json"
 
 [[mixins]]
-config="${mod_id}.entity.mixins.json"
+config="${mod_id}.aabb.mixins.json"
 
 [[mixins]]
 config="${mod_id}.network.mixins.json"
@@ -62,10 +62,11 @@ config="${mod_id}.entityculling.mixins.json"
 [[mixins]]
 config="${mod_id}.particle.mixins.json"
 
-# The [[accessTransformers]] block allows you to declare where your AT file is.
-# If this block is omitted, a fallback attempt will be made to load an AT from META-INF/accesstransformer.cfg
-#[[accessTransformers]]
-#file="META-INF/accesstransformer.cfg"
+[[mixins]]
+config="${mod_id}.mobdespawn.mixins.json"
+
+[[accessTransformers]]
+file="META-INF/accesstransformer.cfg"
 
 # The coremods config file path is not configurable and is always loaded from META-INF/coremods.json
 

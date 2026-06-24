@@ -28,7 +28,7 @@ auto init_sycl_device() -> void {
     }
 }
 
-static const tbb::global_control TBB_GC(tbb::global_control::max_allowed_parallelism, std::thread::hardware_concurrency());
+[[maybe_unused]] static const tbb::global_control TBB_GC(tbb::global_control::max_allowed_parallelism, std::thread::hardware_concurrency());
 
 auto APIENTRY DllMain(HMODULE hModule, const DWORD ul_reason_for_call, LPVOID lpReserved) -> BOOL {
     switch (ul_reason_for_call) {
@@ -38,6 +38,8 @@ auto APIENTRY DllMain(HMODULE hModule, const DWORD ul_reason_for_call, LPVOID lp
             stdpp::log::Logger::set_level(stdpp::log::Level::Debug, stdpp::log::LoggerType::ConsoleLogger);
             mi_stats_reset();
             omp_set_num_threads(static_cast<int>(std::thread::hardware_concurrency()));
+            omp_set_dynamic(1);
+            omp_set_schedule(omp_sched_guided, 1);
             JavaNativeBase::init_all();
             break;
         case DLL_THREAD_ATTACH:

@@ -1,6 +1,6 @@
 {
   "required": true,
-  "package": "com.server.entity.mixin",
+  "package": "com.server.entity.aabb.mixin",
   "compatibilityLevel": "JAVA_25",
   "mixins": [
     "EntityMixin",

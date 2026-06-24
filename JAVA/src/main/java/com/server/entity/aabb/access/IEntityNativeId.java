@@ -1,4 +1,4 @@
-package com.server.entity.access;
+package com.server.entity.aabb.access;
 
 public interface IEntityNativeId {
 	int hwopt$getNativeId();

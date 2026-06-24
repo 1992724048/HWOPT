@@ -1,4 +1,4 @@
-package com.server.entity.util;
+package com.server.entity.aabb.util;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;

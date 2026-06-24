@@ -3,6 +3,8 @@ package com.hwpp.mod;
 import net.neoforged.neoforge.common.ModConfigSpec;
 import org.apache.commons.lang3.tuple.Pair;
 
+import java.util.List;
+
 public class Config {
 	public static final Config CONFIG;
 	public static final ModConfigSpec SPEC;
@@ -17,7 +19,6 @@ public class Config {
 	// Rendering - Entity Culling
 	public final ModConfigSpec.BooleanValue tickCulling;
 	public final ModConfigSpec.BooleanValue solidLeaves;
-	public final ModConfigSpec.IntValue tracingDistance;
 	public final ModConfigSpec.IntValue sleepDelay;
 	public final ModConfigSpec.IntValue hitboxLimit;
 	public final ModConfigSpec.IntValue captureRate;
@@ -25,12 +26,14 @@ public class Config {
 	public final ModConfigSpec.BooleanValue skipBlockEntityCulling;
 	public final ModConfigSpec.BooleanValue forceDisplayCulling;
 	public final ModConfigSpec.BooleanValue debugMode;
-	public final ModConfigSpec.ConfigValue<java.util.List<? extends String>> blockEntityCullingWhitelist;
-	public final ModConfigSpec.ConfigValue<java.util.List<? extends String>> entityCullingWhitelist;
-	public final ModConfigSpec.ConfigValue<java.util.List<? extends String>> tickCullingWhitelist;
 	
 	// Entity - Collision
 	public final ModConfigSpec.IntValue entityDensityThreshold;
+
+	// Rendering - Entity Culling Lists
+	public final ModConfigSpec.ConfigValue<String> blockEntityCullingWhitelist;
+	public final ModConfigSpec.ConfigValue<String> entityCullingWhitelist;
+	public final ModConfigSpec.ConfigValue<String> tickCullingWhitelist;
 
 	// Rendering - Particle
 	public final ModConfigSpec.BooleanValue asyncParticleTick;
@@ -39,7 +42,6 @@ public class Config {
 	public final ModConfigSpec.BooleanValue removeIfMissedTick;
 	public final ModConfigSpec.BooleanValue parallelQueueRemoval;
 	public final ModConfigSpec.BooleanValue parallelQueueEviction;
-	
 	// Network - Aggregation
 	public final ModConfigSpec.IntValue netFlushMs;
 	public final ModConfigSpec.IntValue netMaxBytes;
@@ -52,7 +54,23 @@ public class Config {
 	public final ModConfigSpec.IntValue dccCacheDistance;
 	public final ModConfigSpec.IntValue dccCacheSizeLimit;
 	public final ModConfigSpec.IntValue dccBufferDistance;
-	
+
+	// Logging - AsyncLogger
+	public final ModConfigSpec.BooleanValue asyncLoggerEnabled;
+	public final ModConfigSpec.IntValue asyncLoggerRingBufferSize;
+	public final ModConfigSpec.ConfigValue<String> asyncLoggerWaitStrategy;
+	public final ModConfigSpec.ConfigValue<String> asyncLoggerSynchronizeEnqueueWhenQueueFull;
+	public final ModConfigSpec.ConfigValue<String> asyncLoggerFormatMsgAsync;
+	public final ModConfigSpec.ConfigValue<String> asyncLoggerAsyncQueueFullPolicy;
+	public final ModConfigSpec.ConfigValue<String> asyncLoggerDiscardThreshold;
+	public final ModConfigSpec.BooleanValue asyncLoggerWrapSysOutSysErr;
+	public final ModConfigSpec.BooleanValue asyncLoggerTestPerformance;
+	public final ModConfigSpec.BooleanValue asyncLoggerUseColors;
+
+	// Mob - Despawn
+	public final ModConfigSpec.BooleanValue mobDespawnEnabled;
+	public final ModConfigSpec.ConfigValue<java.util.List<? extends String>> mobDespawnProtectedMobs;
+
 	private Config(ModConfigSpec.Builder builder) {
 		builder.push("debug").translation("hwopt.configuration.debug");
 		logChunkGen = builder.comment("Log chunk generation timing stats to console").translation("hwopt.configuration.debug.logChunkGen").define("logChunkGen", false);
@@ -71,7 +89,6 @@ public class Config {
 		builder.push("entity_culling").translation("hwopt.config.group.entityCulling");
 		tickCulling = builder.comment("Cull entity ticking when behind walls").translation("hwopt.config.tickCulling").define("tickCulling", true);
 		solidLeaves = builder.comment("Treat leaves as solid blocks for occlusion culling").translation("hwopt.config.solidLeaves").define("solidLeaves", false);
-		tracingDistance = builder.comment("Maximum distance (blocks) for entity tracing/culling").translation("hwopt.config.tracingDistance").defineInRange("tracingDistance", 128, 16, 512);
 		sleepDelay = builder.comment("Sleep delay (ms) between culling task iterations").translation("hwopt.config.sleepDelay").defineInRange("sleepDelay", 10, 0, 1000);
 		hitboxLimit = builder.comment("Hitbox size limit for culling (skip oversized entities)").translation("hwopt.config.hitboxLimit").defineInRange("hitboxLimit", 50, 1, 500);
 		captureRate = builder.comment("Entity capture rate (ticks between capture rounds)").translation("hwopt.config.captureRate").defineInRange("captureRate", 5, 1, 100);
@@ -79,9 +96,9 @@ public class Config {
 		skipBlockEntityCulling = builder.comment("Skip block entity culling entirely").translation("hwopt.config.skipBlockEntityCulling").define("skipBlockEntityCulling", false);
 		forceDisplayCulling = builder.comment("Force culling for Display entities with zero bounding box").translation("hwopt.config.forceDisplayCulling").define("forceDisplayCulling", false);
 		debugMode = builder.comment("Use player eye position instead of camera for culling checks").translation("hwopt.config.debugMode").define("debugMode", false);
-		blockEntityCullingWhitelist = builder.comment("Block entity IDs to exclude from culling").translation("hwopt.config.blockEntityCullingWhitelist").defineList("blockEntityCullingWhitelist", java.util.Arrays.asList("betterend:eternal_pedestal", "botania:falling_star", "botania:flame_ring", "botania:magic_missile", "create:hose_pulley", "create:rope_pulley", "minecraft:beacon"), s -> s instanceof String);
-		entityCullingWhitelist = builder.comment("Entity IDs to exclude from culling").translation("hwopt.config.entityCullingWhitelist").defineList("entityCullingWhitelist", java.util.Arrays.asList("botania:mana_burst", "drg_flares:drg_flares", "quark:soul_bead"), s -> s instanceof String);
-		tickCullingWhitelist = builder.comment("Entity IDs to exclude from tick culling").translation("hwopt.config.tickCullingWhitelist").defineList("tickCullingWhitelist", java.util.Arrays.asList("alexscaves:gum_worm", "alexscaves:gum_worm_segment", "avm_staff:campfire_flame", "minecraft:acacia_boat", "minecraft:acacia_chest_boat", "minecraft:bamboo_chest_raft", "minecraft:bamboo_raft", "minecraft:birch_boat", "minecraft:birch_chest_boat", "minecraft:block_display", "minecraft:boat", "minecraft:cherry_boat", "minecraft:cherry_chest_boat", "minecraft:dark_oak_boat", "minecraft:dark_oak_chest_boat", "minecraft:firework_rocket", "minecraft:item_display", "minecraft:jungle_boat", "minecraft:jungle_chest_boat", "minecraft:mangrove_boat", "minecraft:mangrove_chest_boat", "minecraft:oak_boat", "minecraft:oak_chest_boat", "minecraft:pale_oak_boat", "minecraft:pale_oak_chest_boat", "minecraft:spruce_boat", "minecraft:spruce_chest_boat", "minecraft:text_display"), s -> s instanceof String);
+		blockEntityCullingWhitelist = builder.comment("Block entity IDs to exclude from culling (comma-separated).").translation("hwopt.config.blockEntityCullingWhitelist").define("blockEntityCullingWhitelist", "betterend:eternal_pedestal,botania:falling_star,botania:flame_ring,botania:magic_missile,create:hose_pulley,create:rope_pulley,minecraft:beacon");
+		entityCullingWhitelist = builder.comment("Entity IDs to exclude from culling (comma-separated).").translation("hwopt.config.entityCullingWhitelist").define("entityCullingWhitelist", "botania:mana_burst,drg_flares:drg_flares,quark:soul_bead");
+		tickCullingWhitelist = builder.comment("Entity IDs to exclude from tick culling (comma-separated).").translation("hwopt.config.tickCullingWhitelist").define("tickCullingWhitelist", "alexscaves:gum_worm,alexscaves:gum_worm_segment,avm_staff:campfire_flame,minecraft:acacia_boat,minecraft:acacia_chest_boat,minecraft:bamboo_chest_raft,minecraft:bamboo_raft,minecraft:birch_boat,minecraft:birch_chest_boat,minecraft:block_display,minecraft:boat,minecraft:cherry_boat,minecraft:cherry_chest_boat,minecraft:dark_oak_boat,minecraft:dark_oak_chest_boat,minecraft:firework_rocket,minecraft:item_display,minecraft:jungle_boat,minecraft:jungle_chest_boat,minecraft:mangrove_boat,minecraft:mangrove_chest_boat,minecraft:oak_boat,minecraft:oak_chest_boat,minecraft:pale_oak_boat,minecraft:pale_oak_chest_boat,minecraft:spruce_boat,minecraft:spruce_chest_boat,minecraft:text_display");
 		builder.pop();
 		
 		builder.push("particle").translation("hwopt.config.group.particle");
@@ -109,6 +126,24 @@ public class Config {
 		dccCacheSizeLimit = builder.comment("Maximum number of cached chunks before eviction").translation("hwopt.config.dccCacheSizeLimit").defineInRange("dccCacheSizeLimit", 1200, 100, 5000);
 		dccBufferDistance = builder.comment("Extra buffer distance (chunks) beyond view distance for pre-loading").translation("hwopt.config.dccBufferDistance").defineInRange("dccBufferDistance", 8, 2, 32);
 		builder.pop();
+		builder.pop();
+
+		builder.push("logging").translation("hwopt.config.category.logging");
+		asyncLoggerEnabled = builder.comment("Enable async logging for better performance. Requires restart.").translation("hwopt.config.asyncLoggerEnabled").define("asyncLoggerEnabled", true);
+		asyncLoggerRingBufferSize = builder.comment("Async logger ring buffer size (0 = mod default, -1 = log4j default). Requires restart.").translation("hwopt.config.asyncLoggerRingBufferSize").defineInRange("asyncLoggerRingBufferSize", 0, -1, 262144);
+		asyncLoggerWaitStrategy = builder.comment("Async logger wait strategy. Requires restart.").translation("hwopt.config.asyncLoggerWaitStrategy").defineInList("asyncLoggerWaitStrategy", "", List.of("", "sleep", "yield", "busyspin", "block"));
+		asyncLoggerSynchronizeEnqueueWhenQueueFull = builder.comment("Synchronize enqueue when queue is full. Requires restart.").translation("hwopt.config.asyncLoggerSynchronizeEnqueueWhenQueueFull").defineInList("asyncLoggerSynchronizeEnqueueWhenQueueFull", "", List.of("", "true", "false"));
+		asyncLoggerFormatMsgAsync = builder.comment("Format log messages asynchronously. Requires restart.").translation("hwopt.config.asyncLoggerFormatMsgAsync").defineInList("asyncLoggerFormatMsgAsync", "", List.of("", "true", "false"));
+		asyncLoggerAsyncQueueFullPolicy = builder.comment("Async queue full policy. Requires restart.").translation("hwopt.config.asyncLoggerAsyncQueueFullPolicy").defineInList("asyncLoggerAsyncQueueFullPolicy", "", List.of("", "Discard", "Block"));
+		asyncLoggerDiscardThreshold = builder.comment("Discard threshold for async logger (0.0 ~ 1.0). Requires restart.").translation("hwopt.config.asyncLoggerDiscardThreshold").defineInList("asyncLoggerDiscardThreshold", "", List.of("", "0.0", "0.1", "0.2", "0.3", "0.4", "0.5", "0.6", "0.7", "0.8", "0.9", "1.0"));
+		asyncLoggerWrapSysOutSysErr = builder.comment("Redirect System.out and System.err to the async logger. Requires restart.").translation("hwopt.config.asyncLoggerWrapSysOutSysErr").define("asyncLoggerWrapSysOutSysErr", false);
+		asyncLoggerTestPerformance = builder.comment("Test logging performance at startup and log results. Requires restart.").translation("hwopt.config.asyncLoggerTestPerformance").define("asyncLoggerTestPerformance", false);
+		asyncLoggerUseColors = builder.comment("Use ANSI color codes in console output for different log levels. Requires restart.").translation("hwopt.config.asyncLoggerUseColors").define("asyncLoggerUseColors", true);
+		builder.pop();
+
+		builder.push("mob_despawn").translation("hwopt.config.category.mobDespawn");
+		mobDespawnEnabled = builder.comment("Allow mobs that picked up items to despawn naturally, dropping their items on despawn.").translation("hwopt.config.mobDespawnEnabled").define("mobDespawnEnabled", true);
+		mobDespawnProtectedMobs = builder.comment("Mob IDs that should stay persistent even after picking up items.").translation("hwopt.config.mobDespawnProtectedMobs").defineList("mobDespawnProtectedMobs", java.util.Arrays.asList("corpse:corpse"), s -> s instanceof String);
 		builder.pop();
 	}
 	

@@ -14,6 +14,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(Minecraft.class)
 public class MixinMinecraft {
+	@Inject(method = "runTick", at = @At("HEAD"))
+	private void hwopt$onRunTickHead(CallbackInfo ci) {
+		AsyncTickBehavior.getInstance().onRunTick(Minecraft.getInstance().isPaused());
+	}
+
 	@Inject(method = "runTick", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;tick()V"))
 	private void hwopt$onPreTick(boolean advanceGameTime, CallbackInfo ci,
 		@Local(ordinal = 0) int ticksToDo, @Local(ordinal = 1) int i) {

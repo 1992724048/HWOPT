@@ -1,4 +1,4 @@
-package com.server.entity.mixin;
+package com.server.entity.aabb.mixin;
 
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;

@@ -50,11 +50,18 @@ public class EntityCullingMod {
 
     public EntityCullingMod() {
         instance = this;
-        culling = new OcclusionCullingInstance(Config.CONFIG.tracingDistance.get(), new Provider());
+        culling = new OcclusionCullingInstance(64, new Provider());
         cullTask = new CullTask(culling, blockEntityWhitelist, entityWhitelist);
         cullThread = new Thread(cullTask, "CullThread");
         cullThread.setUncaughtExceptionHandler((thread, ex) -> LOGGER.error("CullingThread crashed!", ex));
         cullThread.setDaemon(true);
+    }
+
+    public void loadConfig() {
+        blockEntityWhitelist.clear();
+        tickCullWhitelists.clear();
+        entityWhitelist.clear();
+        initWhitelists();
     }
 
     public static EntityCullingMod getInstance() {
@@ -121,15 +128,21 @@ public class EntityCullingMod {
     }
 
     private void initWhitelists() {
-        for (String id : Config.CONFIG.blockEntityCullingWhitelist.get()) {
+        for (String id : Config.CONFIG.blockEntityCullingWhitelist.get().split(",")) {
+            id = id.trim();
+            if (id.isEmpty()) continue;
             Identifier loc = Identifier.tryParse(id);
             if (loc != null) BuiltInRegistries.BLOCK_ENTITY_TYPE.getOptional(loc).ifPresent(blockEntityWhitelist::add);
         }
-        for (String id : Config.CONFIG.tickCullingWhitelist.get()) {
+        for (String id : Config.CONFIG.tickCullingWhitelist.get().split(",")) {
+            id = id.trim();
+            if (id.isEmpty()) continue;
             Identifier loc = Identifier.tryParse(id);
             if (loc != null) BuiltInRegistries.ENTITY_TYPE.getOptional(loc).ifPresent(tickCullWhitelists::add);
         }
-        for (String id : Config.CONFIG.entityCullingWhitelist.get()) {
+        for (String id : Config.CONFIG.entityCullingWhitelist.get().split(",")) {
+            id = id.trim();
+            if (id.isEmpty()) continue;
             Identifier loc = Identifier.tryParse(id);
             if (loc != null) BuiltInRegistries.ENTITY_TYPE.getOptional(loc).ifPresent(entityWhitelist::add);
         }

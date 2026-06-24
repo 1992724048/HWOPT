@@ -1,7 +1,7 @@
-package com.server.entity.mixin;
+package com.server.entity.aabb.mixin;
 
-import com.server.entity.access.IEntityNativeId;
-import com.server.entity.util.CollisionMapData;
+import com.server.entity.aabb.access.IEntityNativeId;
+import com.server.entity.aabb.util.CollisionMapData;
 import com.hwpp.mod.Config;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;

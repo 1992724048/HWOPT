@@ -2,10 +2,10 @@
 #include <algorithm>
 #include <atomic>
 #include <cmath>
+#include <cstdint>
 #include <vector>
 
-#include <tbb/blocked_range.h>
-#include <tbb/parallel_for.h>
+#include <omp.h>
 #include <tbb/parallel_sort.h>
 
 #include "mimalloc/mimalloc.h"
@@ -162,10 +162,17 @@ auto AABB::batch_find_collisions(const double* aabbs,
         sorted[i].id = i;
     }
 
-    tbb::parallel_sort(sorted.begin(),
-                       sorted.end(),
-                       [](const EntityRef& a, const EntityRef& b) -> bool {
-                           return a.min_x < b.min_x;
-                       });
+    if (entity_count > 500) {
+        tbb::parallel_sort(sorted.begin(),
+                           sorted.end(),
+                           [](const EntityRef& a, const EntityRef& b) -> bool {
+                               return a.min_x < b.min_x;
+                           });
+    } else {
+        std::ranges::sort(sorted,
+                          [](const EntityRef& a, const EntityRef& b) -> bool {
+                              return a.min_x < b.min_x;
+                          });
+    }
     return sweep_seq(entity_count, max_collisions, sorted.data(), output_a, output_b);
 }

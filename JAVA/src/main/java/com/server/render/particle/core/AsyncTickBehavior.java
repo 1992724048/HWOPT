@@ -58,6 +58,13 @@ public class AsyncTickBehavior {
 		return Config.CONFIG.asyncParticleTick.get();
 	}
 
+	public void onRunTick(boolean paused) {
+		if (paused) {
+			tickTaskHelper.disposeTasks();
+			cleanupTaskHelper.disposeTasks();
+		}
+	}
+
 	public void preTick() {
 		preTick(true, true);
 	}

@@ -18,6 +18,7 @@ version = mod_version
 group = mod_group_id
 
 repositories {
+    mavenCentral()
 }
 
 base {
@@ -127,6 +128,7 @@ configurations {
 }
 
 dependencies {
+    implementation("com.lmax:disruptor:4.0.0")
     implementation files("run/mods/yet_another_config_lib_v3-3.9.4+26.2-neoforge.jar")
 
 

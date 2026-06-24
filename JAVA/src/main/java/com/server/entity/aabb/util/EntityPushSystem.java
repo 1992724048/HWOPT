@@ -1,6 +1,6 @@
-package com.server.entity.util;
+package com.server.entity.aabb.util;
 
-import com.server.entity.access.IEntityNativeId;
+import com.server.entity.aabb.access.IEntityNativeId;
 import library.dll.AABBNative;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;

@@ -1,6 +1,6 @@
-package com.server.entity.mixin;
+package com.server.entity.aabb.mixin;
 
-import com.server.entity.access.IEntityNativeId;
+import com.server.entity.aabb.access.IEntityNativeId;
 import library.dll.AABBNative;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.Entity;

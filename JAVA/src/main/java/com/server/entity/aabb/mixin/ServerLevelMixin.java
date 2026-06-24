@@ -1,7 +1,7 @@
-package com.server.entity.mixin;
+package com.server.entity.aabb.mixin;
 
-import com.server.entity.util.EntityPushSystem;
-import com.server.entity.util.TempID;
+import com.server.entity.aabb.util.EntityPushSystem;
+import com.server.entity.aabb.util.TempID;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.entity.EntityTickList;
 import org.spongepowered.asm.mixin.Final;
@@ -20,7 +20,7 @@ public abstract class ServerLevelMixin {
 	private EntityTickList entityTickList;
 	
 	@Inject(method = "tick(Ljava/util/function/BooleanSupplier;)V", at = @At("HEAD"))
-	private void hwopt$onTick(BooleanSupplier hasTimeLeft, CallbackInfo ci) {
+	private void hwopt$onTick(BooleanSupplier haveTime, CallbackInfo ci) {
 		TempID.tickStart();
 		entityTickList.forEach(entity -> {
 			if (!entity.isRemoved()) {

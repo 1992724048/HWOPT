@@ -1,4 +1,4 @@
-package com.server.entity.util;
+package com.server.entity.aabb.util;
 
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.tags.BlockTags;

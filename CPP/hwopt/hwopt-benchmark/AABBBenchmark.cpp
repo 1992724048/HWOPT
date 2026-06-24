@@ -1,4 +1,4 @@
-#include <gtest/gtest.h>
+﻿#include <gtest/gtest.h>
 
 #include <chrono>
 #include <print>
@@ -39,13 +39,11 @@ TEST_F(CollideAxisBench, OpenField) {
     constexpr int ITERATIONS = 1000000;
     double sum = 0;
 
-    auto start = std::chrono::high_resolution_clock::now();
+    const auto start = std::chrono::high_resolution_clock::now();
     for (int i = 0; i < ITERATIONS; ++i) {
-        sum += AABB::batch_collide_axis(
-            0, 0.0, 0.0, 0.0, 0.6, 1.8, 0.6,
-            boxes.data(), static_cast<int>(boxes.size()), 0.3);
+        sum += AABB::batch_collide_axis(0, 0.0, 0.0, 0.0, 0.6, 1.8, 0.6, boxes.data(), static_cast<int>(boxes.size()), 0.3);
     }
-    auto end = std::chrono::high_resolution_clock::now();
+    const auto end = std::chrono::high_resolution_clock::now();
     auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
     std::println("CollideAxis (0 boxes / open field) x{}: {} ms  ({} M calls/s)",
                  ITERATIONS, ms, ITERATIONS * 1000.0 / ms / 1'000'000);
@@ -58,14 +56,11 @@ TEST_F(CollideAxisBench, OneBox) {
     constexpr int ITERATIONS = 500000;
     double sum = 0;
 
-    auto start = std::chrono::high_resolution_clock::now();
+    const auto start = std::chrono::high_resolution_clock::now();
     for (int i = 0; i < ITERATIONS; ++i) {
-        sum += AABB::batch_collide_axis(
-            0, 1.5 + i * 0.001, 0.0, 1.5,
-            2.1 + i * 0.001, 1.8, 2.1,
-            boxes.data(), static_cast<int>(boxes.size()), 0.5);
+        sum += AABB::batch_collide_axis(0, 1.5 + i * 0.001, 0.0, 1.5, 2.1 + i * 0.001, 1.8, 2.1, boxes.data(), static_cast<int>(boxes.size()), 0.5);
     }
-    auto end = std::chrono::high_resolution_clock::now();
+    const auto end = std::chrono::high_resolution_clock::now();
     auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
     std::println("CollideAxis (1 box) x{}: {} ms  ({} M calls/s)",
                  ITERATIONS, ms, ITERATIONS * 1000.0 / ms / 1'000'000);
@@ -76,23 +71,22 @@ TEST_F(CollideAxisBench, DenseCave) {
     // ~400 boxes — cave/tunnel full of blocks
     fillGrid(boxes, 7, 3, 7, -1, -1, -1);
     // remove center to create a tunnel
-    for (int y = 0; y < 3; ++y)
-        for (int z = 2; z < 5; ++z)
+    for (int y = 0; y < 3; ++y) {
+        for (int z = 2; z < 5; ++z) {
             for (int x = 2; x < 5; ++x) {
-                int idx = (y * 7 * 7 + z * 7 + x) * 6;
+                const int idx = (y * 7 * 7 + z * 7 + x) * 6;
                 boxes[idx] = boxes[idx + 3] = 0;  // zero-size = skipped
             }
+        }
+    }
     constexpr int ITERATIONS = 100000;
     double sum = 0;
 
-    auto start = std::chrono::high_resolution_clock::now();
+    const auto start = std::chrono::high_resolution_clock::now();
     for (int i = 0; i < ITERATIONS; ++i) {
-        sum += AABB::batch_collide_axis(
-            1, 1.0, 1.0, 1.0,
-            1.6, 2.8, 1.6,
-            boxes.data(), static_cast<int>(boxes.size()), -0.3);
+        sum += AABB::batch_collide_axis(1, 1.0, 1.0, 1.0, 1.6, 2.8, 1.6, boxes.data(), static_cast<int>(boxes.size()), -0.3);
     }
-    auto end = std::chrono::high_resolution_clock::now();
+    const auto end = std::chrono::high_resolution_clock::now();
     auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
     std::println("CollideAxis (~{} boxes / cave) x{}: {} ms  ({} calls/s)",
                  boxes.size() / 6, ITERATIONS, ms,
@@ -109,21 +103,18 @@ TEST_F(CollideAxisBench, ForestFloor) {
         double z = rng() % 20 - 5;
         double y = 0.0;
         // random slab/stair-like height
-        double h = 0.5 + (rng() % 4) * 0.25;
+        const double h = 0.5 + (rng() % 4) * 0.25;
         boxes.push_back(x); boxes.push_back(y); boxes.push_back(z);
         boxes.push_back(x + 1.0); boxes.push_back(y + h); boxes.push_back(z + 1.0);
     }
     constexpr int ITERATIONS = 100000;
     double sum = 0;
 
-    auto start = std::chrono::high_resolution_clock::now();
+    const auto start = std::chrono::high_resolution_clock::now();
     for (int i = 0; i < ITERATIONS; ++i) {
-        sum += AABB::batch_collide_axis(
-            2, 0.0, 0.0, 0.0,
-            0.6, 1.8, 0.6,
-            boxes.data(), static_cast<int>(boxes.size()), 0.4);
+        sum += AABB::batch_collide_axis(2, 0.0, 0.0, 0.0, 0.6, 1.8, 0.6, boxes.data(), static_cast<int>(boxes.size()), 0.4);
     }
-    auto end = std::chrono::high_resolution_clock::now();
+    const auto end = std::chrono::high_resolution_clock::now();
     auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
     std::println("CollideAxis ({} boxes / forest) x{}: {} ms  ({} calls/s)",
                  boxes.size() / 6, ITERATIONS, ms,
@@ -151,7 +142,7 @@ TEST_F(FindCollisionsBench, TenEntities) {
     outB.assign(100, 0);
     constexpr int ITERATIONS = 500000;
 
-    auto start = std::chrono::high_resolution_clock::now();
+    const auto start = std::chrono::high_resolution_clock::now();
     for (int i = 0; i < ITERATIONS; ++i) {
         AABB::batch_find_collisions(
             aabbs.data(), static_cast<int>(aabbs.size()),
@@ -159,7 +150,7 @@ TEST_F(FindCollisionsBench, TenEntities) {
             outB.data(), static_cast<int>(outB.size()),
             10, 100);
     }
-    auto end = std::chrono::high_resolution_clock::now();
+    const auto end = std::chrono::high_resolution_clock::now();
     auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
     std::println("FindCollisions (10 entities) x{}: {} ms  ({} calls/s)",
                  ITERATIONS, ms, ITERATIONS * 1000.0 / ms);
@@ -175,12 +166,12 @@ TEST_F(FindCollisionsBench, OneHundredEntities) {
         aabbs.push_back(x); aabbs.push_back(0); aabbs.push_back(z);
         aabbs.push_back(x + 0.6); aabbs.push_back(1.8); aabbs.push_back(z + 0.6);
     }
-    int max = 5000;
+    constexpr int max = 5000;
     outA.assign(max, 0);
     outB.assign(max, 0);
     constexpr int ITERATIONS = 50000;
 
-    auto start = std::chrono::high_resolution_clock::now();
+    const auto start = std::chrono::high_resolution_clock::now();
     for (int i = 0; i < ITERATIONS; ++i) {
         AABB::batch_find_collisions(
             aabbs.data(), static_cast<int>(aabbs.size()),
@@ -188,7 +179,7 @@ TEST_F(FindCollisionsBench, OneHundredEntities) {
             outB.data(), static_cast<int>(outB.size()),
             100, max);
     }
-    auto end = std::chrono::high_resolution_clock::now();
+    const auto end = std::chrono::high_resolution_clock::now();
     auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
     std::println("FindCollisions (100 entities) x{}: {} ms  ({} calls/s)",
                  ITERATIONS, ms, ITERATIONS * 1000.0 / ms);
@@ -204,12 +195,12 @@ TEST_F(FindCollisionsBench, OneThousandEntities) {
         aabbs.push_back(x); aabbs.push_back(0); aabbs.push_back(z);
         aabbs.push_back(x + 0.6); aabbs.push_back(1.8); aabbs.push_back(z + 0.6);
     }
-    int max = 50000;
+    constexpr int max = 50000;
     outA.assign(max, 0);
     outB.assign(max, 0);
     constexpr int ITERATIONS = 5000;
 
-    auto start = std::chrono::high_resolution_clock::now();
+    const auto start = std::chrono::high_resolution_clock::now();
     for (int i = 0; i < ITERATIONS; ++i) {
         AABB::batch_find_collisions(
             aabbs.data(), static_cast<int>(aabbs.size()),
@@ -217,7 +208,7 @@ TEST_F(FindCollisionsBench, OneThousandEntities) {
             outB.data(), static_cast<int>(outB.size()),
             1000, max);
     }
-    auto end = std::chrono::high_resolution_clock::now();
+    const auto end = std::chrono::high_resolution_clock::now();
     auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
     std::println("FindCollisions (1000 entities) x{}: {} ms  ({} calls/s)",
                  ITERATIONS, ms, ITERATIONS * 1000.0 / ms);

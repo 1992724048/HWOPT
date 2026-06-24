@@ -1,13 +1,18 @@
 package com.server.render.entityculling.occlusion;
 
 public class OcclusionCullingInstance {
-    private final int tracingDistance;
+    private int tracingDistance;
     private final DataProvider dataProvider;
-    private java.util.Map<Long, Boolean> cache = new java.util.HashMap<>();
+    private final java.util.Map<Long, Boolean> cache = new java.util.HashMap<>();
 
     public OcclusionCullingInstance(int tracingDistance, DataProvider dataProvider) {
         this.tracingDistance = tracingDistance;
         this.dataProvider = dataProvider;
+    }
+
+    public void setTracingDistance(int tracingDistance) {
+        this.tracingDistance = tracingDistance;
+        resetCache();
     }
 
     public void resetCache() {
