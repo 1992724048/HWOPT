@@ -7,6 +7,7 @@ import net.minecraft.network.Connection;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.ProtocolInfo;
 import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
@@ -18,6 +19,11 @@ public class PacketAggregationPacket implements CustomPacketPayload {
     private static final Logger LOGGER = LoggerFactory.getLogger("PacketAggr");
     public static final CustomPacketPayload.Type<PacketAggregationPacket> TYPE =
         new CustomPacketPayload.Type<>(Identifier.fromNamespaceAndPath("hwopt", "packet_aggregation"));
+    public static final StreamCodec<RegistryFriendlyByteBuf, PacketAggregationPacket> CODEC =
+        new StreamCodec<>() {
+            @Override public void encode(RegistryFriendlyByteBuf buf, PacketAggregationPacket p) { p.encode(buf); }
+            @Override public PacketAggregationPacket decode(RegistryFriendlyByteBuf buf) { return new PacketAggregationPacket(buf); }
+        };
     @Override public CustomPacketPayload.Type<PacketAggregationPacket> type() { return TYPE; }
 
     private int bakedSize;

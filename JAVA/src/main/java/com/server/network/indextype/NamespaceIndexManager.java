@@ -63,7 +63,7 @@ public class NamespaceIndexManager {
         NAMESPACES.clear(); PATHS.clear(); NAMESPACE_MAP.clear(); PATH_MAPS.clear();
         AtomicInteger nsIdx = new AtomicInteger(1);
         NAMESPACES.add("ILLEGAL"); PATHS.add(new ArrayList<>()); payloadCount = 0;
-        VANILLA_PATHS.forEach(p -> fillSingle(nsIdx, Identifier.withDefaultNamespace(p)));
+        VANILLA_PATHS.forEach(p -> { fillSingle(nsIdx, Identifier.withDefaultNamespace(p)); payloadCount++; });
         if (types != null) {
             for (Identifier t : types) { fillSingle(nsIdx, t); payloadCount++; }
         }

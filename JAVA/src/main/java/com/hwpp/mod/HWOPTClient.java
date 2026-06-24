@@ -2,9 +2,9 @@ package com.hwpp.mod;
 
 import com.hwpp.util.BlockIdRegistry;
 import com.server.network.aggregation.AggregationManager;
+import com.server.network.debugEntries.NetworkStatsEntry;
+import com.server.network.util.NetworkTrafficTracker;
 import com.server.render.entityculling.EntityCullingMod;
-import net.minecraft.client.gui.components.debug.DebugScreenEntryStatus;
-import net.minecraft.client.gui.components.debug.DebugScreenProfile;
 import net.minecraft.resources.Identifier;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -14,6 +14,7 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.neoforged.neoforge.client.event.RegisterDebugEntriesEvent;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.common.NeoForge;
 
@@ -24,24 +25,22 @@ public class HWOPTClient {
         container.registerConfig(ModConfig.Type.CLIENT, Config.SPEC);
         container.registerExtensionPoint(IConfigScreenFactory.class,
                 (container1, parent) -> ModConfigScreen.create(parent));
-        NeoForge.EVENT_BUS.addListener(ClientTickEvent.Post.class, event -> EntityCullingMod.getInstance().clientTick());
-        registerDebugEntries();
+        NeoForge.EVENT_BUS.addListener(ClientTickEvent.Post.class, event -> {
+            EntityCullingMod.getInstance().clientTick();
+            NetworkTrafficTracker.tick();
+        });
     }
 
     @SubscribeEvent
     static void onClientSetup(final FMLClientSetupEvent event) {
         event.enqueueWork(EntityCullingMod::getInstance);
         event.enqueueWork(AggregationManager::init);
+        // PacketIndexRegistry initializes via @SubscribeEvent on RegisterPayloadHandlersEvent
         BlockIdRegistry.init();
     }
 
-    private static void registerDebugEntries() {
-        try {
-            var mutable = com.server.network.mixin.DebugScreenEntriesAccessor.getProfilesMutable();
-            var profileMap = mutable.computeIfAbsent(DebugScreenProfile.DEFAULT, k -> new java.util.LinkedHashMap<>());
-            profileMap.put(Identifier.fromNamespaceAndPath("hwopt", "network_stats"),
-                DebugScreenEntryStatus.ALWAYS_ON);
-        } catch (Exception ignored) {
-        }
+    @SubscribeEvent
+    static void onRegisterDebugEntries(RegisterDebugEntriesEvent event) {
+        event.register(Identifier.fromNamespaceAndPath("hwopt", "network_stats"), new NetworkStatsEntry());
     }
 }

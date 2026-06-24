@@ -46,12 +46,14 @@ public class AggregatedDecodePacket {
     public void handle(ProtocolInfo<?> pi, IPayloadContext ctx) {
         try {
             var codec = pi.codec();
-            var toId = (it.unimi.dsi.fastutil.objects.Object2IntMap) VH_TO_ID.get(codec);
+            var rawToId = VH_TO_ID.get(codec);
             var byId = (java.util.List) VH_BY_ID.get(codec);
+            @SuppressWarnings({"rawtypes","unchecked"})
+            var toId = (it.unimi.dsi.fastutil.objects.Object2IntMap<net.minecraft.network.protocol.PacketType>) rawToId;
             if (toId.size() != VANILLA_TO_ID.size()) {
                 VANILLA_TO_ID.clear();
-                var entries = (it.unimi.dsi.fastutil.objects.Object2IntMap.Entry<java.lang.Object>[]) (Object) toId.object2IntEntrySet().toArray();
-                for (var e : entries) VANILLA_TO_ID.put(((PacketType) e.getKey()).id(), e.getIntValue());
+                toId.object2IntEntrySet().forEach(e ->
+                    VANILLA_TO_ID.put(e.getKey().id(), e.getIntValue()));
             }
             int id = VANILLA_TO_ID.getInt(type);
             if (id != -1) {
