@@ -90,7 +90,7 @@ HWOPT (Hardware Optimization) is a Minecraft optimization mod that rewrites vani
 
 5. Will Vulkan be considered for broader hardware support in the future?
 
-- Possibly. The Vulkan backend is not a high priority, but if there is community demand and dedicated contributors, we can evaluate it. SYCL remains the preferred choice for performance and cross-platform support.
+- Possibly. The Vulkan backend is not a high priority, but if there is community demand and dedicated contributors, we can evaluate it. SYCL remains the preferred choice for performance.
 
 6. Why is the mod file size so large?
 
