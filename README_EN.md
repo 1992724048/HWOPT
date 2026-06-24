@@ -46,6 +46,7 @@ HWOPT (Hardware Optimization) is a Minecraft optimization mod that rewrites vani
 | ------------ | ----------- | -------- | ----- | ------ |
 | 26.2         | 26.1.x      | ✓        | ✕     | ✕      |
 
+- This mod does not support older game versions and follows a rolling release model. Once a new version is released, the old version is no longer maintained.
 #### OS & Hardware Support
 
 | Mod Version | Windows  | Linux | Intel CPU | Intel iGPU | Intel dGPU | AMD CPU | AMD iGPU | AMD dGPU | NVIDIA dGPU  |

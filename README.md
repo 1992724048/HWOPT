@@ -46,6 +46,7 @@ HWOPT (Hardware Optimization) 是一个 Minecraft 优化模组，使用 C++ 重�
 | -------- | ------- | -------- | ----- | ------ |
 | 26.2     | 26.1.x  | ✓        | ✕     | ✕      |
 
+- mod 不向下支持旧版本，跟随游戏更新脚步采用滚动更新策略。新版本发布后，旧版本不再维护。
 #### 操作系统、硬件支持情况
 
 | MOD版本 | Windows  | Linux | Intel CPU | Intel iGPU | Intel dGPU | AMD CPU | AMD iGPU | AMD dGPU | NVIDIA dGPU  |
