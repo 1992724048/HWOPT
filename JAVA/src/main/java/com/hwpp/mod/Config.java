@@ -29,6 +29,9 @@ public class Config {
 	public final ModConfigSpec.ConfigValue<java.util.List<? extends String>> entityCullingWhitelist;
 	public final ModConfigSpec.ConfigValue<java.util.List<? extends String>> tickCullingWhitelist;
 	
+	// Entity - Collision
+	public final ModConfigSpec.IntValue entityDensityThreshold;
+
 	// Rendering - Particle
 	public final ModConfigSpec.BooleanValue asyncParticleTick;
 	public final ModConfigSpec.BooleanValue particleLightCache;
@@ -60,6 +63,10 @@ public class Config {
 		spawnAtVillage = builder.comment("Move world spawn to the nearest village on world load").translation("hwopt.configuration.world.spawnAtVillage").define("spawnAtVillage", false);
 		builder.pop();
 		
+		builder.push("entity").translation("hwopt.config.category.entity");
+		entityDensityThreshold = builder.comment("Minimum collision partners to use cached entity push; below this threshold push is skipped for performance").translation("hwopt.config.entityDensityThreshold").defineInRange("entityDensityThreshold", 2, 0, 32);
+		builder.pop();
+
 		builder.push("rendering").translation("hwopt.config.category.rendering");
 		builder.push("entity_culling").translation("hwopt.config.group.entityCulling");
 		tickCulling = builder.comment("Cull entity ticking when behind walls").translation("hwopt.config.tickCulling").define("tickCulling", true);
@@ -72,9 +79,9 @@ public class Config {
 		skipBlockEntityCulling = builder.comment("Skip block entity culling entirely").translation("hwopt.config.skipBlockEntityCulling").define("skipBlockEntityCulling", false);
 		forceDisplayCulling = builder.comment("Force culling for Display entities with zero bounding box").translation("hwopt.config.forceDisplayCulling").define("forceDisplayCulling", false);
 		debugMode = builder.comment("Use player eye position instead of camera for culling checks").translation("hwopt.config.debugMode").define("debugMode", false);
-		blockEntityCullingWhitelist = builder.comment("Block entity IDs to exclude from culling").translation("hwopt.config.blockEntityCullingWhitelist").defineList("blockEntityCullingWhitelist", java.util.Arrays.asList("betterend:eternal_pedestal","botania:falling_star","botania:flame_ring","botania:magic_missile","create:hose_pulley","create:rope_pulley","minecraft:beacon"), s -> s instanceof String);
-		entityCullingWhitelist = builder.comment("Entity IDs to exclude from culling").translation("hwopt.config.entityCullingWhitelist").defineList("entityCullingWhitelist", java.util.Arrays.asList("botania:mana_burst","drg_flares:drg_flares","quark:soul_bead"), s -> s instanceof String);
-		tickCullingWhitelist = builder.comment("Entity IDs to exclude from tick culling").translation("hwopt.config.tickCullingWhitelist").defineList("tickCullingWhitelist", java.util.Arrays.asList("alexscaves:gum_worm","alexscaves:gum_worm_segment","avm_staff:campfire_flame","minecraft:acacia_boat","minecraft:acacia_chest_boat","minecraft:bamboo_chest_raft","minecraft:bamboo_raft","minecraft:birch_boat","minecraft:birch_chest_boat","minecraft:block_display","minecraft:boat","minecraft:cherry_boat","minecraft:cherry_chest_boat","minecraft:dark_oak_boat","minecraft:dark_oak_chest_boat","minecraft:firework_rocket","minecraft:item_display","minecraft:jungle_boat","minecraft:jungle_chest_boat","minecraft:mangrove_boat","minecraft:mangrove_chest_boat","minecraft:oak_boat","minecraft:oak_chest_boat","minecraft:pale_oak_boat","minecraft:pale_oak_chest_boat","minecraft:spruce_boat","minecraft:spruce_chest_boat","minecraft:text_display"), s -> s instanceof String);
+		blockEntityCullingWhitelist = builder.comment("Block entity IDs to exclude from culling").translation("hwopt.config.blockEntityCullingWhitelist").defineList("blockEntityCullingWhitelist", java.util.Arrays.asList("betterend:eternal_pedestal", "botania:falling_star", "botania:flame_ring", "botania:magic_missile", "create:hose_pulley", "create:rope_pulley", "minecraft:beacon"), s -> s instanceof String);
+		entityCullingWhitelist = builder.comment("Entity IDs to exclude from culling").translation("hwopt.config.entityCullingWhitelist").defineList("entityCullingWhitelist", java.util.Arrays.asList("botania:mana_burst", "drg_flares:drg_flares", "quark:soul_bead"), s -> s instanceof String);
+		tickCullingWhitelist = builder.comment("Entity IDs to exclude from tick culling").translation("hwopt.config.tickCullingWhitelist").defineList("tickCullingWhitelist", java.util.Arrays.asList("alexscaves:gum_worm", "alexscaves:gum_worm_segment", "avm_staff:campfire_flame", "minecraft:acacia_boat", "minecraft:acacia_chest_boat", "minecraft:bamboo_chest_raft", "minecraft:bamboo_raft", "minecraft:birch_boat", "minecraft:birch_chest_boat", "minecraft:block_display", "minecraft:boat", "minecraft:cherry_boat", "minecraft:cherry_chest_boat", "minecraft:dark_oak_boat", "minecraft:dark_oak_chest_boat", "minecraft:firework_rocket", "minecraft:item_display", "minecraft:jungle_boat", "minecraft:jungle_chest_boat", "minecraft:mangrove_boat", "minecraft:mangrove_chest_boat", "minecraft:oak_boat", "minecraft:oak_chest_boat", "minecraft:pale_oak_boat", "minecraft:pale_oak_chest_boat", "minecraft:spruce_boat", "minecraft:spruce_chest_boat", "minecraft:text_display"), s -> s instanceof String);
 		builder.pop();
 		
 		builder.push("particle").translation("hwopt.config.group.particle");

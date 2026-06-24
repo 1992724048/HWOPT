@@ -45,6 +45,8 @@ public abstract class EntityMixin implements IEntityNativeId {
 	
 	@Unique
 	private int hwopt$nativeId = -1;
+	@Unique
+	private int hwopt$collisionCount = 0;
 	
 	@Override
 	public int hwopt$getNativeId() {
@@ -54,6 +56,33 @@ public abstract class EntityMixin implements IEntityNativeId {
 	@Override
 	public void hwopt$setNativeId(int id) {
 		this.hwopt$nativeId = id;
+	}
+	
+	@Override
+	public int hwopt$getCollisionCount() {
+		return hwopt$collisionCount;
+	}
+	
+	@Override
+	public void hwopt$setCollisionCount(int count) {
+		this.hwopt$collisionCount = count;
+	}
+	
+	@Override
+	public void hwopt$extractBoundingBox(double[] arr, int offset) {
+		arr[offset] = this.hwopt$bbMinX;
+		arr[offset + 1] = this.hwopt$bbMinY;
+		arr[offset + 2] = this.hwopt$bbMinZ;
+		arr[offset + 3] = this.hwopt$bbMaxX;
+		arr[offset + 4] = this.hwopt$bbMaxY;
+		arr[offset + 5] = this.hwopt$bbMaxZ;
+	}
+	
+	@Override
+	public void hwopt$extractPosition(double[] arr, int offset) {
+		arr[offset] = ((Entity) (Object) this).getX();
+		arr[offset + 1] = ((Entity) (Object) this).getY();
+		arr[offset + 2] = ((Entity) (Object) this).getZ();
 	}
 	
 	@Unique
@@ -97,7 +126,6 @@ public abstract class EntityMixin implements IEntityNativeId {
 		int boxCount = hwopt$flattenShapes(shapes);
 		if (boxCount == 0) return movement;
 		
-		AABBNative nativeAABB = AABBNative.instance();
 		double rx = 0.0, ry = 0.0, rz = 0.0;
 		
 		double mx = movement.x, my = movement.y, mz = movement.z;
@@ -113,7 +141,7 @@ public abstract class EntityMixin implements IEntityNativeId {
 			double movingMaxY = boundingBox.maxY + ry;
 			double movingMaxZ = boundingBox.maxZ + rz;
 			
-			double collision = nativeAABB.batchCollideAxis(axis.ordinal(), movingMinX, movingMinY, movingMinZ, movingMaxX, movingMaxY, movingMaxZ, hwopt$boxCacheTL.get(), axisMovement);
+			double collision = AABBNative.INSTANCE.batchCollideAxis(axis.ordinal(), movingMinX, movingMinY, movingMinZ, movingMaxX, movingMaxY, movingMaxZ, hwopt$boxCacheTL.get(), axisMovement);
 			
 			if (axis == X) rx = collision;
 			else if (axis == Y) ry = collision;

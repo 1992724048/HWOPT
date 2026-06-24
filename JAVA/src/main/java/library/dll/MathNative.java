@@ -7,13 +7,7 @@ import nativecode.dll.Static;
 
 @LibraryImport(dll = "hwopt.dll", structSize = 1)
 public interface MathNative extends AutoCloseable {
-	class Holder {
-		static final MathNative INSTANCE = FFMFactory.load(MathNative.class);
-	}
-	
-	static MathNative instance() {
-		return MathNative.Holder.INSTANCE;
-	}
+	MathNative INSTANCE = FFMFactory.load(MathNative.class);
 	
 	@Static
 	@Name("Math::lerp3")

@@ -1,60 +1,81 @@
 package com.server.entity.util;
 
+import com.server.entity.access.IEntityNativeId;
 import library.dll.AABBNative;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.phys.AABB;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class EntityPushSystem {
-	
-	public static void tick(ServerLevel level) {
-		CollisionMapData.newTick();
-		
-		List<LivingEntity> all = new ArrayList<>();
-		for (Entity e : level.getAllEntities()) {
-			if (e instanceof LivingEntity le && le.isAlive() && !e.isRemoved()) {
-				all.add(le);
+	private static final ThreadLocal<ReusableBuffers> TL_BUFFERS = ThreadLocal.withInitial(ReusableBuffers::new);
+
+	private static class ReusableBuffers {
+		Entity[] entities = new Entity[256];
+		double[] aabbs = new double[256 * 6];
+		int[] collisionCounts = new int[256];
+		int[] outA = new int[1024];
+		int[] outB = new int[1024];
+
+		void ensureSize(int count) {
+			int need = count * 6;
+			if (aabbs.length < need) {
+				int newCap = count + (count >> 1);
+				entities = new Entity[newCap];
+				aabbs = new double[newCap * 6];
+				collisionCounts = new int[newCap];
+				int pairCap = newCap * 4;
+				outA = new int[pairCap];
+				outB = new int[pairCap];
 			}
 		}
-		if (all.isEmpty()) return;
-		
-		int count = all.size();
-		double[] aabbs = new double[count * 6];
-		
-		for (int i = 0; i < count; i++) {
-			AABB bb = all.get(i).getBoundingBox();
-			int off = i * 6;
-			aabbs[off] = bb.minX;
-			aabbs[off + 1] = bb.minY;
-			aabbs[off + 2] = bb.minZ;
-			aabbs[off + 3] = bb.maxX;
-			aabbs[off + 4] = bb.maxY;
-			aabbs[off + 5] = bb.maxZ;
+	}
+
+	public static void tick(ServerLevel level) {
+		CollisionMapData.newTick();
+
+		ReusableBuffers buf = TL_BUFFERS.get();
+		Entity[] all = buf.entities;
+		double[] aabbs = buf.aabbs;
+
+		int count = 0;
+		for (Entity e : level.getAllEntities()) {
+			if (e instanceof LivingEntity le && le.isAlive() && !e.isRemoved()) {
+				if (count >= all.length) {
+					int newCap = all.length + (all.length >> 1);
+					all = buf.entities = java.util.Arrays.copyOf(all, newCap);
+					aabbs = buf.aabbs = java.util.Arrays.copyOf(aabbs, newCap * 6);
+					buf.collisionCounts = java.util.Arrays.copyOf(buf.collisionCounts, newCap);
+				}
+				all[count] = le;
+				IEntityNativeId nativeId = (IEntityNativeId) le;
+				nativeId.hwopt$setCollisionCount(0);
+				nativeId.hwopt$extractBoundingBox(aabbs, count * 6);
+				count++;
+			}
 		}
-		
-		int maxPairs = count * 4;
-		int[] outA = new int[maxPairs];
-		int[] outB = new int[maxPairs];
-		
-		AABBNative nativeAABB = AABBNative.instance();
-		int pairCount = nativeAABB.batchFindCollisions(aabbs, outA, outB, count, maxPairs);
-		
+		if (count == 0) return;
+
+		buf.ensureSize(count);
+		aabbs = buf.aabbs;
+		int[] collisionCounts = buf.collisionCounts;
+		java.util.Arrays.fill(collisionCounts, 0, count, 0);
+		int[] outA = buf.outA;
+		int[] outB = buf.outB;
+
+		int pairCount = AABBNative.INSTANCE.batchFindCollisions(aabbs, outA, outB, count, outA.length);
+
 		for (int i = 0; i < pairCount; i++) {
 			int ia = outA[i];
 			int ib = outB[i];
 			if (ia >= count || ib >= count) continue;
-			
+
 			CollisionMapData.putCollision(ia, ib);
-			
-			LivingEntity a = all.get(ia);
-			LivingEntity b = all.get(ib);
-			if (a.getBoundingBox().intersects(b.getBoundingBox())) {
-				a.push(b);
-			}
+			collisionCounts[ia]++;
+			collisionCounts[ib]++;
+		}
+
+		for (int i = 0; i < count; i++) {
+			((IEntityNativeId) all[i]).hwopt$setCollisionCount(collisionCounts[i]);
 		}
 	}
 }

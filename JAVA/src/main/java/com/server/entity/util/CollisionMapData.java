@@ -9,7 +9,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class CollisionMapData {
-	private static final Int2ObjectOpenHashMap<IntArrayList> collisionMap = new Int2ObjectOpenHashMap<>(1000);
+	private static final Int2ObjectOpenHashMap<IntArrayList> collisionMap = new Int2ObjectOpenHashMap<>(8192);
 	
 	public static void newTick() {
 		collisionMap.clear();

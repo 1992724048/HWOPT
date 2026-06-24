@@ -49,7 +49,7 @@ public abstract class NoiseInterpolatorMixin {
 		if (hwopt$trilerpCache == null || hwopt$trilerpCache.length != total) {
 			hwopt$trilerpCache = new double[total];
 		}
-		MathNative.instance().batch_trilerp(noise000, noise100, noise010, noise110, noise001, noise101, noise011, noise111, cellW, cellH, hwopt$trilerpCache);
+		MathNative.INSTANCE.batch_trilerp(noise000, noise100, noise010, noise110, noise001, noise101, noise011, noise111, cellW, cellH, hwopt$trilerpCache);
 	}
 	
 	@Inject(method = "compute(Lnet/minecraft/world/level/levelgen/DensityFunction$FunctionContext;)D", at = @At("HEAD"), cancellable = true)

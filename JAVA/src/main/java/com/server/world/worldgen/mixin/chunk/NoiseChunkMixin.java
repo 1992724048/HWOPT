@@ -57,7 +57,7 @@ public abstract class NoiseChunkMixin {
 	private void hwopt$fillAllDirectly(double[] output, DensityFunction function, CallbackInfo ci) {
 		if (function instanceof NoiseChunk.NoiseInterpolator interp) {
 			NoiseInterpolatorAccessor acc = (NoiseInterpolatorAccessor) interp;
-			MathNative.instance().batch_trilerp(
+			MathNative.INSTANCE.batch_trilerp(
 				acc.noise000(), acc.noise100(), acc.noise010(), acc.noise110(),
 				acc.noise001(), acc.noise101(), acc.noise011(), acc.noise111(),
 				this.cellWidth, this.cellHeight, output

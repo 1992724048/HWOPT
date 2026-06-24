@@ -21,26 +21,25 @@ import net.neoforged.neoforge.common.NeoForge;
 @Mod(value = HWOPT.MODID, dist = Dist.CLIENT)
 @EventBusSubscriber(modid = HWOPT.MODID, value = Dist.CLIENT)
 public class HWOPTClient {
-    public HWOPTClient(final ModContainer container) {
-        container.registerConfig(ModConfig.Type.CLIENT, Config.SPEC);
-        container.registerExtensionPoint(IConfigScreenFactory.class,
-                (container1, parent) -> ModConfigScreen.create(parent));
-        NeoForge.EVENT_BUS.addListener(ClientTickEvent.Post.class, event -> {
-            EntityCullingMod.getInstance().clientTick();
-            NetworkTrafficTracker.tick();
-        });
-    }
-
-    @SubscribeEvent
-    static void onClientSetup(final FMLClientSetupEvent event) {
-        event.enqueueWork(EntityCullingMod::getInstance);
-        event.enqueueWork(AggregationManager::init);
-        // PacketIndexRegistry initializes via @SubscribeEvent on RegisterPayloadHandlersEvent
-        BlockIdRegistry.init();
-    }
-
-    @SubscribeEvent
-    static void onRegisterDebugEntries(RegisterDebugEntriesEvent event) {
-        event.register(Identifier.fromNamespaceAndPath("hwopt", "network_stats"), new NetworkStatsEntry());
-    }
+	public HWOPTClient(final ModContainer container) {
+		container.registerConfig(ModConfig.Type.CLIENT, Config.SPEC);
+		container.registerExtensionPoint(IConfigScreenFactory.class, (container1, parent) -> ModConfigScreen.create(parent));
+		NeoForge.EVENT_BUS.addListener(ClientTickEvent.Post.class, event -> {
+			EntityCullingMod.getInstance().clientTick();
+			NetworkTrafficTracker.tick();
+		});
+	}
+	
+	@SubscribeEvent
+	static void onClientSetup(final FMLClientSetupEvent event) {
+		event.enqueueWork(EntityCullingMod::getInstance);
+		event.enqueueWork(AggregationManager::init);
+		// PacketIndexRegistry initializes via @SubscribeEvent on RegisterPayloadHandlersEvent
+		BlockIdRegistry.init();
+	}
+	
+	@SubscribeEvent
+	static void onRegisterDebugEntries(RegisterDebugEntriesEvent event) {
+		event.register(Identifier.fromNamespaceAndPath("hwopt", "network_stats"), new NetworkStatsEntry());
+	}
 }

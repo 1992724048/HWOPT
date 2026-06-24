@@ -8,6 +8,8 @@
 #include <tbb/parallel_for.h>
 #include <tbb/parallel_sort.h>
 
+#include "mimalloc/mimalloc.h"
+
 #include "stdpp/util.h"
 
 using namespace minecraft::aabb;
@@ -148,7 +150,7 @@ auto AABB::batch_find_collisions(const double* aabbs,
         return 0;
     }
 
-    std::vector<EntityRef> sorted(entity_count);
+    std::vector<EntityRef, mi_stl_allocator<EntityRef>> sorted(entity_count);
     for (int i = 0; i < entity_count; i++) {
         const double* b = aabbs + (i * 6);
         sorted[i].min_x = b[0];
