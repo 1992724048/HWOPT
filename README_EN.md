@@ -67,7 +67,7 @@ HWOPT (Hardware Optimization) is a Minecraft optimization mod that rewrites vani
 
 2. Why choose SYCL over Vulkan compute shaders?
 
-- SYCL is a single-source C++ programming model that allows writing GPU kernels directly in C++ code, eliminating the need to learn shader languages like GLSL/HLSL, reducing code duplication and porting costs. Vulkan compute shaders require managing complex pipeline states, memory barriers, and descriptor sets, resulting in lower development efficiency. For a mod like Minecraft that involves heavy algorithm porting, SYCL's C++ integration and cross-platform support are significantly superior to Vulkan.
+- SYCL is a single-source C++ programming model that allows writing GPU kernels directly in C++ code, eliminating the need to learn shader languages like GLSL/HLSL, reducing code duplication and porting costs. Vulkan compute shaders require managing complex pipeline states, memory barriers, and descriptor sets, resulting in lower development efficiency. For a mod like Minecraft that involves heavy algorithm porting, SYCL's C++ integration and performance are significantly superior to Vulkan.
 
 3. What advantage does the Intel C++ compiler have over MSVC for compiling native DLLs?
 

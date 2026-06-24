@@ -67,7 +67,7 @@ HWOPT (Hardware Optimization) 是一个 Minecraft 优化模组，使用 C++ 重�
 
 2. 为什么选择 SYCL 而不是 Vulkan 计算着色器？
 
-- SYCL 是单源 C++ 编程模型，可直接在 C++ 代码中编写 GPU 核函数，无需学习 GLSL/HLSL 等着色器语言，代码复用和移植成本更低。Vulkan 计算着色器需要管理复杂的管线状态、内存屏障和描述符集，开发效率较低。SYCL 的 C++ 集成度和跨平台性显著优于 Vulkan。
+- SYCL 是单源 C++ 编程模型，可直接在 C++ 代码中编写 GPU 核函数，无需学习 GLSL/HLSL 等着色器语言，代码复用和移植成本更低。Vulkan 计算着色器需要管理复杂的管线状态、内存屏障和描述符集，开发效率较低。SYCL 的 C++ 集成度和性能显著优于 Vulkan。
 
 3. Native DLL 使用 Intel C++ 编译器编译相较于 MSVC 有什么优势吗？
 
