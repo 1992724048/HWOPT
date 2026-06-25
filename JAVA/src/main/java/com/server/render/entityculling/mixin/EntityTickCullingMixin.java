@@ -3,6 +3,7 @@ package com.server.render.entityculling.mixin;
 import com.server.render.entityculling.EntityCulling;
 import com.server.render.entityculling.NMSCullingHelper;
 import com.server.render.entityculling.access.Cullable;
+import com.server.render.entityculling.occlusion.HardwareOcclusionEngine;
 import com.hwpp.mod.Config;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -56,9 +57,6 @@ public class EntityTickCullingMixin {
         if (entity instanceof LivingEntity living) {
             living.aiStep();
             if (living.hurtTime > 0) living.hurtTime--;
-            // Warden heartbeat sound handled by vanilla tick
         }
     }
-
-
 }

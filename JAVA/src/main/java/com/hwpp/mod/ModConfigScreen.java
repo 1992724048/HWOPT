@@ -29,10 +29,7 @@ public class ModConfigScreen {
 										false, C.solidLeaves, C.solidLeaves::set))
 								.option(intOpt("hwopt.config.sleepDelay",
 										"hwopt.config.sleepDelay.desc",
-										10, C.sleepDelay, C.sleepDelay::set, 0, 1000, 10))
-								.option(intOpt("hwopt.config.hitboxLimit",
-										"hwopt.config.hitboxLimit.desc",
-										50, C.hitboxLimit, C.hitboxLimit::set, 1, 500, 1))
+										10, C.sleepDelay, C.sleepDelay::set, 1, 1000, 10))
 								.option(intOpt("hwopt.config.captureRate",
 										"hwopt.config.captureRate.desc",
 										5, C.captureRate, C.captureRate::set, 1, 100, 1))
@@ -45,9 +42,27 @@ public class ModConfigScreen {
 								.option(boolOpt("hwopt.config.forceDisplayCulling",
 										"hwopt.config.forceDisplayCulling.desc",
 										false, C.forceDisplayCulling, C.forceDisplayCulling::set))
-								.option(boolOpt("hwopt.config.debugMode",
-										"hwopt.config.debugMode.desc",
-										false, C.debugMode, C.debugMode::set))
+								.option(intOpt("hwopt.config.staleFrames",
+										"hwopt.config.staleFrames.desc",
+										40, C.staleFrames, C.staleFrames::set, 5, 200, 5))
+								.option(intOpt("hwopt.config.maxTraceDist",
+										"hwopt.config.maxTraceDist.desc",
+										128, C.maxTraceDist, C.maxTraceDist::set, 16, 512, 16))
+								.option(intOpt("hwopt.config.nearDist",
+										"hwopt.config.nearDist.desc",
+										64, C.nearDist, C.nearDist::set, 8, 256, 8))
+								.option(intOpt("hwopt.config.midDist",
+										"hwopt.config.midDist.desc",
+										128, C.midDist, C.midDist::set, 16, 512, 16))
+								.option(intOpt("hwopt.config.freqMid",
+										"hwopt.config.freqMid.desc",
+										2, C.freqMid, C.freqMid::set, 1, 10, 1))
+								.option(intOpt("hwopt.config.freqFar",
+										"hwopt.config.freqFar.desc",
+										4, C.freqFar, C.freqFar::set, 1, 20, 1))
+								.option(intOpt("hwopt.config.maxBeCache",
+										"hwopt.config.maxBeCache.desc",
+										8192, C.maxBeCache, C.maxBeCache::set, 256, 65536, 256))
 								.build())
 						.group(OptionGroup.createBuilder()
 								.name(Component.translatable("hwopt.config.group.particle"))
@@ -117,6 +132,20 @@ public class ModConfigScreen {
 								.option(boolOpt("hwopt.configuration.world.spawnAtVillage",
 										"hwopt.configuration.world.spawnAtVillage.tooltip",
 										false, C.spawnAtVillage, C.spawnAtVillage::set))
+								.build())
+						.group(OptionGroup.createBuilder()
+								.name(Component.translatable("hwopt.config.group.collision"))
+								.collapsed(false)
+								.option(intOpt("hwopt.config.entityDensityThreshold",
+										"hwopt.config.entityDensityThreshold.desc",
+										1, C.entityDensityThreshold, C.entityDensityThreshold::set, 0, 32, 1))
+								.build())
+						.group(OptionGroup.createBuilder()
+								.name(Component.translatable("hwopt.config.group.entityAI"))
+								.collapsed(false)
+								.option(intOpt("hwopt.config.pathfindCooldown",
+										"hwopt.config.pathfindCooldown.desc",
+										5, C.pathfindCooldown, C.pathfindCooldown::set, 0, 100, 1))
 								.build())
 						.group(OptionGroup.createBuilder()
 								.name(Component.translatable("hwopt.config.group.mobDespawn"))

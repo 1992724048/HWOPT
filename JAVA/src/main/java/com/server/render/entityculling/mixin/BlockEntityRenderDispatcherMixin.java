@@ -1,8 +1,8 @@
 package com.server.render.entityculling.mixin;
 
-import com.server.render.entityculling.EntityCulling;
-import com.server.render.entityculling.access.Cullable;
 import com.hwpp.mod.Config;
+import com.server.render.entityculling.EntityCulling;
+import com.server.render.entityculling.occlusion.HardwareOcclusionEngine;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
@@ -19,27 +19,30 @@ public abstract class BlockEntityRenderDispatcherMixin {
     @Shadow
     public abstract <E extends BlockEntity> BlockEntityRenderer<E, ?> getRenderer(E blockEntity);
 
-    @Inject(method = "tryExtractRenderState", at = @At("HEAD"), cancellable = true)
-    private void hwopt$tryExtractRenderState(BlockEntity blockEntity, float partialTick,
-                                              ModelFeatureRenderer.CrumblingOverlay crumblingOverlay,
+    @Inject(method = "tryExtractRenderState*", at = @At("HEAD"), cancellable = true)
+    private void hwopt$tryExtractRenderState(BlockEntity blockEntity, float partialTicks,
+                                              ModelFeatureRenderer.CrumblingOverlay breakProgress,
                                               boolean isGloballyRendered,
                                               CallbackInfoReturnable<Object> ci) {
         if (isGloballyRendered) return;
-        EntityCulling mod = EntityCulling.getInstance();
         if (Config.CONFIG.skipBlockEntityCulling.get()) return;
         if (!EntityCulling.enabled || !Config.CONFIG.tickCulling.get()) return;
+
         BlockEntityRenderer<?, ?> renderer = getRenderer(blockEntity);
         if (renderer == null) return;
         if (renderer.shouldRenderOffScreen()) {
-            mod.renderedBlockEntities++;
+            EntityCulling.getInstance().renderedBlockEntities++;
             return;
         }
-        Cullable cullable = (Cullable) blockEntity;
-        if (cullable.isCulled()) {
-            mod.skippedBlockEntities++;
+
+        long beId = blockEntity.getBlockPos().asLong();
+        if (HardwareOcclusionEngine.getInstance().isBlockEntityCulled(beId)) {
+            EntityCulling.getInstance().skippedBlockEntities++;
             ci.setReturnValue(null);
             return;
         }
-        mod.renderedBlockEntities++;
+
+        HardwareOcclusionEngine.getInstance().trackRenderedBlockEntity(blockEntity);
+        EntityCulling.getInstance().renderedBlockEntities++;
     }
 }

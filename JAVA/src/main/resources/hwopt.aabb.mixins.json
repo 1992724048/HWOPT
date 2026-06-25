@@ -6,7 +6,6 @@
     "EntityMixin",
     "LivingEntityMixin",
     "LevelMixin",
-    "PathNavigationMixin",
     "ServerLevelMixin"
   ],
   "injectors": {

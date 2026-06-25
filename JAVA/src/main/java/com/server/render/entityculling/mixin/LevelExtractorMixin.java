@@ -23,17 +23,18 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public class LevelExtractorMixin {
 
     @Inject(method = "extractEntity", at = @At("HEAD"), cancellable = true)
-    private void hwopt$extractEntity(Entity entity, float partialTick, CallbackInfoReturnable<EntityRenderState> ci) {
+    private void hwopt$extractEntity(Entity entity, float partialTickTime, CallbackInfoReturnable<EntityRenderState> ci) {
         EntityCulling mod = EntityCulling.getInstance();
         if (Config.CONFIG.skipEntityCulling.get()) return;
         if (!EntityCulling.enabled || !Config.CONFIG.tickCulling.get()) return;
+
         Cullable cullable = (Cullable) entity;
         if (!cullable.isForcedVisible() && cullable.isCulled() && !NMSCullingHelper.ignoresCulling(entity)) {
             EntityRenderState state = new EntityRenderState();
             state.entityType = EntityTypes.INTERACTION;
-            state.x = Mth.lerp(partialTick, entity.xOld, entity.getX());
-            state.y = Mth.lerp(partialTick, entity.yOld, entity.getY());
-            state.z = Mth.lerp(partialTick, entity.zOld, entity.getZ());
+            state.x = Mth.lerp(partialTickTime, entity.xOld, entity.getX());
+            state.y = Mth.lerp(partialTickTime, entity.yOld, entity.getY());
+            state.z = Mth.lerp(partialTickTime, entity.zOld, entity.getZ());
             state.isInvisible = true;
             mod.skippedEntities++;
             ci.setReturnValue(state);
@@ -45,7 +46,7 @@ public class LevelExtractorMixin {
 
     @Inject(method = "extractVisibleEntities", at = @At("HEAD"))
     private void hwopt$extractVisibleEntities(Camera camera, Frustum frustum, DeltaTracker deltaTracker,
-                                               LevelRenderState levelRenderState, CallbackInfo ci) {
+                                               LevelRenderState output, CallbackInfo ci) {
         EntityCulling.getInstance().frustum = frustum;
     }
 }

@@ -1,5 +1,6 @@
-package com.server.entity.aabb.mixin;
+package com.server.entity.misc;
 
+import com.hwpp.mod.Config;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.level.Level;
@@ -20,14 +21,11 @@ public class PathNavigationMixin {
 	@Unique
 	private long hwopt$lastPathfindGameTime = 0;
 	
-	@Unique
-	private static final long hwopt$PATHFIND_COOLDOWN = 5;
-	
 	@Inject(method = "recomputePath", at = @At("HEAD"), cancellable = true)
 	private void hwopt$onRecomputePath(CallbackInfo ci) {
 		Level level = this.mob.level();
 		long gameTime = level.getGameTime();
-		if (gameTime - this.hwopt$lastPathfindGameTime < hwopt$PATHFIND_COOLDOWN) {
+		if (gameTime - this.hwopt$lastPathfindGameTime < Config.CONFIG.pathfindCooldown.get()) {
 			ci.cancel();
 		} else {
 			this.hwopt$lastPathfindGameTime = gameTime;

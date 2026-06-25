@@ -1,7 +1,6 @@
 package com.server.render.entityculling;
 
-import com.server.render.entityculling.occlusion.OcclusionCullingInstance;
-import com.server.render.entityculling.occlusion.Provider;
+import com.server.render.entityculling.occlusion.HardwareOcclusionEngine;
 import com.hwpp.mod.Config;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.culling.Frustum;
@@ -15,6 +14,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,7 +27,6 @@ public class EntityCulling {
     public static boolean enabled = true;
 
     public final DebugCollector debugCollector = new DebugCollector();
-    public OcclusionCullingInstance culling;
     public boolean debugHitboxes = false;
     public int renderedBlockEntities = 0;
     public int skippedBlockEntities = 0;
@@ -38,22 +37,22 @@ public class EntityCulling {
     public Set<BlockEntityType<?>> blockEntityWhitelist = new HashSet<>();
     public Set<EntityType<?>> entityWhitelist = new HashSet<>();
     public Set<EntityType<?>> tickCullWhitelists = new HashSet<>();
-    public CullTask cullTask;
     public double lastTickTime = 0;
     public Frustum frustum = null;
 
+    public final HardwareOcclusionEngine hocEngine = HardwareOcclusionEngine.getInstance();
+    public final CullTask cullTask;
     private final Thread cullThread;
-    private int tickCounter = 0;
     private boolean lateInit = false;
+    private int tickCounter = 0;
     private final Set<Function<BlockEntity, Boolean>> dynamicBlockEntityWhitelist = new HashSet<>();
     private final Set<Function<Entity, Boolean>> dynamicEntityWhitelist = new HashSet<>();
 
     public EntityCulling() {
         instance = this;
-        culling = new OcclusionCullingInstance(64, new Provider());
-        cullTask = new CullTask(culling, blockEntityWhitelist, entityWhitelist);
+        cullTask = new CullTask(hocEngine);
         cullThread = new Thread(cullTask, "CullThread");
-        cullThread.setUncaughtExceptionHandler((thread, ex) -> LOGGER.error("CullingThread crashed!", ex));
+        cullThread.setUncaughtExceptionHandler((t, ex) -> LOGGER.error("CullThread crashed!", ex));
         cullThread.setDaemon(true);
     }
 
@@ -93,7 +92,7 @@ public class EntityCulling {
                     for (Entity entity : client.level.entitiesForRendering()) {
                         entities.add(entity);
                     }
-                    cullTask.setEntitiesForRendering(entities);
+                    cullTask.setEntities(entities);
                     debugCollector.getDataHolder().consideredEntities = entities.size();
                 }
                 if (!Config.CONFIG.skipBlockEntityCulling.get()) {
@@ -110,14 +109,14 @@ public class EntityCulling {
                 changed = true;
             }
             cullTask.setIngame(true);
-            cullTask.setCameraMC(Config.CONFIG.debugMode.get() ? client.player.getEyePosition(0) : client.gameRenderer.mainCamera().position());
+            cullTask.setCameraPos(client.gameRenderer.mainCamera().position());
             cullTask.requestCull = true;
             if (changed) {
                 lastTickTime = (System.nanoTime() - start) / 1_000_000.0;
             }
         } else {
             cullTask.setIngame(false);
-            cullTask.setEntitiesForRendering(Collections.emptyList());
+            cullTask.setEntities(Collections.emptyList());
             cullTask.setBlockEntities(Collections.emptyMap());
             lastTickTime = (System.nanoTime() - start) / 1_000_000.0;
         }

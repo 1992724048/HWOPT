@@ -12,7 +12,7 @@ public class EntityPushSystem {
 	private static class ReusableBuffers {
 		Entity[] entities = new Entity[256];
 		double[] aabbs = new double[256 * 6];
-		int[] collisionCounts = new int[256];
+		int[] tempIds = new int[256];
 		int[] outA = new int[1024];
 		int[] outB = new int[1024];
 
@@ -22,7 +22,7 @@ public class EntityPushSystem {
 				int newCap = count + (count >> 1);
 				entities = new Entity[newCap];
 				aabbs = new double[newCap * 6];
-				collisionCounts = new int[newCap];
+				tempIds = new int[newCap];
 				int pairCap = newCap * 4;
 				outA = new int[pairCap];
 				outB = new int[pairCap];
@@ -31,11 +31,10 @@ public class EntityPushSystem {
 	}
 
 	public static void tick(ServerLevel level) {
-		CollisionMapData.newTick();
-
 		ReusableBuffers buf = TL_BUFFERS.get();
 		Entity[] all = buf.entities;
 		double[] aabbs = buf.aabbs;
+		int[] tempIds = buf.tempIds;
 
 		int count = 0;
 		for (Entity e : level.getAllEntities()) {
@@ -44,38 +43,26 @@ public class EntityPushSystem {
 					int newCap = all.length + (all.length >> 1);
 					all = buf.entities = java.util.Arrays.copyOf(all, newCap);
 					aabbs = buf.aabbs = java.util.Arrays.copyOf(aabbs, newCap * 6);
-					buf.collisionCounts = java.util.Arrays.copyOf(buf.collisionCounts, newCap);
+					tempIds = buf.tempIds = java.util.Arrays.copyOf(tempIds, newCap);
 				}
 				all[count] = le;
-				IEntityNativeId nativeId = (IEntityNativeId) le;
-				nativeId.hwopt$setCollisionCount(0);
-				nativeId.hwopt$extractBoundingBox(aabbs, count * 6);
+				tempIds[count] = TempID.getId(le);
+				((IEntityNativeId) le).hwopt$extractBoundingBox(aabbs, count * 6);
 				count++;
 			}
 		}
 		if (count == 0) return;
 
 		buf.ensureSize(count);
-		aabbs = buf.aabbs;
-		int[] collisionCounts = buf.collisionCounts;
-		java.util.Arrays.fill(collisionCounts, 0, count, 0);
 		int[] outA = buf.outA;
 		int[] outB = buf.outB;
 
 		int pairCount = AABBNative.INSTANCE.batchFindCollisions(aabbs, outA, outB, count, outA.length);
 
-		for (int i = 0; i < pairCount; i++) {
-			int ia = outA[i];
-			int ib = outB[i];
-			if (ia >= count || ib >= count) continue;
-
-			CollisionMapData.putCollision(ia, ib);
-			collisionCounts[ia]++;
-			collisionCounts[ib]++;
-		}
+		CollisionMapData.build(outA, outB, pairCount, count, tempIds);
 
 		for (int i = 0; i < count; i++) {
-			((IEntityNativeId) all[i]).hwopt$setCollisionCount(collisionCounts[i]);
+			((IEntityNativeId) all[i]).hwopt$setCollisionCount(CollisionMapData.getCollisionCount(tempIds[i]));
 		}
 	}
 }

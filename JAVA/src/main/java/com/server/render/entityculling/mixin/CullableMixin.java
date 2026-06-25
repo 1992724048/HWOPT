@@ -2,6 +2,7 @@ package com.server.render.entityculling.mixin;
 
 import com.server.render.entityculling.EntityCulling;
 import com.server.render.entityculling.access.Cullable;
+import com.server.render.entityculling.occlusion.HardwareOcclusionEngine;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import org.spongepowered.asm.mixin.Mixin;
@@ -10,25 +11,25 @@ import org.spongepowered.asm.mixin.Unique;
 @Mixin(value = {Entity.class, BlockEntity.class})
 public class CullableMixin implements Cullable {
     @Unique
-    private long lasttime;
+    private long jAVA$lasttime;
     @Unique
-    private boolean culled;
+    private boolean jAVA$culled;
     @Unique
-    private boolean outOfCamera;
+    private boolean jAVA$outOfCamera;
 
     @Override
     public void setTimeout() {
-        lasttime = System.currentTimeMillis() + 1000;
+        jAVA$lasttime = System.currentTimeMillis() + 1000;
     }
 
     @Override
     public boolean isForcedVisible() {
-        return lasttime > System.currentTimeMillis();
+        return jAVA$lasttime > System.currentTimeMillis();
     }
 
     @Override
     public void setCulled(boolean value) {
-        this.culled = value;
+        this.jAVA$culled = value;
         if (!value) {
             setTimeout();
         }
@@ -37,17 +38,25 @@ public class CullableMixin implements Cullable {
     @Override
     public boolean isCulled() {
         if (!EntityCulling.enabled) return false;
-        return culled;
+        if (jAVA$culled) return true;
+        Object self = this;
+        if (self instanceof Entity entity) {
+            return HardwareOcclusionEngine.getInstance().isEntityCulled(entity.getId());
+        }
+        if (self instanceof BlockEntity be) {
+            return HardwareOcclusionEngine.getInstance().isBlockEntityCulled(be.getBlockPos().asLong());
+        }
+        return false;
     }
 
     @Override
     public void setOutOfCamera(boolean value) {
-        this.outOfCamera = value;
+        this.jAVA$outOfCamera = value;
     }
 
     @Override
     public boolean isOutOfCamera() {
         if (!EntityCulling.enabled) return false;
-        return outOfCamera;
+        return jAVA$outOfCamera;
     }
 }

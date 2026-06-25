@@ -65,6 +65,12 @@ config="${mod_id}.particle.mixins.json"
 [[mixins]]
 config="${mod_id}.mobdespawn.mixins.json"
 
+[[mixins]]
+config="${mod_id}.biome.mixins.json"
+
+[[mixins]]
+config="${mod_id}.misc.mixins.json"
+
 [[accessTransformers]]
 file="META-INF/accesstransformer.cfg"
 

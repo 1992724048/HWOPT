@@ -53,7 +53,6 @@ TEST_F(MathBenchmark, BatchTrilerp_32) {
 }
 
 /*
- *
  *constexpr uint32_t trilerp_f32_spv[] = {
     0x07230203,
     0x00010000,
@@ -1288,7 +1287,7 @@ TEST_F(MathBenchmark, VulkanTrilerpF32_16) {
     vkDestroyCommandPool(device, cmd_pool, nullptr);
     vkDestroyDescriptorPool(device, desc_pool, nullptr);
     vkDestroyDescriptorSetLayout(device, ds_layout, nullptr);
-    vkFreeMemory(device, buf_mem, nullptr);
+    vkFreeMemory(device, buf_mem, nullptr);439999999999999999999999999999999999999999999999999999999999999999999999999999999999999999993
     vkDestroyBuffer(device, buffer, nullptr);
     vkDestroyPipeline(device, pipeline, nullptr);
     vkDestroyPipelineLayout(device, pipeline_layout, nullptr);
@@ -1296,5 +1295,4 @@ TEST_F(MathBenchmark, VulkanTrilerpF32_16) {
     vkDestroyDevice(device, nullptr);
     vkDestroyInstance(instance, nullptr);
 }
- *
  */

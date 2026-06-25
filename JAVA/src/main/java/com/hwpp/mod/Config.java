@@ -20,15 +20,21 @@ public class Config {
 	public final ModConfigSpec.BooleanValue tickCulling;
 	public final ModConfigSpec.BooleanValue solidLeaves;
 	public final ModConfigSpec.IntValue sleepDelay;
-	public final ModConfigSpec.IntValue hitboxLimit;
 	public final ModConfigSpec.IntValue captureRate;
 	public final ModConfigSpec.BooleanValue skipEntityCulling;
 	public final ModConfigSpec.BooleanValue skipBlockEntityCulling;
 	public final ModConfigSpec.BooleanValue forceDisplayCulling;
-	public final ModConfigSpec.BooleanValue debugMode;
+	public final ModConfigSpec.IntValue staleFrames;
+	public final ModConfigSpec.IntValue maxTraceDist;
+	public final ModConfigSpec.IntValue nearDist;
+	public final ModConfigSpec.IntValue midDist;
+	public final ModConfigSpec.IntValue freqMid;
+	public final ModConfigSpec.IntValue freqFar;
+	public final ModConfigSpec.IntValue maxBeCache;
 	
 	// Entity - Collision
 	public final ModConfigSpec.IntValue entityDensityThreshold;
+	public final ModConfigSpec.IntValue pathfindCooldown;
 
 	// Rendering - Entity Culling Lists
 	public final ModConfigSpec.ConfigValue<String> blockEntityCullingWhitelist;
@@ -82,20 +88,29 @@ public class Config {
 		builder.pop();
 		
 		builder.push("entity").translation("hwopt.config.category.entity");
-		entityDensityThreshold = builder.comment("Minimum collision partners to use cached entity push; below this threshold push is skipped for performance").translation("hwopt.config.entityDensityThreshold").defineInRange("entityDensityThreshold", 2, 0, 32);
+		entityDensityThreshold = builder.comment("Minimum collision partners to use cached entity push; below this threshold push is skipped for performance").translation("hwopt.config.entityDensityThreshold").defineInRange("entityDensityThreshold", 1, 0, 32);
+		builder.pop();
+
+		builder.push("entity_ai").translation("hwopt.config.group.entityAI");
+		pathfindCooldown = builder.comment("Minimum ticks between pathfinder full recomputes").translation("hwopt.config.pathfindCooldown").defineInRange("pathfindCooldown", 5, 0, 100);
 		builder.pop();
 
 		builder.push("rendering").translation("hwopt.config.category.rendering");
 		builder.push("entity_culling").translation("hwopt.config.group.entityCulling");
 		tickCulling = builder.comment("Cull entity ticking when behind walls").translation("hwopt.config.tickCulling").define("tickCulling", true);
 		solidLeaves = builder.comment("Treat leaves as solid blocks for occlusion culling").translation("hwopt.config.solidLeaves").define("solidLeaves", false);
-		sleepDelay = builder.comment("Sleep delay (ms) between culling task iterations").translation("hwopt.config.sleepDelay").defineInRange("sleepDelay", 10, 0, 1000);
-		hitboxLimit = builder.comment("Hitbox size limit for culling (skip oversized entities)").translation("hwopt.config.hitboxLimit").defineInRange("hitboxLimit", 50, 1, 500);
+		sleepDelay = builder.comment("CullTask sleep delay (ms) between iterations").translation("hwopt.config.sleepDelay").defineInRange("sleepDelay", 10, 1, 1000);
 		captureRate = builder.comment("Entity capture rate (ticks between capture rounds)").translation("hwopt.config.captureRate").defineInRange("captureRate", 5, 1, 100);
 		skipEntityCulling = builder.comment("Skip entity culling entirely").translation("hwopt.config.skipEntityCulling").define("skipEntityCulling", false);
 		skipBlockEntityCulling = builder.comment("Skip block entity culling entirely").translation("hwopt.config.skipBlockEntityCulling").define("skipBlockEntityCulling", false);
 		forceDisplayCulling = builder.comment("Force culling for Display entities with zero bounding box").translation("hwopt.config.forceDisplayCulling").define("forceDisplayCulling", false);
-		debugMode = builder.comment("Use player eye position instead of camera for culling checks").translation("hwopt.config.debugMode").define("debugMode", false);
+		staleFrames = builder.comment("Frames before culling result expires").translation("hwopt.config.staleFrames").defineInRange("staleFrames", 40, 5, 200);
+		maxTraceDist = builder.comment("Maximum ray trace distance (blocks)").translation("hwopt.config.maxTraceDist").defineInRange("maxTraceDist", 128, 16, 512);
+		nearDist = builder.comment("Near distance threshold (blocks)").translation("hwopt.config.nearDist").defineInRange("nearDist", 64, 8, 256);
+		midDist = builder.comment("Mid distance threshold (blocks)").translation("hwopt.config.midDist").defineInRange("midDist", 128, 16, 512);
+		freqMid = builder.comment("Mid distance query skip frequency").translation("hwopt.config.freqMid").defineInRange("freqMid", 2, 1, 10);
+		freqFar = builder.comment("Far distance query skip frequency").translation("hwopt.config.freqFar").defineInRange("freqFar", 4, 1, 20);
+		maxBeCache = builder.comment("Maximum block entity AABB cache entries").translation("hwopt.config.maxBeCache").defineInRange("maxBeCache", 8192, 256, 65536);
 		blockEntityCullingWhitelist = builder.comment("Block entity IDs to exclude from culling (comma-separated).").translation("hwopt.config.blockEntityCullingWhitelist").define("blockEntityCullingWhitelist", "betterend:eternal_pedestal,botania:falling_star,botania:flame_ring,botania:magic_missile,create:hose_pulley,create:rope_pulley,minecraft:beacon");
 		entityCullingWhitelist = builder.comment("Entity IDs to exclude from culling (comma-separated).").translation("hwopt.config.entityCullingWhitelist").define("entityCullingWhitelist", "botania:mana_burst,drg_flares:drg_flares,quark:soul_bead");
 		tickCullingWhitelist = builder.comment("Entity IDs to exclude from tick culling (comma-separated).").translation("hwopt.config.tickCullingWhitelist").define("tickCullingWhitelist", "alexscaves:gum_worm,alexscaves:gum_worm_segment,avm_staff:campfire_flame,minecraft:acacia_boat,minecraft:acacia_chest_boat,minecraft:bamboo_chest_raft,minecraft:bamboo_raft,minecraft:birch_boat,minecraft:birch_chest_boat,minecraft:block_display,minecraft:boat,minecraft:cherry_boat,minecraft:cherry_chest_boat,minecraft:dark_oak_boat,minecraft:dark_oak_chest_boat,minecraft:firework_rocket,minecraft:item_display,minecraft:jungle_boat,minecraft:jungle_chest_boat,minecraft:mangrove_boat,minecraft:mangrove_chest_boat,minecraft:oak_boat,minecraft:oak_chest_boat,minecraft:pale_oak_boat,minecraft:pale_oak_chest_boat,minecraft:spruce_boat,minecraft:spruce_chest_boat,minecraft:text_display");
