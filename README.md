@@ -15,13 +15,9 @@
 
 HWOPT (Hardware Optimization) 是一个 Minecraft 优化模组，使用 C++ 重写原版算法，通过 Java 25 FFM API 实现低开销本地调用，并利用 GPU（SYCL/DPC++）加速游戏性能。
 
-## 交流频道
-
-- [pd34429710](https://pd.qq.com/s/fcy3gqy4x) (QQ 频道)
-
 ## 项目状态
 
-**正在开发中...** GPU 加速（SYCL）及其他优化仍在开发中。
+**暂停开发**
 
 #### 功能列表
 
