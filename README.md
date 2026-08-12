@@ -17,7 +17,7 @@ HWOPT (Hardware Optimization) 是一个 Minecraft 优化模组，使用 C++ 重�
 
 ## 项目状态
 
-**暂停开发** （正在开发GUI框架项目而搁置）
+**暂停开发**
 
 #### 功能列表
 
